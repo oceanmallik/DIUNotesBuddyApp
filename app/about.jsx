@@ -3,20 +3,19 @@ import { StyleSheet, Text, View } from 'react-native'
 
 import backgroundImage from "@/assets/images/background.png"
 
-const app = () => {
+const AboutUs = () => {
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={backgroundImage}
-        style={styles.Image}
-      >
-        <Text style={styles.text}>DIU Notes Buddy</Text>
+      <ImageBackground source={backgroundImage} style={styles.Image}>
+
+        <Text style={styles.text}>About Us</Text>
+
       </ImageBackground>
     </View>
   )
 }
 
-export default app
+export default AboutUs
 
 const styles = StyleSheet.create({
   container: {

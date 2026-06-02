@@ -36,7 +36,7 @@ const Contribute = () => {
 
         </View>
         <View style={styles.MemeView}>
-          <Image source={Memes}></Image>
+          <Image source={Memes} style={styles.Meme}></Image>
         </View>
 
       </ImageBackground>
@@ -60,10 +60,11 @@ const styles = StyleSheet.create({
   MemeView: {
     resizeMode: 'contain',
     paddingTop: 60,
+    margin: 20,
   },
   Meme: {
     width: '100%',
-    height: 200,
+    height: 350,
   },
   TopBar: {
     width: '100%',

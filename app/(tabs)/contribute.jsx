@@ -1,27 +1,45 @@
 import { ImageBackground } from 'expo-image'
 import { Link } from 'expo-router'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 
 import backgroundImage from "@/assets/images/backgroundBlue.png"
+import topBarBackground from "@/assets/images/topBarBackground.png"
+import Memes from "@/assets/memes/contributionMeme.jpeg"
+
 
 const Contribute = () => {
   return (
     <View style={styles.container}>
-        <ImageBackground source={backgroundImage} style={styles.Image}>
 
-          <Text style={styles.title}>Contribute Notes</Text>
+      <ImageBackground source={topBarBackground} style={styles.TopBar}>
+        <Text style={styles.title}>Contribute Notes</Text>
+      </ImageBackground>
 
-          <Text style={styles.subtitle}>Contribute to DIU Notes Buddy</Text>
+      <ImageBackground source={backgroundImage} style={styles.Image}>
 
-          <Text style={styles.miniTitle}>Add your notes, fix broken resources, and help make the study library more complete for other DIU students.</Text>
+        <Text style={styles.subtitle}>Wanna Contribute to this Project?</Text>
+
+        <Text style={styles.miniTitle}>Add your notes, fix broken resources, and help make the study library more complete for other DIU students.</Text>
+        
+        <View style={styles.buttonsContainer}>
 
           <Link style={styles.linkButton} href="https://forms.gle/gVuKTo2LxsfGV9A86" asChild>
             <Pressable style={styles.button}>
               <Text style={styles.buttonText}>Contribute Notes</Text>
             </Pressable>
           </Link>
+          <Link style={styles.linkButton} href="https://github.com/oceanmallik/DIUNotesBuddyApp/issues" asChild>
+            <Pressable style={styles.button}>
+              <Text style={styles.buttonText}>Report an Issue</Text>
+            </Pressable>
+          </Link>
 
-        </ImageBackground>
+        </View>
+        <View style={styles.MemeView}>
+          <Image source={Memes}></Image>
+        </View>
+
+      </ImageBackground>
     </View>
   )
 }
@@ -29,29 +47,41 @@ const Contribute = () => {
 export default Contribute
 
 const styles = StyleSheet.create({
-    container: {
+  container: {
     flex: 1,
     flexDirection: 'column',
   },
-    Image: {
+  Image: {
     width: '100%',
     height: '100%',
     flex: 1,
     justifyContent: 'flex-start',
   },
+  MemeView: {
+    resizeMode: 'contain',
+    paddingTop: 60,
+  },
+  Meme: {
+    width: '100%',
+    height: 200,
+  },
+  TopBar: {
+    width: '100%',
+    flex: 0.13,
+    justifyContent: 'flex-start',
+  },
   title: {
     color: 'white',
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: 'bold',
     fontFamily: 'Times New Roman',
     textAlign: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingTop: 30,
+    paddingTop: 36,
     paddingBottom: 20,
   },
   subtitle: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 22,
     fontFamily: 'Times New Roman',
     textAlign: 'left',
     padding: 20,
@@ -61,6 +91,11 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     fontSize: 14,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    allignItems: 'center',
+    merginTop: 30,
   },
   button: {
     minHeight: 25,

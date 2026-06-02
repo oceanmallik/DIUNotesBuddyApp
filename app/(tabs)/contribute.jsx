@@ -2,7 +2,7 @@ import { ImageBackground } from 'expo-image'
 import { Link } from 'expo-router'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
-import backgroundImage from "@/assets/images/background.png"
+import backgroundImage from "@/assets/images/backgroundBlue.png"
 
 const Contribute = () => {
   return (
@@ -10,6 +10,10 @@ const Contribute = () => {
         <ImageBackground source={backgroundImage} style={styles.Image}>
 
           <Text style={styles.title}>Contribute Notes</Text>
+
+          <Text style={styles.subtitle}>Contribute to DIU Notes Buddy</Text>
+
+          <Text style={styles.miniTitle}>Add your notes, fix broken resources, and help make the study library more complete for other DIU students.</Text>
 
           <Link style={styles.linkButton} href="https://forms.gle/gVuKTo2LxsfGV9A86" asChild>
             <Pressable style={styles.button}>
@@ -45,8 +49,21 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 20,
   },
+  subtitle: {
+    color: 'white',
+    fontSize: 20,
+    fontFamily: 'Times New Roman',
+    textAlign: 'left',
+    padding: 20,
+  },
+  miniTitle: {
+    color: 'grey',
+    paddingLeft: 20,
+    paddingRight: 20,
+    fontSize: 14,
+  },
   button: {
-    minHeight: 56,
+    minHeight: 25,
     borderRadius: 28,
     backgroundColor: 'rgba(17, 24, 39, 0.92)',
     paddingVertical: 14,
@@ -63,7 +80,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
     letterSpacing: 0.4,
     textAlign: 'center',

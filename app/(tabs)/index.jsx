@@ -13,11 +13,6 @@ const app = () => {
         <Text style={styles.title}>DIU Notes Buddy</Text>
         <Text style={styles.description}>Your Ultimate Study Companion</Text>
 
-        <Link style={{marginHorizontal: '100'}} href="/contribute" asChild>
-          <Pressable style={styles.button}>
-            <Text style={styles.buttonText}>Contribute Notes</Text>
-          </Pressable>
-        </Link>
         <Link style={{marginHorizontal: '120'}} href="/about" asChild>
           <Pressable style={styles.button}>
             <Text style={styles.buttonText}>About Us</Text>

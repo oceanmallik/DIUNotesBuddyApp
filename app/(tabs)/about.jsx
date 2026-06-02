@@ -8,7 +8,7 @@ const AboutUs = () => {
     <View style={styles.container}>
       <ImageBackground source={backgroundImage} style={styles.Image}>
 
-        <Text style={styles.text}>About Us</Text>
+        <Text style={styles.title}>About Us</Text>
 
       </ImageBackground>
     </View>
@@ -26,14 +26,16 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
-  text: {
+  title: {
     color: 'white',
-    fontSize: 42,
+    fontSize: 32,
     fontWeight: 'bold',
     fontFamily: 'Times New Roman',
     textAlign: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingTop: 30,
+    paddingBottom: 20,
   },
 })

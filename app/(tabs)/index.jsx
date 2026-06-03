@@ -2,8 +2,8 @@ import { ImageBackground } from 'expo-image'
 import { StyleSheet, Text, View } from 'react-native'
 
 import backgroundImage from "@/assets/images/background.png"
-import AppButton from '../../components/button.js'
-import Header from '../../components/header.js'
+import AppButton from '../../appDesign/button.js'
+import Header from '../../appDesign/header.js'
 
 const app = () => {
   return (

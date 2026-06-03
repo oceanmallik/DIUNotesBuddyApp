@@ -2,7 +2,7 @@ import { ImageBackground } from 'expo-image'
 import { StyleSheet, Text, View } from 'react-native'
 
 import backgroundImage from "@/assets/images/backgroundBlue.png"
-import Header from '../../components/header.js'
+import Header from '../../appDesign/header.js'
 
 const AboutUs = () => {
   return (

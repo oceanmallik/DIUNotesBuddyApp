@@ -1,6 +1,6 @@
 import { ImageBackground } from 'expo-image'
-import { Link } from 'expo-router'
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
+import AppButton from '../../components/button.js'
 
 import backgroundImage from "@/assets/images/backgroundBlue.png"
 import topBarBackground from "@/assets/images/topBarBackground.png"
@@ -23,17 +23,15 @@ const Contribute = () => {
         
         <View style={styles.buttonsContainer}>
 
-          <Link style={styles.linkButton} href="https://forms.gle/gVuKTo2LxsfGV9A86" asChild>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>Contribute Notes</Text>
-            </Pressable>
-          </Link>
-          <Link style={styles.linkButton} href="https://github.com/oceanmallik/DIUNotesBuddyApp/issues" asChild>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>Report an Issue</Text>
-            </Pressable>
-          </Link>
-
+          <AppButton
+            link="https://forms.gle/gVuKTo2LxsfGV9A86"
+            title="Contribute Notes"
+          />
+          <AppButton
+            link="https://github.com/oceanmallik/DIUNotesBuddyApp/issues"
+            title="Report an Issue"
+          />
+          
         </View>
         <View style={styles.MemeView}>
           <Image source={Memes} style={styles.Meme}></Image>
@@ -95,36 +93,5 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
-    allignItems: 'center',
-    merginTop: 30,
-  },
-  button: {
-    minHeight: 25,
-    borderRadius: 28,
-    backgroundColor: 'rgba(17, 24, 39, 0.92)',
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.28,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 13,
-    fontWeight: 'bold',
-    letterSpacing: 0.4,
-    textAlign: 'center',
-  },
-  linkButton: {
-    alignSelf: 'flex-start',
-    marginLeft: 20,
-    marginTop: 20,
-    minWidth: 50,
   },
 })

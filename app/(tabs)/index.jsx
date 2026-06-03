@@ -1,24 +1,26 @@
 import { ImageBackground } from 'expo-image'
-import { Link } from 'expo-router'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 import backgroundImage from "@/assets/images/background.png"
+import AppButton from '../../components/button.js'
+import Header from '../../components/header.js'
 
 const app = () => {
   return (
     <View style={styles.container}>
 
+      <Header title="DIU Notes Buddy" />
+
       <ImageBackground source={backgroundImage} style={styles.Image} >
 
-        <Text style={styles.title}>DIU Notes Buddy</Text>
         <Text style={styles.description}>Your Ultimate Study Companion</Text>
 
-        <Link style={styles.linkButton} href="/about" asChild>
-          <Pressable style={styles.button}>
-            <Text style={styles.buttonText}>About Us</Text>
-          </Pressable>
-        </Link>
-
+        <View style={styles.viewContainer}>
+          <AppButton
+            link="/about"
+            title="About Us"
+          />
+        </View>
       </ImageBackground>
 
     </View>
@@ -91,5 +93,12 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     marginBottom: 40,
     minWidth: 50,
+  },
+  viewContainer: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    zIndex: 10,
+    elevation: 10,
   },
 })

@@ -1,14 +1,18 @@
 import { ImageBackground } from 'expo-image'
 import { StyleSheet, Text, View } from 'react-native'
 
-import backgroundImage from "@/assets/images/background.png"
+import backgroundImage from "@/assets/images/backgroundBlue.png"
+import Header from '../../components/header.js'
 
 const AboutUs = () => {
   return (
     <View style={styles.container}>
+
+      <Header title="About Us" />
+
       <ImageBackground source={backgroundImage} style={styles.Image}>
 
-        <Text style={styles.title}>About Us</Text>
+        <Text>Coming soon...</Text>
 
       </ImageBackground>
     </View>
@@ -27,15 +31,5 @@ const styles = StyleSheet.create({
     height: '100%',
     flex: 1,
     justifyContent: 'flex-start',
-  },
-  title: {
-    color: 'white',
-    fontSize: 32,
-    fontWeight: 'bold',
-    fontFamily: 'Times New Roman',
-    textAlign: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingTop: 30,
-    paddingBottom: 20,
   },
 })

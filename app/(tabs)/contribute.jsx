@@ -1,19 +1,17 @@
 import { ImageBackground } from 'expo-image'
 import { Image, StyleSheet, Text, View } from 'react-native'
-import AppButton from '../../components/button.js'
 
 import backgroundImage from "@/assets/images/backgroundBlue.png"
-import topBarBackground from "@/assets/images/topBarBackground.png"
 import Memes from "@/assets/memes/contributionMeme.jpeg"
+import AppButton from '../../components/button.js'
+import Header from '../../components/header.js'
 
 
 const Contribute = () => {
   return (
     <View style={styles.container}>
 
-      <ImageBackground source={topBarBackground} style={styles.TopBar}>
-        <Text style={styles.title}>Contribute Notes</Text>
-      </ImageBackground>
+      <Header title="Contribute Notes" />
 
       <ImageBackground source={backgroundImage} style={styles.Image}>
 

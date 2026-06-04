@@ -68,28 +68,6 @@ const styles = StyleSheet.create({
     flex: 0.13,
     justifyContent: 'flex-start',
   },
-  title: {
-    color: 'white',
-    fontSize: 30,
-    fontWeight: 'bold',
-    fontFamily: 'Times New Roman',
-    textAlign: 'center',
-    paddingTop: 36,
-    paddingBottom: 20,
-  },
-  subtitle: {
-    color: 'white',
-    fontSize: 22,
-    fontFamily: 'Times New Roman',
-    textAlign: 'left',
-    padding: 20,
-  },
-  miniTitle: {
-    color: 'grey',
-    paddingLeft: 20,
-    paddingRight: 20,
-    fontSize: 14,
-  },
   buttonsContainer: {
     flexDirection: 'row',
   },

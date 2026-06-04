@@ -5,15 +5,21 @@ export const fonts = {
     bold: "SpaceGrotesk-Bold",
 }
 
-export function Planet ({ title }) {
+export function Planet ({ title, style }) {
     return (
-        <Text style={[styles.globalStyle, styles.planet]}>{title}</Text>
+        <Text style={[styles.globalStyle, styles.planet, style]}>{title}</Text>
     );
 }
 
-export function Tree ({ title }) {
+export function Mountain ({ title, style }) {
     return (
-        <Text style={[styles.globalStyle, styles.tree]}>{title}</Text>
+        <Text style={[styles.globalStyle, styles.mountain, style]}>{title}</Text>
+    );
+}
+
+export function Tree ({ title, style }) {
+    return (
+        <Text style={[styles.globalStyle, styles.tree, style]}>{title}</Text>
     );
 }
 
@@ -30,7 +36,7 @@ const styles = StyleSheet.create({
     },
     mountain: {
         fontFamily: fonts.regular,
-        fontSize: 18,
+        fontSize: 22,
         textAlign: 'left',
         marginHorizontal: 20,
         marginVertical: 10,
@@ -42,11 +48,4 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginVertical: 10,
     },
-    branch: {
-        fontFamily: fonts.regular,
-        fontSize: 12,
-        textAlign: 'left',
-        marginHorizontal: 20,
-        marginVertical: 10,
-    }
 })

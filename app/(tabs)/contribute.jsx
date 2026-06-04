@@ -70,5 +70,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })

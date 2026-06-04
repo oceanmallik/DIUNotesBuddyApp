@@ -8,36 +8,37 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+app-example/
 
-# Native
+# generated native folders (safe to ignore if using Expo Prebuild)
+/ios
+/android
+
+# Native build artifacts and signing keys (SECURITY RISK: NEVER COMMIT)
 .kotlin/
 *.orig.*
 *.jks
+*.keystore
 *.p8
 *.p12
 *.key
 *.mobileprovision
 
-# Metro
+# Metro bundler cache
 .metro-health-check*
 
-# debug
+# debug logs
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
+# OS generated files
 .DS_Store
 *.pem
 
-# local env files
+# local env files (Contains secrets like API keys)
+.env
 .env*.local
 
-# typescript
+# typescript cache
 *.tsbuildinfo
-
-app-example
-
-# generated native folders
-/ios
-/android

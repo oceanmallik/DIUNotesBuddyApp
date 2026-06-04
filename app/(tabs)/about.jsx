@@ -2,6 +2,7 @@ import { ImageBackground } from 'expo-image'
 import { StyleSheet, View } from 'react-native'
 
 import backgroundImage from "@/assets/images/backgroundBlue.png"
+import { NameCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
 import { Planet, Tree } from '../../appDesign/texts.js'
 
@@ -16,6 +17,8 @@ const AboutUs = () => {
         <Planet title="Built by a small team, with big ideas." />
 
         <Tree title="DIU Notes Buddy is a passion project crafted by a team of three — designed to help you capture, organize, and revisit your notes in a smarter, friendlier way." />
+
+        <NameCard title="Name Description" />
 
       </ImageBackground>
     </View>

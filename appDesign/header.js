@@ -2,14 +2,13 @@ import topBarBackground from "@/assets/images/topBarBackground.png";
 import { ImageBackground, StyleSheet, Text } from 'react-native';
 
 export const fonts = {
-    regular: "Cause-Regular",
     bold: "Cause-Bold",
 }
 
 export default function Header({ title }) {
     return (
         <ImageBackground source={topBarBackground} style={styles.topBar}>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.galaxy}>{title}</Text>
         </ImageBackground>
     );
 }
@@ -20,7 +19,7 @@ const styles = StyleSheet.create({
         flex: 0.13,
         justifyContent: 'center',
     },
-    title: {
+    galaxy: {
         color: 'white',
         fontSize: 30,
         fontFamily: fonts.bold,

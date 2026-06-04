@@ -1,8 +1,9 @@
 import { ImageBackground } from 'expo-image'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import backgroundImage from "@/assets/images/backgroundBlue.png"
 import Header from '../../appDesign/header.js'
+import { Planet, Tree } from '../../appDesign/texts.js'
 
 const AboutUs = () => {
   return (
@@ -12,7 +13,9 @@ const AboutUs = () => {
 
       <ImageBackground source={backgroundImage} style={styles.Image}>
 
-        <Text>Coming soon...</Text>
+        <Planet title="Built by a small team, with big ideas." />
+
+        <Tree title="DIU Notes Buddy is a passion project crafted by a team of three — designed to help you capture, organize, and revisit your notes in a smarter, friendlier way." />
 
       </ImageBackground>
     </View>

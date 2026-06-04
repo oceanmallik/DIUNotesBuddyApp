@@ -1,10 +1,11 @@
 import { ImageBackground } from 'expo-image'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 
 import backgroundImage from "@/assets/images/backgroundBlue.png"
 import Memes from "@/assets/memes/contributionMeme.jpeg"
 import AppButton from '../../appDesign/button.js'
 import Header from '../../appDesign/header.js'
+import { Planet, Tree } from '../../appDesign/texts.js'
 
 
 const Contribute = () => {
@@ -15,9 +16,9 @@ const Contribute = () => {
 
       <ImageBackground source={backgroundImage} style={styles.Image}>
 
-        <Text style={styles.subtitle}>Wanna Contribute to this Project?</Text>
+        <Planet title="Want to become a part?" />
 
-        <Text style={styles.miniTitle}>Add your notes, fix broken resources, and help make the study library more complete for other DIU students.</Text>
+        <Tree title="Add your notes, fix broken resources, and help make the study library more complete for other DIU students." />
         
         <View style={styles.buttonsContainer}>
 

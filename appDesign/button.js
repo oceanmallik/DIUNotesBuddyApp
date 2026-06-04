@@ -1,6 +1,10 @@
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
+export const fonts = {
+    regular: "PlaywriteGBJ-Regular",
+}
+
 export default function AppButton({ link, title }) {
     return (
         <Link style={styles.linkButton} href={link} asChild>
@@ -29,6 +33,7 @@ const styles = StyleSheet.create({
         elevation: 6,
     },
     buttonText: {
+        fontFamily: fonts.regular,
         color: 'white',
         fontSize: 13,
         fontWeight: 'bold',

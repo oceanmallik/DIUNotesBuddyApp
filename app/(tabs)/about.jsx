@@ -15,9 +15,9 @@ const AboutUs = () => {
       <ImageBackground source={backgroundImage} style={styles.Image}>
 
         <Planet title="Built by a small team, with big ideas." />
-        <Tree title="DIU Notes Buddy is a passion project crafted by a team of three — designed to help you capture, organize, and revisit your notes in a smarter, friendlier way." />
+        <Tree title="DIU Notes Buddy is a passion project crafted by a team of three — designed to help you with your notes in a smarter, friendlier way." />
 
-        <Planet title="Meet the Creator" style={{ textAlign: 'center' }} />
+        <Planet title="Meet the Co-founders" style={{ textAlign: 'center' }} />
 
         <NameCard
           name="Ocean Mallik"
@@ -26,6 +26,17 @@ const AboutUs = () => {
           photoURL="https://github.com/oceanmallik.png"
           githubURL="https://github.com/oceanmallik"
           otherURL="https://link.oceanmallik.com/"
+          contribution="Lead Developer, Developer (Website & App), Github Manager"
+        />
+
+        <NameCard
+          name="Hasibul Hasan Hasib"
+          username="@hasib2050"
+          description="dedicated to making learning easier and more accessible"
+          photoURL="https://github.com/hasib2050.png"
+          githubURL="https://github.com/hasib2050"
+          otherURL="https://link.hasib2050.com/"
+          contribution="Co-founder, Developer (Website), Notes Contributor"
         />
 
       </ImageBackground>

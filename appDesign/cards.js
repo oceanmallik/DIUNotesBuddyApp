@@ -8,7 +8,7 @@ export const fonts = {
     uName: "BitcountSingle-Regular",
 }
 
-export function NameCard({ name, description, username, githubURL, otherURL, photoURL }) {
+export function NameCard({ name, description, username, githubURL, otherURL, photoURL, contribution }) {
     return (
         <View style={styles.wrapper}>
             <View style={styles.card}>
@@ -16,6 +16,7 @@ export function NameCard({ name, description, username, githubURL, otherURL, pho
                 <View style={styles.content}>
                     <Text style={styles.name}>{name}</Text>
                     <Text style={styles.uName}>{username}</Text>
+                    <Text style={styles.contribution}>Contributions: {contribution}</Text>
                     <Text style={styles.description}>{description}</Text>
                 </View>
             </View>
@@ -49,22 +50,32 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 1,
         shadowRadius: 10,
-        elevation: 50,
+        elevation: 70,
     },
     content: {
         flexDirection: 'column',
         flex: 1,
     },
     avatar: {
-        width: 86,
-        height: 86,
+        width: 88,
+        height: 88,
         borderRadius: 44,
         marginRight: 14,
+        alignSelf: 'center',
+        borderWidth: 2,
+        borderColor: 'red',
     },
     name: {
         fontFamily: fonts.nameTitle,
         fontSize: 26,
         color: 'white',
+    },
+    contribution: {
+        fontFamily: fonts.regular,
+        fontSize: 12,
+        textAlign: 'left',
+        marginVertical: 2,
+        color: 'grey',
     },
     description: {
         fontFamily: fonts.italic,
@@ -75,9 +86,9 @@ const styles = StyleSheet.create({
     },
     uName: {
         fontFamily: fonts.uName,
-        fontSize: 13,
+        fontSize: 15,
         textAlign: 'left',
-        color: 'grey',
+        color: 'red',
     },
     button: {
         marginTop: 10,

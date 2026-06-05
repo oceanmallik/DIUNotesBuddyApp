@@ -18,6 +18,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     'Aubrey-Regular': require('../assets/fonts/Aubrey-Regular.ttf'),
+    'BitcountSingle-Regular': require('../assets/fonts/BitcountSingle-Regular.ttf'),
     'Cause-Bold': require('../assets/fonts/Cause-Bold.ttf'),
     'Cause-Regular': require('../assets/fonts/Cause-Regular.ttf'),
     'PlaywriteGBJ-Italic': require('../assets/fonts/PlaywriteGBJ-Italic.ttf'),

@@ -26,7 +26,7 @@ const AboutUs = () => {
           photoURL="https://github.com/oceanmallik.png"
           githubURL="https://github.com/oceanmallik"
           otherURL="https://link.oceanmallik.com/"
-          contribution="Lead Developer, Developer (Website & App), Github Manager"
+          contribution="Lead Developer, Developer (Web & App), Github Management"
         />
 
         <NameCard
@@ -36,7 +36,7 @@ const AboutUs = () => {
           photoURL="https://github.com/hasib2050.png"
           githubURL="https://github.com/hasib2050"
           otherURL="https://link.hasib2050.com/"
-          contribution="Co-founder, Developer (Website), Notes Contributor"
+          contribution="Co-founder, Developer (Web), Notes Contributor, Github Management"
         />
 
       </ImageBackground>

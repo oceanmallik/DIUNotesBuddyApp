@@ -4,7 +4,7 @@ export const fonts = {
     regular: "SpaceGrotesk-Regular",
     bold: "SpaceGrotesk-Bold",
     italic: "PlaywriteGBJ-Italic",
-    nameTitle: "Aubrey-Regular",
+    nameTitle: "SpaceGrotesk-regular",
     uName: "BitcountSingle-Regular",
 }
 
@@ -16,8 +16,8 @@ export function NameCard({ name, description, username, githubURL, otherURL, pho
                 <View style={styles.content}>
                     <Text style={styles.name}>{name}</Text>
                     <Text style={styles.uName}>{username}</Text>
-                    <Text style={styles.contribution}>Contributions: {contribution}</Text>
-                    <Text style={styles.description}>{description}</Text>
+                    <Text style={styles.contribution}>{contribution}</Text>
+                    <Text style={styles.description}>{`"${description}"`}</Text>
                 </View>
             </View>
 
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontFamily: fonts.nameTitle,
-        fontSize: 26,
+        fontSize: 20,
         color: 'white',
     },
     contribution: {

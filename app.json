@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "DIUNotesBuddy-App",
-    "slug": "DIUNotesBuddy-App",
-    "version": "1.0.0",
+    "name": "DIU Note",
+    "slug": "diu-note",
+    "version": "0.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "diunotesbuddyapp",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.oceanmallik.diunotesbuddy"
+      "bundleIdentifier": "com.oceanmallik.diunote"
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +20,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.oceanmallik.diunotesbuddy"
+      "package": "com.oceanmallik.diunote",
+      "versionCode": 1
     },
     "web": {
       "output": "static",

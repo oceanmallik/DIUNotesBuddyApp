@@ -65,8 +65,8 @@ const styles = StyleSheet.create({
         borderRadius: 44,
         marginRight: 14,
         alignSelf: 'center',
-        borderWidth: 2,
-        borderColor: 'red',
+        borderWidth: 3,
+        borderColor: 'green',
     },
     name: {
         fontFamily: fonts.nameTitle,

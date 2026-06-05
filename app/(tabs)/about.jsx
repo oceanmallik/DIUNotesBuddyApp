@@ -22,19 +22,19 @@ const AboutUs = () => {
         <NameCard
           name="Ocean Mallik"
           username="@oceanmallik"
-          description="grateful for everything, excited for what's next"
+          description="Grateful for everything, excited for what's next"
           photoURL="https://github.com/oceanmallik.png"
           cardURL="https://github.com/oceanmallik"
           webURL="https://oceanmallik.com/"
           otherURL="https://link.oceanmallik.com/"
           email="mailto:oceanmallik@oceanmallik.com"
-          contribution="Lead Developer, Developer (Web & App), Github Management"
+          contribution="Co-founder, Developer (App & Web), Github Management"
         />
 
         <NameCard
           name="Hasibul Hasan Hasib"
           username="@hasib2050"
-          description="dedicated to making learning easier and more accessible"
+          description="Dedicated to making learning easier and more accessible"
           photoURL="https://github.com/hasib2050.png"
           cardURL="https://github.com/hasib2050"
           webURL="https://hasib2050.github.io/"

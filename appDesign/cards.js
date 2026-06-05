@@ -8,10 +8,10 @@ export const fonts = {
     uName: "BitcountSingle-Regular",
 }
 
-export function NameCard({ name, description, username, githubURL, otherURL, photoURL, contribution }) {
+export function NameCard({ name, description, username, webURL, cardURL, otherURL, email, photoURL, contribution }) {
     return (
         <View style={styles.wrapper}>
-            <View style={styles.card}>
+            <Pressable style={styles.card} onPress={() => Linking.openURL(cardURL)}>
                 <Image source={{ uri: photoURL }} style={styles.avatar} />
                 <View style={styles.content}>
                     <Text style={styles.name}>{name}</Text>
@@ -19,14 +19,17 @@ export function NameCard({ name, description, username, githubURL, otherURL, pho
                     <Text style={styles.contribution}>{contribution}</Text>
                     <Text style={styles.description}>{`"${description}"`}</Text>
                 </View>
-            </View>
+            </Pressable>
 
             <View style={styles.buttonContainer}>
-                <Pressable style={styles.button} onPress={() => Linking.openURL(githubURL)}>
-                    <Text style={styles.buttonText}>View GitHub</Text>
+                <Pressable style={styles.button} onPress={() => Linking.openURL(webURL)}>
+                    <Text style={styles.buttonText}>Website</Text>
                 </Pressable>
                 <Pressable style={styles.button} onPress={() => Linking.openURL(otherURL)}>
-                    <Text style={styles.buttonText}>Other Links</Text>
+                    <Text style={styles.buttonText}>Links</Text>
+                </Pressable>
+                <Pressable style={styles.button} onPress={() => Linking.openURL(email)}>
+                    <Text style={styles.buttonText}>Email</Text>
                 </Pressable>
             </View>
         </View>

@@ -24,8 +24,10 @@ const AboutUs = () => {
           username="@oceanmallik"
           description="grateful for everything, excited for what's next"
           photoURL="https://github.com/oceanmallik.png"
-          githubURL="https://github.com/oceanmallik"
+          cardURL="https://github.com/oceanmallik"
+          webURL="https://oceanmallik.com/"
           otherURL="https://link.oceanmallik.com/"
+          email="mailto:oceanmallik@oceanmallik.com"
           contribution="Lead Developer, Developer (Web & App), Github Management"
         />
 
@@ -34,8 +36,10 @@ const AboutUs = () => {
           username="@hasib2050"
           description="dedicated to making learning easier and more accessible"
           photoURL="https://github.com/hasib2050.png"
-          githubURL="https://github.com/hasib2050"
-          otherURL="https://link.hasib2050.com/"
+          cardURL="https://github.com/hasib2050"
+          webURL="https://hasib2050.github.io/"
+          otherURL="https://www.facebook.com/hasibulhasan.hasib.2050"
+          email="mailto:hasibulhasanhasib355@gmail.com"
           contribution="Co-founder, Developer (Web), Notes Contributor, Github Management"
         />
 

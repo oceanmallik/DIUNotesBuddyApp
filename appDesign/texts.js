@@ -1,4 +1,4 @@
-import { StyleSheet, Text } from 'react-native';
+import { Linking, StyleSheet, Text } from 'react-native';
 
 export const fonts = {
     regular: "SpaceGrotesk-Regular",
@@ -20,6 +20,14 @@ export function Mountain ({ title, style }) {
 export function Tree ({ title, style }) {
     return (
         <Text style={[styles.globalStyle, styles.tree, style]}>{title}</Text>
+    );
+}
+
+export function Leaf ({ title, style, linkURL }) {
+    return (
+        <Text style={[styles.leaf, style]}>
+            {title} <Text onPress={() => Linking.openURL(linkURL)} style={styles.link}>Privacy Policy</Text>
+        </Text>
     );
 }
 
@@ -47,5 +55,17 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         marginHorizontal: 20,
         marginVertical: 10,
+    },
+    leaf: {
+        fontFamily: fonts.regular,
+        fontSize: 12,
+        textAlign: 'left',
+        marginHorizontal: 20,
+        marginVertical: 10,
+        color: 'grey',
+    },
+    link: {
+        color: 'grey',
+        textDecorationLine: 'underline',
     },
 })

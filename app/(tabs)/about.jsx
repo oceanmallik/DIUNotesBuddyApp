@@ -3,7 +3,7 @@ import { ImageBackground } from 'expo-image'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { NameCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
-import { Planet, Tree } from '../../appDesign/texts.js'
+import { Leaf, Planet, Tree } from '../../appDesign/texts.js'
 
 const AboutUs = () => {
   return (
@@ -51,6 +51,8 @@ const AboutUs = () => {
             email="mailto:mdbinasif@gmail.com"
             contribution="Supporter, Notes Contributor"
           />
+
+          <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" />
 
         </ScrollView>
       </ImageBackground>

@@ -18,12 +18,14 @@ const AboutUs = () => {
         <Tree title="DIU Notes Buddy is a passion project crafted by a team of three — designed to help you capture, organize, and revisit your notes in a smarter, friendlier way." />
 
         <Planet title="Meet the Creator" style={{ textAlign: 'center' }} />
+
         <NameCard
           name="Ocean Mallik"
           username="@oceanmallik"
           description="grateful for everything, excited for what's next"
           photoURL="https://github.com/oceanmallik.png"
           githubURL="https://github.com/oceanmallik"
+          otherURL="https://link.oceanmallik.com/"
         />
 
       </ImageBackground>

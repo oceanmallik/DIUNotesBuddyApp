@@ -8,26 +8,35 @@ export const fonts = {
     uName: "BitcountSingle-Regular",
 }
 
-export function NameCard({ name, description, username, githubURL, photoURL }) {
+export function NameCard({ name, description, username, githubURL, otherURL, photoURL }) {
     return (
-        <View style={styles.card}>
-            <Image source={{ uri: photoURL }} style={styles.avatar} />
+        <View style={styles.wrapper}>
+            <View style={styles.card}>
+                <Image source={{ uri: photoURL }} style={styles.avatar} />
+                <View style={styles.content}>
+                    <Text style={styles.name}>{name}</Text>
+                    <Text style={styles.uName}>{username}</Text>
+                    <Text style={styles.description}>{description}</Text>
+                </View>
+            </View>
 
-            <View style={styles.content}>
-                <Text style={styles.name}>{name}</Text>
-                <Text style={styles.uName}>{username}</Text>
-                <Text style={styles.description}>{description}</Text>
-
+            <View style={styles.buttonContainer}>
                 <Pressable style={styles.button} onPress={() => Linking.openURL(githubURL)}>
                     <Text style={styles.buttonText}>View GitHub</Text>
                 </Pressable>
+                <Pressable style={styles.button} onPress={() => Linking.openURL(otherURL)}>
+                    <Text style={styles.buttonText}>Other Links</Text>
+                </Pressable>
             </View>
         </View>
-
     );
 }
 
 const styles = StyleSheet.create({
+    wrapper: {
+        marginHorizontal: 16,
+        marginVertical: 8,
+    },
     card: {
         flexDirection: 'row',
         alignItems: 'flex-start',
@@ -36,8 +45,6 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(0, 213, 255, 0.73)',
         borderRadius: 16,
         padding: 16,
-        marginHorizontal: 16,
-        marginVertical: 8,
         shadowColor: 'rgba(0, 212, 255, 0.2)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 1,
@@ -83,7 +90,6 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(0,212,255,0.35)',
         alignItems: 'center',
         justifyContent: 'center',
-        alignSelf: 'flex-end',
         shadowColor: 'rgba(0, 212, 255, 0.2)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -97,5 +103,11 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         letterSpacing: 0.4,
         textAlign: 'center',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 4,
     },
 })

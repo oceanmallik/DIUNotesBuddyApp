@@ -118,3 +118,14 @@ cd android
 
 **Missing source.properties file for NDK**
 If the build fails with `[CXX1101] NDK at ... did not have a source.properties file`, open the SDK Manager, uninstall your current NDK, and strictly install version `27.1.12297006`.
+
+## 3. Prepare for release
+This is how to generate aap for the project. 
+```bash
+npx expo prebuild
+cd android
+./gradlew clean
+./gradlew bundleRelease
+```
+Once finished, the generated APK will be located at:
+`android/app/build/outputs/bundle/release/app-release.aab`

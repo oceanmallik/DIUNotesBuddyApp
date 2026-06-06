@@ -1,7 +1,5 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
-import backgroundImage from "@/assets/images/backgroundGreen.png"
 import { IconBrandGithub, IconWorld } from '@tabler/icons-react-native'
-import { ImageBackground } from 'expo-image'
 import { Image, Linking, Pressable, StyleSheet, View } from 'react-native'
 import AppButton from '../../appDesign/button.js'
 import { TitleCard } from '../../appDesign/cards.js'
@@ -11,7 +9,7 @@ const app = () => {
   return (
     <View style={styles.container}>
 
-      <ImageBackground source={backgroundImage} style={styles.Image} >
+      <View style={styles.bg} >
 
         <View style={styles.topBar}>
           <Image source={appLogo} style={styles.logo} />
@@ -27,7 +25,7 @@ const app = () => {
         <View style={{ width: '100%', paddingHorizontal: 0, marginVertical: 20 }}>
           <Pressable onPress={() => Linking.openURL('https://diunotesbuddy.live/')}>
             <TitleCard
-              title="Our App Experience is Live!"
+              title="Our Web Experience is Live!"
               description="Click Here to view the website instead"
               icon={IconWorld}
             />
@@ -46,7 +44,7 @@ const app = () => {
             title="About Us"
           />
         </View>
-      </ImageBackground>
+      </View>
 
     </View>
   )
@@ -59,11 +57,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  Image: {
+  bg: {
     width: '100%',
-    height: '100%',
     flex: 1,
-    justifyContent: 'flex-start',
+    backgroundColor: '#131313',
   },
   topBar: {
     marginTop: 40,

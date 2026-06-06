@@ -1,5 +1,4 @@
-import topBarBackground from "@/assets/images/topBarBackground.png";
-import { ImageBackground, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export const fonts = {
     bold: "SpaceGrotesk-Bold",
@@ -7,9 +6,9 @@ export const fonts = {
 
 export default function Header({ title }) {
     return (
-        <ImageBackground source={topBarBackground} style={styles.topBar}>
+        <View style={styles.topBar}>
             <Text style={styles.galaxy}>{title}</Text>
-        </ImageBackground>
+        </View>
     );
 }
 
@@ -18,6 +17,7 @@ const styles = StyleSheet.create({
         width: '100%',
         flex: 0.10,
         justifyContent: 'center',
+        backgroundColor: '#1a1a1a',
     },
     galaxy: {
         color: 'white',

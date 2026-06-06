@@ -1,6 +1,4 @@
-import backgroundImage from "@/assets/images/backgroundBlue.png"
 import { IconBookUpload, IconServer, IconUsersGroup } from '@tabler/icons-react-native'
-import { ImageBackground } from 'expo-image'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { TitleCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
@@ -11,9 +9,9 @@ const SupportUs = () => {
         <View style={styles.container}>
             <Header title="Support Us" />
 
-            <ImageBackground source={backgroundImage} style={styles.image}>
+            <View style={styles.bg}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                    <Planet title="Help Us Keep the Lights On" />
+                    <Planet title="Help Us Keep the Lights On" style={{ textAlign: 'center' }} />
                     <Tree title="DIU Notes Buddy is free and open for everyone. Your donation keeps our servers running and helps us expand resources for students." />
 
                     <Planet title="Why Your Support Matters" style={{ textAlign: 'center' }} />
@@ -41,7 +39,7 @@ const SupportUs = () => {
                     <Tree title="Features are still work in progress, coming soon!" />
 
                 </ScrollView>
-            </ImageBackground>
+            </View>
         </View>
     )
 }
@@ -53,9 +51,10 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
     },
-    image: {
+    bg: {
         flex: 1,
         width: '100%',
+        backgroundColor: '#131313',
     },
     scrollView: {
         flex: 1,

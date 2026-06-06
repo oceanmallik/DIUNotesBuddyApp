@@ -1,8 +1,5 @@
-import backgroundImage from "@/assets/images/backgroundBlue.png"
-import Memes from "@/assets/memes/contributionMeme.jpeg"
 import { IconSend } from '@tabler/icons-react-native'
-import { ImageBackground } from 'expo-image'
-import { Image, ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import AppButton from '../../appDesign/button.js'
 import { TitleCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
@@ -15,10 +12,10 @@ const Contribute = () => {
 
       <Header title="Contribute Notes" />
 
-      <ImageBackground source={backgroundImage} style={styles.Image}>
+      <View style={styles.bg}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
-          <Planet title="Want to become a part?" />
+          <Planet title="Want to become a part?" style={{ textAlign: 'center' }} />
 
           <Tree title="Add your notes, fix broken resources, and help make the study library more complete for other DIU students." />
 
@@ -41,11 +38,10 @@ const Contribute = () => {
             />
           </View>
 
-          <View style={styles.MemeView}>
-            <Image source={Memes} style={styles.Meme}></Image>
-          </View>
+          <Planet title="Steps to Contribute" style={{ textAlign: 'center', marginTop: 30 }} />
+
         </ScrollView>
-      </ImageBackground>
+      </View>
     </View>
   )
 }
@@ -57,11 +53,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  Image: {
-    width: '100%',
-    height: '100%',
+  bg: {
     flex: 1,
-    justifyContent: 'flex-start',
+    width: '100%',
+    backgroundColor: '#131313',
   },
   MemeView: {
     resizeMode: 'contain',
@@ -81,6 +76,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: -15,
   },
   scrollView: {
     flex: 1,

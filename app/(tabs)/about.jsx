@@ -1,5 +1,3 @@
-import backgroundImage from "@/assets/images/background.png"
-import { ImageBackground } from 'expo-image'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { NameCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
@@ -9,7 +7,7 @@ const AboutUs = () => {
   return (
     <View style={styles.container}>
       <Header title="About Us" />
-      <ImageBackground source={backgroundImage} style={styles.image}>
+      <View style={styles.bg}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
           <Planet title="A small team, with big ideas." style={{ textAlign: 'center' }} />
@@ -52,7 +50,7 @@ const AboutUs = () => {
           <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" />
 
         </ScrollView>
-      </ImageBackground>
+      </View>
     </View>
   )
 }
@@ -64,9 +62,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  image: {
+  bg: {
     flex: 1,
     width: '100%',
+    backgroundColor: '#131313',
   },
   scrollView: {
     flex: 1,

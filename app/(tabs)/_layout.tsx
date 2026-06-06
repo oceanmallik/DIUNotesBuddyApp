@@ -5,6 +5,7 @@ import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function TabLayout() {
@@ -28,7 +29,14 @@ export default function TabLayout() {
         name="contribute"
         options={{
           title: 'Contribute',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="handshake-o" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome size={24} name="handshake-o" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="support"
+        options={{
+          title: 'Support Us',
+          tabBarIcon: ({ color }) => <Feather name="thumbs-up" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -38,6 +46,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="question" color={color} />,
         }}
       />
+      
     </Tabs>
   );
 }

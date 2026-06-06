@@ -11,7 +11,7 @@ export const fonts = {
 export function NameCard({ name, description, username, webURL, cardURL, otherURL, email, photoURL, contribution }) {
     return (
         <View style={styles.wrapper}>
-            <Pressable style={styles.card} onPress={() => Linking.openURL(cardURL)}>
+            <Pressable style={styles.nameCard} onPress={() => Linking.openURL(cardURL)}>
                 <Image source={{ uri: photoURL }} style={styles.avatar} />
                 <View style={styles.content}>
                     <Text style={styles.name}>{name}</Text>
@@ -36,12 +36,24 @@ export function NameCard({ name, description, username, webURL, cardURL, otherUR
     );
 }
 
+export function TitleCard({ title, description, icon: Icon }) {
+    return (
+        <View style={styles.titleCard}>
+            <Icon size={32} color="rgb(0, 247, 255)" strokeWidth={2} />
+            <View style={styles.content}>
+                <Text style={styles.nameTwo}>{title}</Text>
+                <Text style={styles.subname}>{description}</Text>
+            </View>
+        </View>
+    )
+}
+
 const styles = StyleSheet.create({
     wrapper: {
         marginHorizontal: 16,
         marginVertical: 8,
     },
-    card: {
+    nameCard: {
         flexDirection: 'row',
         alignItems: 'flex-start',
         backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -54,6 +66,22 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 30,
         elevation: 100,
+    },
+    titleCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+        borderWidth: 1,
+        borderColor: 'rgba(0, 255, 55, 0.61)',
+        borderRadius: 8,
+        padding: 16,
+        shadowColor: 'rgba(0, 255, 55, 0.37)',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 1,
+        shadowRadius: 30,
+        elevation: 100,
+        marginHorizontal: 16,
+        marginVertical: 8,
     },
     content: {
         flexDirection: 'column',
@@ -72,6 +100,19 @@ const styles = StyleSheet.create({
         fontFamily: fonts.nameTitle,
         fontSize: 20,
         color: 'white',
+    },
+    nameTwo: {
+        fontFamily: fonts.nameTitle,
+        fontSize: 18,
+        color: 'white',
+        textAlign: 'center',
+    },
+    subname: {
+        fontFamily: fonts.regular,
+        fontSize: 11,
+        textAlign: 'center',
+        marginVertical: 2,
+        color: 'grey',
     },
     contribution: {
         fontFamily: fonts.regular,

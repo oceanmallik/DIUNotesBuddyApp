@@ -1,6 +1,6 @@
 import { IconSend } from '@tabler/icons-react-native'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import AppButton from '../../appDesign/button.js'
+import { AppButton } from '../../appDesign/button.js'
 import { TitleCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
 import { Planet, Tree } from '../../appDesign/texts.js'

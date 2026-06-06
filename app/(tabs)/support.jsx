@@ -1,5 +1,6 @@
 import { IconBookUpload, IconServer, IconUsersGroup } from '@tabler/icons-react-native'
 import { ScrollView, StyleSheet, View } from 'react-native'
+import { AppButtonExternal } from '../../appDesign/button.js'
 import { TitleCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
 import { Planet, Tree } from '../../appDesign/texts.js'
@@ -36,7 +37,7 @@ const SupportUs = () => {
                     <Planet title="How to Support US" style={{ textAlign: 'center' }} />
                     <Tree title="You can support us by sharing our app with your friends, providing feedback, donating, making a payment via google play store or even watching a small ad to help us grow and improve." />
 
-                    <Tree title="Features are still work in progress, coming soon!" />
+                    <AppButtonExternal title="Watch an Ad" location="/ads" />
 
                 </ScrollView>
             </View>

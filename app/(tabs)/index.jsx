@@ -1,7 +1,7 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 import { IconBrandGithub, IconWorld } from '@tabler/icons-react-native'
 import { Image, Linking, Pressable, StyleSheet, View } from 'react-native'
-import AppButton from '../../appDesign/button.js'
+import { AppButton } from '../../appDesign/button.js'
 import { TitleCard } from '../../appDesign/cards.js'
 import { Mountain, Planet, Tree } from '../../appDesign/texts.js'
 

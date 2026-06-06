@@ -1,7 +1,7 @@
 import { ImageBackground } from 'expo-image'
 import { StyleSheet, View } from 'react-native'
 
-import backgroundImage from "@/assets/images/background.png"
+import backgroundImage from "@/assets/images/backgroundGreen.png"
 import AppButton from '../../appDesign/button.js'
 import { Mountain, Planet, Tree } from '../../appDesign/texts.js'
 

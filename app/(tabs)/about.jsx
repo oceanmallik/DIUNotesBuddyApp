@@ -1,4 +1,4 @@
-import backgroundImage from "@/assets/images/backgroundBlue.png"
+import backgroundImage from "@/assets/images/background.png"
 import { ImageBackground } from 'expo-image'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { NameCard } from '../../appDesign/cards.js'
@@ -12,7 +12,7 @@ const AboutUs = () => {
       <ImageBackground source={backgroundImage} style={styles.image}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
-          <Planet title="Built by a small team, with big ideas." />
+          <Planet title="A small team, with big ideas." style={{ textAlign: 'center' }} />
           <Tree title="DIU Notes Buddy is a passion project crafted by a team of three!" />
           <Planet title="Meet the Team Behind" style={{ textAlign: 'center' }} />
 
@@ -24,7 +24,7 @@ const AboutUs = () => {
             webURL="https://oceanmallik.com/"
             otherURL="https://link.oceanmallik.com/"
             email="mailto:oceanmallik@oceanmallik.com"
-            contribution="Co-founder, Developer (App & Web), Github Management"
+            contribution="Co-founder, Developer (App, Web & Backend), Github Management"
           />
 
           <NameCard

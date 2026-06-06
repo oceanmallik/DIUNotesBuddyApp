@@ -13,13 +13,12 @@ const AboutUs = () => {
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
           <Planet title="Built by a small team, with big ideas." />
-          <Tree title="DIU Notes Buddy is a passion project crafted by a team of three — designed to help you with your notes in a smarter, friendlier way." />
+          <Tree title="DIU Notes Buddy is a passion project crafted by a team of three!" />
           <Planet title="Meet the Team Behind" style={{ textAlign: 'center' }} />
 
           <NameCard
             name="Ocean Mallik"
             username="@oceanmallik"
-            description="Grateful for everything, excited for what's next"
             photoURL="https://github.com/oceanmallik.png"
             cardURL="https://github.com/oceanmallik"
             webURL="https://oceanmallik.com/"
@@ -31,7 +30,6 @@ const AboutUs = () => {
           <NameCard
             name="Hasibul Hasan Hasib"
             username="@hasib2050"
-            description="Dedicated to making learning easier and more accessible"
             photoURL="https://github.com/hasib2050.png"
             cardURL="https://github.com/hasib2050"
             webURL="https://hasib2050.github.io/"
@@ -43,7 +41,6 @@ const AboutUs = () => {
           <NameCard
             name="Md. Bin Asif"
             username="@mdbinasif07"
-            description="Heroes aren't remembered for what they take. They're remembered for what they contribute."
             photoURL="https://github.com/mdbinasif07.png"
             cardURL="https://github.com/mdbinasif07"
             webURL="https://mdbinasif07.github.io/"

@@ -8,7 +8,7 @@ export const fonts = {
     uName: "BitcountSingle-Regular",
 }
 
-export function NameCard({ name, description, username, webURL, cardURL, otherURL, email, photoURL, contribution }) {
+export function NameCard({ name, username, webURL, cardURL, otherURL, email, photoURL, contribution }) {
     return (
         <View style={styles.wrapper}>
             <Pressable style={styles.nameCard} onPress={() => Linking.openURL(cardURL)}>
@@ -17,7 +17,6 @@ export function NameCard({ name, description, username, webURL, cardURL, otherUR
                     <Text style={styles.name}>{name}</Text>
                     <Text style={styles.uName}>{username}</Text>
                     <Text style={styles.contribution}>{contribution}</Text>
-                    <Text style={styles.description}>{`"${description}"`}</Text>
                 </View>
             </Pressable>
 
@@ -82,6 +81,7 @@ const styles = StyleSheet.create({
         elevation: 100,
         marginHorizontal: 16,
         marginVertical: 8,
+        gap: 12,
     },
     content: {
         flexDirection: 'column',

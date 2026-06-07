@@ -2,7 +2,7 @@
   "expo": {
     "name": "DIU Note",
     "slug": "diu-note",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "diunotesbuddyapp",
@@ -21,7 +21,7 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.oceanmallik.diunote",
-      "versionCode": 8
+      "versionCode": 9
     },
     "web": {
       "output": "static",
@@ -42,7 +42,13 @@
         }
       ],
       "expo-font",
-      "./withDisableTablets.js"
+      "./withDisableTablets.js",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-7117924360439036~4608066678"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

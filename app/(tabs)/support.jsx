@@ -36,8 +36,10 @@ const SupportUs = () => {
                     
                     <Planet title="How to Support US" style={{ textAlign: 'center' }} />
                     <Tree title="You can support us by sharing our app with your friends, providing feedback, donating, making a payment via google play store or even watching a small ad to help us grow and improve." />
+                    <Tree title="Click the methods below to support us:" />
 
-                    <AppButtonExternal title="Watch an Ad" location="/ads" />
+                    <AppButtonExternal title="1. Watch an Ad to Support Us (Free)" location="/ads" />
+                    <AppButtonExternal title="2. Donate via bKash Send Money (Donation)" location="/bKash" />
 
                 </ScrollView>
             </View>

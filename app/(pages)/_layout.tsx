@@ -10,6 +10,10 @@ export default function PagesLayout() {
         name="ads" 
         options={{ title: 'Watch an Ad' }} 
       />
+      <Stack.Screen 
+        name="bKash" 
+        options={{ title: 'Support Us via bKash' }} 
+      />
     </Stack>
   );
 }

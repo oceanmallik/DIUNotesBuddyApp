@@ -1,4 +1,4 @@
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 export const fonts = {
@@ -15,18 +15,6 @@ export function AppButton({ link, title }) {
                 <Text style={styles.buttonText}>{title}</Text>
             </Pressable>
         </Link>
-    );
-}
-
-export function AppButtonExternal({ title, location }) {
-    return (
-        <Pressable
-            style={styles.buttonExternal}
-            android_ripple={{ color: 'transparent' }}
-            onPress={() => router.push(location)}
-        >
-            <Text style={styles.buttonTextExternal}>{title}</Text>
-        </Pressable>
     );
 }
 
@@ -75,7 +63,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     buttonTextExternal: {
-        fontFamily: fonts.regular,
         color: '#ffffff',
         fontSize: 16,
         fontWeight: '600',

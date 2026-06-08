@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export const fonts = {
@@ -7,7 +8,7 @@ export const fonts = {
     uName: "BitcountSingle-Regular",
 }
 
-export function NameCard({ name, username, webURL, cardURL, otherURL, email, photoURL, contribution }) {
+export function NameCard({ name, username, webURL, cardURL, otherURL, email, photoURL, contribution, button1, button2, button3, ID }) {
     return (
         <View style={styles.wrapper}>
             <Pressable style={styles.nameCard} onPress={() => Linking.openURL(cardURL)}>
@@ -16,18 +17,19 @@ export function NameCard({ name, username, webURL, cardURL, otherURL, email, pho
                     <Text style={styles.name}>{name}</Text>
                     <Text style={styles.uName}>{username}</Text>
                     <Text style={styles.contribution}>{contribution}</Text>
+                    <Text style={styles.contribution}>Student ID: {ID}</Text>
                 </View>
             </Pressable>
 
             <View style={styles.buttonContainer}>
                 <Pressable style={styles.button} onPress={() => Linking.openURL(webURL)}>
-                    <Text style={styles.buttonText}>Website</Text>
+                    <Text style={styles.buttonText}>{button1}</Text>
                 </Pressable>
                 <Pressable style={styles.button} onPress={() => Linking.openURL(otherURL)}>
-                    <Text style={styles.buttonText}>Links</Text>
+                    <Text style={styles.buttonText}>{button2}</Text>
                 </Pressable>
                 <Pressable style={styles.button} onPress={() => Linking.openURL(email)}>
-                    <Text style={styles.buttonText}>Email</Text>
+                    <Text style={styles.buttonText}>{button3}</Text>
                 </Pressable>
             </View>
         </View>
@@ -43,6 +45,21 @@ export function TitleCard({ title, description, icon: Icon }) {
                 <Text style={styles.subname}>{description}</Text>
             </View>
         </View>
+    )
+}
+
+export function TitleCardLinked({ title, link, icon: Icon }) {
+    return (
+        <Pressable
+            style={styles.titleCardLinked}
+            android_ripple={{ color: 'transparent' }}
+            onPress={() => router.push(link)}
+        >
+            <Icon size={26} color="rgb(0, 247, 255)" strokeWidth={2} />
+            <View style={styles.content}>
+                <Text style={styles.nameThree}>{title}</Text>
+            </View>
+        </Pressable>
     )
 }
 
@@ -71,7 +88,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1a1a1f',
         borderWidth: 1,
         borderColor: 'rgba(20, 133, 95, 0.44)',
-        borderRadius: 8,
+        borderRadius: 10,
         padding: 12,
         shadowColor: '#00778017',
         shadowOffset: { width: 0, height: 2 },
@@ -82,29 +99,52 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         gap: 12,
     },
+    titleCardLinked: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#34111195',
+        borderWidth: 1,
+        borderColor: 'rgba(211, 28, 28, 0.67)',
+        borderRadius: 16,
+        padding: 12,
+        shadowColor: '#ff0000e1',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 1,
+        shadowRadius: 50,
+        elevation: 100,
+        marginHorizontal: 12,
+        marginVertical: 8,
+        gap: 12,
+    },
     content: {
         flexDirection: 'column',
         flex: 1,
     },
     avatar: {
-        width: 88,
-        height: 88,
-        borderRadius: 44,
+        width: 77,
+        height: 77,
+        borderRadius: 37,
         marginRight: 14,
         alignSelf: 'center',
-        borderWidth: 3,
+        borderWidth: 2,
         borderColor: 'green',
     },
     name: {
-        fontFamily: fonts.name,
+        fontFamily: fonts.regular,
         fontSize: 20,
         color: 'white',
     },
     nameTwo: {
-        fontFamily: fonts.name,
-        fontSize: 18,
+        fontFamily: fonts.regular,
+        fontSize: 16,
         color: 'white',
         textAlign: 'center',
+    },
+    nameThree: {
+        fontFamily: fonts.regular,
+        fontSize: 16,
+        color: 'white',
+        textAlign: 'left',
     },
     subname: {
         fontFamily: fonts.regular,
@@ -115,23 +155,23 @@ const styles = StyleSheet.create({
     },
     contribution: {
         fontFamily: fonts.regular,
-        fontSize: 12,
+        fontSize: 11,
         textAlign: 'left',
         marginVertical: 2,
         color: 'grey',
     },
     description: {
         fontFamily: fonts.italic,
-        fontSize: 12,
+        fontSize: 10,
         textAlign: 'center',
         marginVertical: 2,
         color: 'grey',
     },
     uName: {
         fontFamily: fonts.uName,
-        fontSize: 15,
+        fontSize: 14,
         textAlign: 'left',
-        color: 'red',
+        color: 'rgba(255, 253, 116, 0.58)',
     },
     button: {
         marginTop: 10,

@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     },
     planet: {
         fontFamily: fonts.bold,
-        fontSize: 22,
+        fontSize: 23,
         textAlign: 'left',
         marginHorizontal: 20,
         marginVertical: 10,
@@ -52,14 +52,14 @@ const styles = StyleSheet.create({
     tree: {
         fontFamily: fonts.regular,
         fontSize: 14,
-        textAlign: 'left',
+        textAlign: 'justify',
         marginHorizontal: 20,
         marginVertical: 10,
     },
     leaf: {
         fontFamily: fonts.regular,
         fontSize: 12,
-        textAlign: 'left',
+        textAlign: 'center',
         marginHorizontal: 20,
         marginVertical: 10,
         color: 'grey',

@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     },
     galaxy: {
         color: 'white',
-        fontSize: 26,
+        fontSize: 22,
         fontFamily: fonts.bold,
         textAlign: 'center',
         paddingTop: 26,

@@ -1,16 +1,29 @@
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { IconBackhoe, IconWorld } from '@tabler/icons-react-native'
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { TitleCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
-import { Planet } from '../../appDesign/texts.js'
 
 const Notes = () => {
     return (
         <View style={styles.container}>
-            <Header title="Notes" />
+            <Header title="Notes Explorer" />
             <View style={styles.bg}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
-                    <Planet title="Notes are on the way, stay tuned!" style={{ textAlign: 'center', marginTop: 20 }} />
-                
+                    <TitleCard
+                        title="Under Development"
+                        description="We are currently working on making the contribution process more seamless and integrated within the app. Stay tuned for updates!"
+                        icon={IconBackhoe}
+                    />
+
+                    <Pressable onPress={() => Linking.openURL('https://diunotesbuddy.live/')}>
+                        <TitleCard
+                            title="Our Web Experience is works!"
+                            description="Click Here to view the website instead"
+                            icon={IconWorld}
+                        />
+                    </Pressable>
+
                 </ScrollView>
             </View>
         </View>

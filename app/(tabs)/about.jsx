@@ -6,12 +6,10 @@ import { Leaf, Planet, Tree } from '../../appDesign/texts.js'
 const AboutUs = () => {
   return (
     <View style={styles.container}>
-      <Header title="About Us" />
+      <Header title="A small team, with big ideas" />
       <View style={styles.bg}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-
-          <Planet title="A small team, with big ideas." style={{ textAlign: 'center' }} />
-          <Tree title="DIU Notes Buddy is a passion project crafted by a team of three!" />
+          <Tree title="DIU Notes Buddy is a passion project crafted by a dedicated team of Software Engineering students!" />
           <Planet title="Meet the Team Behind" style={{ textAlign: 'center' }} />
 
           <NameCard
@@ -22,7 +20,11 @@ const AboutUs = () => {
             webURL="https://oceanmallik.com/"
             otherURL="https://link.oceanmallik.com/"
             email="mailto:oceanmallik@oceanmallik.com"
-            contribution="Co-founder, Developer (App, Web & Backend), Github Management"
+            contribution="Co-founder, Developer (App, Website & Backend), Github Management"
+            button1="Website"
+            button2="Links"
+            button3="Email"
+            ID="253-35-087"
           />
 
           <NameCard
@@ -33,7 +35,11 @@ const AboutUs = () => {
             webURL="https://hasib2050.github.io/"
             otherURL="https://www.facebook.com/hasibulhasan.hasib.2050"
             email="mailto:hasibulhasanhasib355@gmail.com"
-            contribution="Co-founder, Developer (Web), Notes Contributor, Github Management"
+            contribution="Co-founder, Developer (Website), Notes Contributor, Github Management"
+            button1="Website"
+            button2="Facebook"
+            button3="Email"
+            ID="253-35-645"
           />
 
           <NameCard
@@ -45,6 +51,10 @@ const AboutUs = () => {
             otherURL="https://www.facebook.com/mohammed.bin.asif.2024"
             email="mailto:mdbinasif@gmail.com"
             contribution="Supporter, Notes Contributor"
+            button1="Website"
+            button2="Facebook"
+            button3="Email"
+            ID="253-35-381"
           />
 
           <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" />

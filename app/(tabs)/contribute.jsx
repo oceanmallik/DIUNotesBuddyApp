@@ -1,4 +1,4 @@
-import { IconSend } from '@tabler/icons-react-native'
+import { IconBackhoe, IconSend } from '@tabler/icons-react-native'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { AppButton } from '../../appDesign/button.js'
 import { TitleCard } from '../../appDesign/cards.js'
@@ -10,12 +10,10 @@ const Contribute = () => {
   return (
     <View style={styles.container}>
 
-      <Header title="Contribute Notes" />
+      <Header title="Want to become a part?" />
 
       <View style={styles.bg}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-
-          <Planet title="Want to become a part?" style={{ textAlign: 'center' }} />
 
           <Tree title="Add your notes, fix broken resources, and help make the study library more complete for other DIU students." />
 
@@ -39,6 +37,12 @@ const Contribute = () => {
           </View>
 
           <Planet title="Steps to Contribute" style={{ textAlign: 'center', marginTop: 30 }} />
+
+          <TitleCard
+            title="Under Development"
+            description="We are currently working on making the contribution process more seamless and integrated within the app. Stay tuned for updates!"
+            icon={IconBackhoe}
+          />
 
         </ScrollView>
       </View>

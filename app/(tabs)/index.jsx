@@ -40,8 +40,8 @@ const app = () => {
         </View>
         <View style={styles.viewContainer}>
           <AppButton
-            link="/about"
-            title="About Us"
+            link="/notes"
+            title="See Notes"
           />
         </View>
       </View>

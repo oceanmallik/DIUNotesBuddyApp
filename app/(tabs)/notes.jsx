@@ -1,7 +1,8 @@
 import { IconBackhoe, IconWorld } from '@tabler/icons-react-native'
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { TitleCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
+import { Tree } from '../../appDesign/texts.js'
 
 const Notes = () => {
     return (
@@ -16,10 +17,12 @@ const Notes = () => {
                         icon={IconBackhoe}
                     />
 
-                    <Pressable onPress={() => Linking.openURL('https://diunotesbuddy.live/')}>
+                    <Tree title="In the meantime, you can access all the notes on our website!" style={{ textAlign: 'center', marginVertical: 20 }} />
+
+                    <Pressable onPress={() => Linking.openURL('https://diunotesbuddy.live/notes/')}>
                         <TitleCard
-                            title="Our Web Experience is works!"
-                            description="Click Here to view the website instead"
+                            title="Click Here to View Notes (Web)"
+                            description="www.diunotesbuddy.live/notes"
                             icon={IconWorld}
                         />
                     </Pressable>

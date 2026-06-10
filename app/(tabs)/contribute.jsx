@@ -38,6 +38,13 @@ const Contribute = () => {
             />
           </View>
 
+          <View style={[styles.buttonsContainer, { marginTop: 1 }]}>
+            <AppButton
+              onPress={() => router.push('/Admin')}
+              title="Admin Portal (Admins Only)"
+            />
+          </View>
+
           <Planet title="Steps to Contribute" style={{ textAlign: 'center', marginTop: 30 }} />
 
           <TitleCard
@@ -45,13 +52,6 @@ const Contribute = () => {
             description="We are currently working on making the contribution process more seamless and integrated within the app. Stay tuned for updates!"
             icon={IconBackhoe}
           />
-
-          <View style={[styles.buttonsContainer, { marginTop: 20 }]}>
-            <AppButton
-              onPress={() => router.push('/Admin')}
-              title="Admin Portal (Admins Only)"
-            />
-          </View>
 
         </ScrollView>
       </View>

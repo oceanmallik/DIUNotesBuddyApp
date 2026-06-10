@@ -8,6 +8,9 @@ import { useEffect } from 'react';
 import MobileAds from 'react-native-google-mobile-ads';
 import 'react-native-reanimated';
 
+// 1. Import the AuthProvider we just created
+import { AuthProvider } from '../logic/AuthProvider';
+
 export const unstable_settings = {
   anchor: '(tabs)',
 };
@@ -48,12 +51,14 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(pages)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(pages)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        </Stack>
+        <StatusBar style="auto" />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

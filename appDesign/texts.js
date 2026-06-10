@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     tree: {
         fontFamily: fonts.regular,
         fontSize: 14,
-        textAlign: 'justify',
+        textAlign: 'left',
         marginHorizontal: 20,
         marginVertical: 10,
     },

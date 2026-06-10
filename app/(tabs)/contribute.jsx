@@ -1,12 +1,14 @@
-import { IconBackhoe, IconSend } from '@tabler/icons-react-native'
-import { ScrollView, StyleSheet, View } from 'react-native'
-import { AppButton } from '../../appDesign/button.js'
-import { TitleCard } from '../../appDesign/cards.js'
-import Header from '../../appDesign/header.js'
-import { Planet, Tree } from '../../appDesign/texts.js'
-
+import { IconBackhoe, IconSend } from '@tabler/icons-react-native';
+import { useRouter } from 'expo-router';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { AppButton } from '../../appDesign/button.js';
+import { TitleCard } from '../../appDesign/cards.js';
+import Header from '../../appDesign/header.js';
+import { Planet, Tree } from '../../appDesign/texts.js';
 
 const Contribute = () => {
+  const router = useRouter(); 
+
   return (
     <View style={styles.container}>
 
@@ -23,15 +25,15 @@ const Contribute = () => {
             icon={IconSend}
           />
 
-          <Tree title="Ready to contribute? Click the button below to get started!" />
+          <Tree title="Ready to contribute? Click the button below to get started! Make sure you are logged in with your university provided @diu.edu.bd account." />
 
           <View style={styles.buttonsContainer}>
             <AppButton
-              link="https://forms.gle/gVuKTo2LxsfGV9A86"
+              onPress={() => router.push('/Submit')}
               title="Contribute Notes"
             />
             <AppButton
-              link="https://github.com/oceanmallik/DIUNotesBuddyApp/issues"
+              onPress={() => router.push('https://github.com/oceanmallik/DIUNotesBuddyApp/issues')}
               title="Report an Issue"
             />
           </View>
@@ -43,6 +45,13 @@ const Contribute = () => {
             description="We are currently working on making the contribution process more seamless and integrated within the app. Stay tuned for updates!"
             icon={IconBackhoe}
           />
+
+          <View style={[styles.buttonsContainer, { marginTop: 20 }]}>
+            <AppButton
+              onPress={() => router.push('/Admin')}
+              title="Admin Portal (Admins Only)"
+            />
+          </View>
 
         </ScrollView>
       </View>

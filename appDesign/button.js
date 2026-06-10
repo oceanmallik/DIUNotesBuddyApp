@@ -1,20 +1,39 @@
-import { Link } from 'expo-router';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Linking, Pressable, StyleSheet, Text } from 'react-native';
 
 export const fonts = {
     regular: 'SpaceGrotesk-Regular',
 };
 
-export function AppButton({ link, title }) {
+export function AppButton({ link, title, onPress, style }) {
+    const router = useRouter();
+    
+    const handlePress = () => {
+        if (onPress) {
+            onPress();
+            return;
+        }
+        if (link) {
+            if (link.startsWith('http')) {
+                Linking.openURL(link);
+            } else {
+                router.push(link);
+            }
+        }
+    };
+
+    const isExternal = link?.startsWith('http');
+
     return (
-        <Link href={link} asChild>
-            <Pressable
-                style={styles.button}
-                android_ripple={{ color: 'transparent' }}
-            >
-                <Text style={styles.buttonText}>{title}</Text>
-            </Pressable>
-        </Link>
+        <Pressable
+            style={[isExternal ? styles.buttonExternal : styles.button, style]} 
+            android_ripple={{ color: 'transparent' }}
+            onPress={handlePress}
+        >
+            <Text style={isExternal ? styles.buttonTextExternal : styles.buttonText}>
+                {title}
+            </Text>
+        </Pressable>
     );
 }
 

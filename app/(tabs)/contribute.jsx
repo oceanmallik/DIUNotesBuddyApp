@@ -1,4 +1,5 @@
 import { IconSend } from '@tabler/icons-react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { AppButton } from '../../appDesign/button.js';
@@ -7,7 +8,7 @@ import Header from '../../appDesign/header.js';
 import { Planet, Tree } from '../../appDesign/texts.js';
 
 const Contribute = () => {
-  const router = useRouter(); 
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -41,10 +42,13 @@ const Contribute = () => {
           <Planet title="How to Contribute?" style={{ textAlign: 'center', marginTop: 30 }} />
 
           <Tree title="1. Click the 'Contribute Notes' button above to submit your notes or report any issues you find." />
-          <Tree title="2. Fill out the contribution form with the required details and attach your notes or screenshots of the issue." />
-          <Tree title="3. Submit your contribution and our team will review it as soon as possible." />
-          <Tree title="4. If your contribution is approved, it will be added to our library for all students to access!" />
-          <Tree title="5. For any questions or if you need assistance, feel free to reach out to us by clicking the 'Get Help or Report' button above." />
+          <Image source={'https://raw.githubusercontent.com/AxiomVessel/DIUNotesBuddyWeb/refs/heads/main/webAssets/submission3.jpg'} style={[styles.picture, { height: 85 }]} />
+          <Tree title="2. Fill out the contribution form with the required details." />
+          <Image source={'https://raw.githubusercontent.com/AxiomVessel/DIUNotesBuddyWeb/refs/heads/main/webAssets/submission2.jpg'} style={[styles.picture, { height: 280 }]} />
+          <Tree title="3. Add a topic first, then attach your notes in .pdf format." />
+          <Image source={'https://raw.githubusercontent.com/AxiomVessel/DIUNotesBuddyWeb/refs/heads/main/webAssets/submission1.jpg'} style={[styles.picture, { height: 330 }]} />
+          <Tree title="4. Submit your contribution and our team will review it as soon as possible." />
+          <Tree title="[ Note: If your contribution is approved, it will be added to our library for all students to access! For any questions or if you need assistance, feel free to reach out to us by clicking the 'Get Help or Report' button above. ]" />
 
           <View style={[styles.buttonsContainer, { marginTop: 1 }]}>
             <AppButton
@@ -76,9 +80,14 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     margin: 20,
   },
-  Meme: {
-    width: '100%',
-    height: 350,
+  picture: {
+    width: '85%',
+    marginRight: 14,
+    alignSelf: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(234, 255, 0, 0.2)',
+    borderRadius: 10,
+    marginLeft: 15,
   },
   TopBar: {
     width: '100%',

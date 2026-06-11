@@ -42,6 +42,8 @@ const AboutUs = () => {
             ID="253-35-645"
           />
 
+          <Planet title="Our Honorable Review Squad" style={{ textAlign: 'center' }} />
+
           <NameCard
             name="Md. Bin Asif"
             username="@mdbinasif07"
@@ -50,11 +52,26 @@ const AboutUs = () => {
             webURL="https://mdbinasif07.github.io/"
             otherURL="https://www.facebook.com/mohammed.bin.asif.2024"
             email="mailto:mdbinasif@gmail.com"
-            contribution="Supporter, Notes Contributor"
+            contribution="Early Supporter, Notes Contributor & Review Squad Member (SWE)"
             button1="Website"
             button2="Facebook"
             button3="Email"
             ID="253-35-381"
+          />
+
+          <NameCard
+            name="Dhrubo Mitra"
+            username="@dhrubo04-oneman"
+            photoURL="https://github.com/dhrubo04-oneman.png"
+            cardURL="https://github.com/dhrubo04-oneman"
+            webURL="https://www.instagram.com/dhrubo7304/"
+            otherURL="https://www.facebook.com/dhrubo.mitra.90"
+            email="mailto:balnuru411@gmail.com"
+            contribution="Notes Contributor & Review Squad Member (ITM)"
+            button1="Instagram"
+            button2="Facebook"
+            button3="Email"
+            ID="261-51-004"
           />
 
           <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" />

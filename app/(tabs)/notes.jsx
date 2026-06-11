@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { TitleCard } from '../../appDesign/cards.js';
 import Header from '../../appDesign/header.js';
-import { Mountain, Tree } from '../../appDesign/texts.js';
+import { Mountain, Planet, Tree } from '../../appDesign/texts.js';
 
 const Notes = () => {
     const router = useRouter(); 
@@ -69,7 +69,7 @@ const Notes = () => {
                         <TitleCard title="Connection Error" description={error} icon={IconAlertCircle} />
                     ) : manifest && manifest.departments ? (
                         <View style={styles.manifestContainer}>
-                            <Mountain title="Academic Departments" style={{ textAlign: 'center', marginVertical: 15, fontSize: 22 }} />
+                            <Planet title="Academic Departments" style={{ textAlign: 'center', marginVertical: 15, fontSize: 22 }} />
                             
                             {/* LEVEL 1: DEPARTMENTS */}
                             {manifest.departments.map((dept) => {

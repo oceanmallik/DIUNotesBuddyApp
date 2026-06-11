@@ -1,7 +1,7 @@
 import { HapticTab } from '@/components/haptic-tab';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
@@ -21,35 +21,35 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <Feather size={28} name="home" color={color} />,
+          tabBarIcon: ({ color }) => <Feather size={24} name="home" color={color} />,
         }}
       />
       <Tabs.Screen
         name="notes"
         options={{
           title: 'Notes',
-          tabBarIcon: ({ color }) => <AntDesign size={22} name="book" color={color} />,
+          tabBarIcon: ({ color }) => <Feather size={24} name="book-open" color={color} />,
         }}
       />
       <Tabs.Screen
         name="contribute"
         options={{
           title: 'Contribute',
-          tabBarIcon: ({ color }) => <FontAwesome size={24} name="handshake-o" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome size={22} name="paper-plane-o" color={color} />,
         }}
       />
       <Tabs.Screen
         name="support"
         options={{
           title: 'Support Us',
-          tabBarIcon: ({ color }) => <Feather name="thumbs-up" size={22} color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome name="handshake-o" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="about"
         options={{
           title: 'About Us',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="question" color={color} />,
+          tabBarIcon: ({ color }) => <Entypo size={28} name="github" color={color} />,
         }}
       />
       

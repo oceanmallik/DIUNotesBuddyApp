@@ -52,15 +52,15 @@ const SupportUs = () => {
                         icon={IconQrcode}
                         link="/bKash"
                     />
-                    <Tree title="Or leave a review on the Google Play Store:" />
+                    <Planet title="Other Ways to Support Us" style={{ textAlign: 'center' }} />
+                    <Tree title="Leave a review on the Google Play Store or follow us on social media!" />
                     <TitleCardLinked
                         title="Visit Google Play Store"
                         icon={IconBrandGooglePlay}
                         link="https://play.google.com/store/apps/details?id=com.oceanmallik.diunote"
                     />
-                    <Tree title="Or maybe you can Just follow us on social media:" />
                     <TitleCardLinked
-                        title="Visit About Us Page"
+                        title="Get to know the team (About Us)"
                         icon={IconFriends}
                         link="/about"
                     />

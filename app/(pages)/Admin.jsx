@@ -250,7 +250,7 @@ const AdminDashboard = () => {
                         <View style={styles.emptyBox}>
                             <IconCheck color="#00E676" size={48} />
                             <Tree title="You are all caught up!" style={{ marginTop: 15, fontSize: 16 }} />
-                            <Tree title="No pending submissions to review." style={{ color: '#777', marginTop: 5 }} />
+                            <Tree title="No pending submissions to review." style={{ color: '#777', marginTop: 5, marginHorizontal: 0 }} />
                         </View>
                     ) : (
                         safeSubmissions.map((sub) => (
@@ -420,14 +420,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 40,
         backgroundColor: '#1A1A1A',
-        borderRadius: 16,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: '#2A2A2A',
         marginTop: 20,
     },
     card: {
         backgroundColor: '#1A1A1A',
-        borderRadius: 16,
+        borderRadius: 12,
         padding: 20,
         borderWidth: 1,
         borderColor: '#2A2A2A',

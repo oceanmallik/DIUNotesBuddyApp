@@ -1,4 +1,4 @@
-import { IconBackhoe, IconSend } from '@tabler/icons-react-native';
+import { IconSend } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { AppButton } from '../../appDesign/button.js';
@@ -33,10 +33,18 @@ const Contribute = () => {
               title="Contribute Notes"
             />
             <AppButton
-              onPress={() => router.push('https://github.com/oceanmallik/DIUNotesBuddyApp/issues')}
-              title="Report an Issue"
+              onPress={() => router.push('mailto:oceanmallik@oceanmallik.com')}
+              title="Get Help or Report"
             />
           </View>
+
+          <Planet title="How to Contribute?" style={{ textAlign: 'center', marginTop: 30 }} />
+
+          <Tree title="1. Click the 'Contribute Notes' button above to submit your notes or report any issues you find." />
+          <Tree title="2. Fill out the contribution form with the required details and attach your notes or screenshots of the issue." />
+          <Tree title="3. Submit your contribution and our team will review it as soon as possible." />
+          <Tree title="4. If your contribution is approved, it will be added to our library for all students to access!" />
+          <Tree title="5. For any questions or if you need assistance, feel free to reach out to us by clicking the 'Get Help or Report' button above." />
 
           <View style={[styles.buttonsContainer, { marginTop: 1 }]}>
             <AppButton
@@ -44,14 +52,6 @@ const Contribute = () => {
               title="Admin Portal (Admins Only)"
             />
           </View>
-
-          <Planet title="Steps to Contribute" style={{ textAlign: 'center', marginTop: 30 }} />
-
-          <TitleCard
-            title="Under Development"
-            description="We are currently working on making the contribution process more seamless and integrated within the app. Stay tuned for updates!"
-            icon={IconBackhoe}
-          />
 
         </ScrollView>
       </View>

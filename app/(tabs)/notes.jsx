@@ -25,7 +25,8 @@ const Notes = () => {
             setIsLoading(true);
             setError(null);
             
-            const MANIFEST_URL = 'https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json';
+            // Added the cache-buster timestamp here so you don't have to wait 5 mins for GitHub updates!
+            const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
             const response = await fetch(MANIFEST_URL);
             
             if (!response.ok) throw new Error('Failed to connect to the GitHub repository.');
@@ -214,12 +215,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
+        flex: 1, // FIXED: Allows the container to shrink
     },
     titleText: {
         fontSize: 18,
         color: '#E0E0E0',
         marginTop: 0,
         marginBottom: 0,
+        flexShrink: 1, // FIXED: Allows long text to wrap to the next line
     },
     nestedContainer: {
         backgroundColor: '#161616',

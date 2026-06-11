@@ -1,5 +1,5 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
-import { IconBrandGithub, IconWorld } from '@tabler/icons-react-native'
+import { IconBrandGithub } from '@tabler/icons-react-native'
 import { Alert, Image, Linking, Pressable, StyleSheet, View } from 'react-native'
 import { AppButton } from '../../appDesign/button.js'
 import { TitleCard } from '../../appDesign/cards.js'
@@ -35,13 +35,6 @@ const app = () => {
         <Mountain title="The app is in early access!" style={{ textAlign: 'center', marginVertical: 0, marginTop: 10, fontSize: 20 }} />
 
         <View style={{ width: '100%', paddingHorizontal: 0, marginVertical: 20 }}>
-          <Pressable onPress={() => Linking.openURL('https://diunotesbuddy.live/')}>
-            <TitleCard
-              title="Our Web Experience is Live!"
-              description="Click Here to view the website instead"
-              icon={IconWorld}
-            />
-          </Pressable>
           <Pressable onPress={() => Linking.openURL('https://github.com/AxiomVessel')}>
             <TitleCard
               title="Check us out on Github!"

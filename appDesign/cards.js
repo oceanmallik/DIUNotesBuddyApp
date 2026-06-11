@@ -67,7 +67,7 @@ export function TitleCardLinked({ title, link, icon: Icon }) {
             android_ripple={{ color: 'transparent' }}
             onPress={() => router.push(link)}
         >
-            <Icon size={26} color="rgb(0, 247, 255)" strokeWidth={2} />
+            <Icon size={26} color="rgb(255, 0, 0)" strokeWidth={1} />
             <View style={styles.content}>
                 <Text style={styles.nameThree}>{title}</Text>
             </View>
@@ -132,9 +132,9 @@ const styles = StyleSheet.create({
     titleCardLinked: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#34111195',
+        backgroundColor: '#1a1a1f',
         borderWidth: 1,
-        borderColor: 'rgba(211, 28, 28, 0.67)',
+        borderColor: 'rgba(211, 28, 28, 0.18)',
         borderRadius: 16,
         padding: 12,
         shadowColor: '#ff0000e1',

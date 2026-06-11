@@ -1,7 +1,7 @@
-import { IconAlertCircle, IconArrowLeft, IconChevronDown, IconChevronRight, IconDownload, IconFileText, IconFolder, IconFolderOpen } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconArrowLeft, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { TitleCard } from '../../appDesign/cards';
 import Header from '../../appDesign/header';
 import { Mountain, Tree } from '../../appDesign/texts';
@@ -151,13 +151,21 @@ const SubjectScreen = () => {
                                                                 <Pressable
                                                                     key={fileIndex}
                                                                     style={styles.fileCard}
-                                                                    onPress={() => Linking.openURL(file.url)}
+                                                                    onPress={() => {
+                                                                        router.push({
+                                                                            pathname: '/Viewer' as any,
+                                                                            params: { 
+                                                                                url: file.url,
+                                                                                title: file.filename 
+                                                                            }
+                                                                        });
+                                                                    }}
                                                                 >
                                                                     <View style={styles.fileLeft}>
                                                                         <IconFileText color="#4285F4" size={24} />
                                                                         <Tree title={file.filename} style={styles.filenameText} />
                                                                     </View>
-                                                                    <IconDownload color="#A0A0A0" size={20} />
+                                                                    <IconChevronRight color="#A0A0A0" size={20} />
                                                                 </Pressable>
                                                             ))}
                                                         </View>

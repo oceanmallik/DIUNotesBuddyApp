@@ -48,6 +48,18 @@ export function TitleCard({ title, description, icon: Icon }) {
     )
 }
 
+export function TitleCardScroll({ title, description, icon: Icon }) {
+    return (
+        <View style={styles.titleCardScroll}>
+            <Icon size={32} color="rgb(0, 247, 255)" strokeWidth={2} />
+            <View style={styles.content}>
+                <Text style={styles.nameTwo}>{title}</Text>
+                <Text style={styles.subname}>{description}</Text>
+            </View>
+        </View>
+    )
+}
+
 export function TitleCardLinked({ title, link, icon: Icon }) {
     return (
         <Pressable
@@ -99,6 +111,24 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         gap: 12,
     },
+    titleCardScroll: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#1a1a1f',
+        borderWidth: 1,
+        borderColor: 'rgba(20, 133, 95, 0.44)',
+        borderRadius: 10,
+        padding: 12,
+        shadowColor: '#00778017',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 1,
+        shadowRadius: 30,
+        elevation: 5,
+        marginHorizontal: 10,
+        marginVertical: 2,
+        gap: 2,
+        width: 330,
+    },
     titleCardLinked: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -108,10 +138,10 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 12,
         shadowColor: '#ff0000e1',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 1,
         shadowRadius: 50,
-        elevation: 100,
+        elevation: 200,
         marginHorizontal: 12,
         marginVertical: 8,
         gap: 12,

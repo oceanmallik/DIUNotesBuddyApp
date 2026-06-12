@@ -1,4 +1,5 @@
-import { IconBadgeAd, IconBookUpload, IconBrandGooglePlay, IconFriends, IconQrcode, IconServer, IconUsersGroup } from '@tabler/icons-react-native'
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
+import { IconBadgeAd, IconBookUpload, IconBrandGooglePlay, IconFriends, IconQrcode, IconServer, IconUsersGroup, IconWorld } from '@tabler/icons-react-native'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { TitleCardLinked, TitleCardScroll } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
@@ -6,12 +7,17 @@ import { Planet, Tree } from '../../appDesign/texts.js'
 
 const CARD_WIDTH = 340
 
+
 const SupportUs = () => {
+    const tabBarHeight = useBottomTabBarHeight();
     return (
         <View style={styles.container}>
-            <Header title="Help Us Keep the Lights On" />
             <View style={styles.bg}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                <ScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
+                    showsVerticalScrollIndicator={false}>
+
                     <Tree title="DIU Notes Buddy is free and open for everyone. Your donation keeps our servers running and helps us expand resources for students." />
                     <Planet title="Why Your Support Matters" style={{ textAlign: 'center' }} />
 
@@ -55,9 +61,14 @@ const SupportUs = () => {
                     <Planet title="Other Ways to Support Us" style={{ textAlign: 'center' }} />
                     <Tree title="Leave a review on the Google Play Store or follow us on social media!" />
                     <TitleCardLinked
-                        title="Visit Google Play Store"
+                        title="Rate Us on Google Play Store"
                         icon={IconBrandGooglePlay}
                         link="https://play.google.com/store/apps/details?id=com.oceanmallik.diunote"
+                    />
+                    <TitleCardLinked
+                        title="Visit the Website Version"
+                        icon={IconWorld}
+                        link="/about"
                     />
                     <TitleCardLinked
                         title="Get to know the team (About Us)"
@@ -66,6 +77,7 @@ const SupportUs = () => {
                     />
                 </ScrollView>
             </View>
+            <Header title="Help Us Keep the Lights On" />
         </View>
     )
 }

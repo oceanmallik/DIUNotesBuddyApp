@@ -1,3 +1,4 @@
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +8,8 @@ import Header from '../../appDesign/header.js';
 import { Mountain, Planet, Tree } from '../../appDesign/texts.js';
 
 const Notes = () => {
-    const router = useRouter(); 
+    const router = useRouter();
+    const tabBarHeight = useBottomTabBarHeight();
 
     const [manifest, setManifest] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -57,9 +59,11 @@ const Notes = () => {
 
     return (
         <View style={styles.container}>
-            <Header title="Notes Explorer" />
             <View style={styles.bg}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                <ScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
+                    showsVerticalScrollIndicator={false}>
 
                     {isLoading ? (
                         <View style={styles.statusContainer}>
@@ -160,6 +164,8 @@ const Notes = () => {
                     ) : null}
                 </ScrollView>
             </View>
+
+            <Header title="Notes Explorer" />
         </View>
     );
 };
@@ -215,14 +221,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
-        flex: 1, // FIXED: Allows the container to shrink
+        flex: 1,
     },
     titleText: {
         fontSize: 18,
         color: '#E0E0E0',
         marginTop: 0,
         marginBottom: 0,
-        flexShrink: 1, // FIXED: Allows long text to wrap to the next line
+        flexShrink: 1,
     },
     nestedContainer: {
         backgroundColor: '#161616',

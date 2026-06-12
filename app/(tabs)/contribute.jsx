@@ -1,22 +1,25 @@
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { IconSend } from '@tabler/icons-react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { AppButton } from '../../appDesign/button.js';
-import { TitleCard } from '../../appDesign/cards.js';
+import { TitleCard, TitleCardLinked } from '../../appDesign/cards.js';
 import Header from '../../appDesign/header.js';
 import { Planet, Tree } from '../../appDesign/texts.js';
 
 const Contribute = () => {
   const router = useRouter();
+  const tabBarHeight = useBottomTabBarHeight();
 
   return (
     <View style={styles.container}>
 
-      <Header title="Want to become a part?" />
-
       <View style={styles.bg}>
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
+          showsVerticalScrollIndicator={false}>
 
           <Tree title="Add your notes, fix broken resources, and help make the study library more complete for other DIU students." />
 
@@ -28,16 +31,24 @@ const Contribute = () => {
 
           <Tree title="Ready to contribute? Click the button below to get started! Make sure you are logged in with your university provided @diu.edu.bd account." />
 
+          <TitleCardLinked
+            title="Click Here to Contribute Notes"
+            icon={IconSend}
+            link="/Submit"
+          />
+
           <View style={styles.buttonsContainer}>
             <AppButton
-              onPress={() => router.push('/Submit')}
-              title="Contribute Notes"
+              onPress={() => router.push('/login')}
+              title="Click to Login"
             />
             <AppButton
               onPress={() => router.push('mailto:oceanmallik@oceanmallik.com')}
-              title="Get Help or Report"
+              title="Need Assistance?"
             />
           </View>
+
+          <Image source={'https://raw.githubusercontent.com/AxiomVessel/DIUNotesBuddyWeb/refs/heads/main/webAssets/tom_meme.png'} style={[styles.meme, { height: 250 }]} />
 
           <Planet title="How to Contribute?" style={{ textAlign: 'center', marginTop: 30 }} />
 
@@ -57,8 +68,13 @@ const Contribute = () => {
             />
           </View>
 
+          <Tree title="If you are an admin, you can access admin portal clicking the button above." />
+          <Tree title="Want to become an admin? Mail any of our team members to become an admin and help us review contributions faster!" />
+
         </ScrollView>
       </View>
+
+      <Header title="Want to become a part?" />
     </View>
   )
 }
@@ -82,12 +98,20 @@ const styles = StyleSheet.create({
   },
   picture: {
     width: '85%',
-    marginRight: 14,
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 208, 146, 0.51)',
+    borderRadius: 5,
+    opacity: 0.7,
+  },
+  meme: {
+    width: '95%',
+    marginTop: 20,
     alignSelf: 'center',
     borderWidth: 2,
-    borderColor: 'rgba(234, 255, 0, 0.2)',
-    borderRadius: 10,
-    marginLeft: 15,
+    borderColor: 'rgba(143, 0, 0, 0.43)',
+    borderRadius: 5,
+    opacity: 0.8,
   },
   TopBar: {
     width: '100%',
@@ -98,7 +122,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -15,
+    marginTop: -8,
   },
   scrollView: {
     flex: 1,

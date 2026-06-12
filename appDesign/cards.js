@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255, 255, 255, 0.07)',
         borderRadius: 16,
         padding: 16,
-        shadowColor: 'rgba(255, 0, 0, 0.33)',
+        shadowColor: 'rgba(4, 255, 0, 0.33)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 1,
         shadowRadius: 30,
@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     avatar: {
-        width: 77,
-        height: 77,
+        width: 74,
+        height: 74,
         borderRadius: 37,
         marginRight: 14,
         alignSelf: 'center',
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontFamily: fonts.regular,
-        fontSize: 20,
+        fontSize: 18,
         color: 'white',
     },
     nameTwo: {
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     },
     contribution: {
         fontFamily: fonts.regular,
-        fontSize: 11,
+        fontSize: 9,
         textAlign: 'left',
         marginVertical: 2,
         color: 'grey',
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     },
     uName: {
         fontFamily: fonts.uName,
-        fontSize: 14,
+        fontSize: 13,
         textAlign: 'left',
         color: 'rgba(255, 253, 116, 0.58)',
     },

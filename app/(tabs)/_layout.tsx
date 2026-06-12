@@ -4,18 +4,31 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarStyle: {
+          position: 'absolute',
+          backgroundColor: 'transparent',
+          borderTopWidth: 1,
+          borderTopColor: 'rgba(255, 255, 255, 0.1)',
+          elevation: 0,
+        },
+        tabBarBackground: () => (
+          <BlurView intensity={100} tint="dark" style={StyleSheet.absoluteFill}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.2)' }} />
+          </BlurView>
+        ),
       }}>
       <Tabs.Screen
         name="index"
@@ -52,7 +65,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Entypo size={28} name="github" color={color} />,
         }}
       />
-      
     </Tabs>
   );
 }

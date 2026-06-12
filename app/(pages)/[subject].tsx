@@ -55,7 +55,9 @@ const SubjectScreen = () => {
     const fetchSubjectData = async () => {
         try {
             setIsLoading(true);
-            const MANIFEST_URL = 'https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json';
+            
+            // Added the cache-buster timestamp to match the first page
+            const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
             const response = await fetch(MANIFEST_URL);
 
             if (!response.ok) throw new Error('Failed to fetch the database.');
@@ -100,15 +102,9 @@ const SubjectScreen = () => {
         <View style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
 
-            <View style={styles.headerArea}>
-                <Pressable onPress={() => router.back()} style={styles.backButton}>
-                    <IconArrowLeft color="#FFFFFF" size={28} />
-                </Pressable>
-                <Header title="Subject Materials" />
-            </View>
-
             <View style={styles.bg}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+                {/* Applied inline paddingTop: 90 here to match the first page */}
+                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: 90 }]}>
 
                     {isLoading ? (
                         <View style={styles.statusContainer}>
@@ -185,6 +181,14 @@ const SubjectScreen = () => {
 
                 </ScrollView>
             </View>
+
+            {/* Moved headerArea to the bottom and positioned it absolutely */}
+            <View style={styles.headerArea}>
+                <Pressable onPress={() => router.back()} style={styles.backButton}>
+                    <IconArrowLeft color="#FFFFFF" size={28} />
+                </Pressable>
+                <Header title="Subject Materials" />
+            </View>
         </View>
     );
 };
@@ -197,8 +201,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#131313'
     },
     headerArea: {
-        position: 'relative',
-        width: '100%'
+        position: 'absolute', // Updated to absolute to overlay scroll content like Page 1
+        top: 0,
+        width: '100%',
+        zIndex: 100 // Added to ensure buttons remain clickable over the scroll view
     },
     backButton: {
         position: 'absolute',
@@ -257,7 +263,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#2A2A2A'
     },
-    topicHeaderLeft: { flexDirection: 'row',
+    topicHeaderLeft: { 
+        flexDirection: 'row',
         alignItems: 'center',
         gap: 12
     },

@@ -65,14 +65,12 @@ export default function Login() {
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.headerContainer}>
         <Text style={styles.title}>
-          DIU<Text style={styles.titleAccent}>Notes</Text>Buddy
+          DIU <Text style={styles.titleAccent}>Notes</Text> Buddy
         </Text>
         <Text style={styles.subtitle}>Your campus, your notes.</Text>
       </View>
 
       <View style={styles.buttonContainer}>
-        <Text style={styles.sectionLabel}>SIGN IN TO CONTINUE</Text>
-
         <TouchableOpacity
           style={styles.button}
           onPress={() => handleLogin('google')}
@@ -127,6 +125,8 @@ export default function Login() {
           </View>
           <Text style={styles.btnArrow}>›</Text>
         </TouchableOpacity>
+
+        <Text style={styles.sectionLabel}>SIGN IN TO CONTINUE</Text>
       </View>
     </View>
   );
@@ -166,18 +166,18 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   buttonContainer: {
-    gap: 12,
+    gap: 8,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    gap: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
     borderRadius: 14,
     backgroundColor: '#171C2F',
     borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(0, 142, 19, 0.25)',
   },
   githubButton: {
     backgroundColor: '#13181F',

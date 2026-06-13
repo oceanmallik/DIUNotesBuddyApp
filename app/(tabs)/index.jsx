@@ -1,40 +1,108 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconLogin, IconLogout, IconSparkles, IconWorld } from '@tabler/icons-react-native'
+import { IconLogin, IconLogout, IconUser, IconWorld } from '@tabler/icons-react-native'
+import { BlurView } from 'expo-blur'
 import { router } from 'expo-router'
+import { useState } from 'react'
 import { Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 import { TitleCard } from '../../appDesign/cards.js'
-import { Planet, Tree } from '../../appDesign/texts.js'
+import { Tree } from '../../appDesign/texts.js'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../logic/AuthProvider'
 
 const app = () => {
   const { user } = useAuth();
   const tabBarHeight = useBottomTabBarHeight();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
+      setMenuOpen(false);
     } catch (err) {
       Alert.alert("Logout Error", err.message);
     }
   };
+
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
-  // Fallback
   const initial = user?.email?.charAt(0)?.toUpperCase() ?? "?";
+  const name = user?.user_metadata?.full_name || user?.user_metadata?.name;
 
   return (
     <View style={styles.container}>
       <View style={[styles.bg, { paddingBottom: tabBarHeight + 5 }]}>
         <View>
+          {/* Top bar */}
           <View style={styles.topBar}>
             <Image source={appLogo} style={styles.logo} />
-            <View>
-              <Planet title="DIU Notes Buddy" style={{ textAlign: 'center', fontSize: 27, marginVertical: 1 }} />
-              <Tree title="Your Ultimate Study Companion" style={{ textAlign: 'center', marginVertical: 3 }} />
+
+            <View style={styles.titleWrap}>
+              <Text style={styles.titleText}>
+                DIU <Text style={styles.titleAccent}>Notes</Text> Buddy
+              </Text>
+              <Tree title="Your Ultimate Study Companion" style={{ textAlign: 'left', fontSize: 10, marginVertical: 2, marginLeft: 10 }} />
             </View>
+
+            {/* Account control */}
+            <Pressable
+              onPress={() => (user ? setMenuOpen((v) => !v) : router.push('/login'))}
+              style={({ pressed }) => [styles.avatarButton, pressed && styles.buttonPressed]}
+            >
+              {user ? (
+                avatarUrl ? (
+                  <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
+                ) : (
+                  <View style={styles.avatarCircle}>
+                    <Text style={styles.avatarText}>{initial}</Text>
+                  </View>
+                )
+              ) : (
+                <IconUser size={20} color="#00D4FF" />
+              )}
+            </Pressable>
           </View>
 
+          {/* Glassmorphic dropdown, shown only when logged in, full width */}
+          {user && menuOpen && (
+            <>
+              {/* Invisible backdrop to close menu on outside tap */}
+              <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)} />
+
+              <BlurView intensity={40} tint="dark" style={styles.menu}>
+                <View style={styles.menuHeader}>
+                  {avatarUrl ? (
+                    <Image source={{ uri: avatarUrl }} style={styles.menuAvatarImage} />
+                  ) : (
+                    <View style={styles.menuAvatarCircle}>
+                      <Text style={styles.avatarText}>{initial}</Text>
+                    </View>
+                  )}
+                  <View style={styles.menuHeaderText}>
+                    {name && (
+                      <Text style={styles.menuName} numberOfLines={1} ellipsizeMode="tail">
+                        {name}
+                      </Text>
+                    )}
+                    <Text style={styles.menuEmail} numberOfLines={1} ellipsizeMode="tail">
+                      {user.email}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.menuDivider} />
+
+                <Pressable
+                  onPress={handleLogout}
+                  style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+                >
+                  <IconLogout size={16} color="#FF6B6B" />
+                  <Text style={styles.menuItemText}>Log out</Text>
+                </Pressable>
+              </BlurView>
+            </>
+          )}
+
+          {/* Website card */}
           <View style={{ width: '100%', paddingHorizontal: 0, marginVertical: 20 }}>
             <Pressable onPress={() => Linking.openURL('https://www.diunotesbuddy.live')}>
               <TitleCard
@@ -46,69 +114,17 @@ const app = () => {
           </View>
         </View>
 
-        {/* Account section */}
-        {!user ? (
-          // ---------- LOGGED OUT: sign-in card ----------
-          <View style={styles.signinCard}>
-            <View style={styles.signinHeader}>
-              <View style={styles.signinIconWrap}>
-                <IconSparkles size={24} color="#00ff8c" />
-              </View>
-              <View style={styles.signinTextWrap}>
-                <Text style={styles.signinTitle}>You're not signed in</Text>
-                <Text style={styles.signinSubtitle}>Log in to submit notes, sync progress, and unlock more</Text>
-              </View>
-            </View>
-
+        {/* Logged-out prompt banner */}
+        {!user && (
+          <View style={styles.signinBanner}>
+            <Text style={styles.signinTitle}>You're not signed in</Text>
+            <Text style={styles.signinSubtitle}>Log in to submit notes, sync progress, and unlock more</Text>
             <Pressable
               onPress={() => router.push('/login')}
-              style={({ pressed }) => [
-                styles.loginButton,
-                pressed && styles.buttonPressed,
-              ]}
+              style={({ pressed }) => [styles.loginButton, pressed && styles.buttonPressed]}
             >
               <IconLogin size={18} color="#0A1A0A" />
               <Text style={styles.loginButtonText}>Log in</Text>
-            </Pressable>
-          </View>
-        ) : (
-          // ---------- LOGGED IN: profile card ----------
-          <View style={styles.profileCard}>
-            <View style={styles.profileTopRow}>
-
-              {/* Profile Image Logic */}
-              {avatarUrl ? (
-                <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
-              ) : (
-                <View style={styles.avatarCircle}>
-                  <Text style={styles.avatarText}>{initial}</Text>
-                </View>
-              )}
-
-              <View style={styles.profileInfo}>
-                <View style={styles.statusRow}>
-                  <View style={styles.statusDot} />
-                  <Text style={styles.statusLabel}>Signed in</Text>
-                </View>
-                <Text
-                  style={styles.profileEmail}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {user.email}
-                </Text>
-              </View>
-            </View>
-
-            <Pressable
-              onPress={handleLogout}
-              style={({ pressed }) => [
-                styles.logoutButton,
-                pressed && styles.buttonPressed,
-              ]}
-            >
-              <IconLogout size={16} color="#FF6B6B" />
-              <Text style={styles.logoutButtonText}>Log out</Text>
             </Pressable>
           </View>
         )}
@@ -138,21 +154,144 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 70,
-    height: 70,
+    width: 66,
+    height: 66,
     alignSelf: 'flex-start',
     justifyContent: 'flex-start',
-    borderRadius: 20,
+    borderRadius: 13,
     borderWidth: 1,
     borderColor: 'rgb(0, 208, 255)',
   },
-
+  titleWrap: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  titleText: {
+    textAlign: 'left',
+    fontSize: 23,
+    fontWeight: '700',
+    marginVertical: 0,
+    marginLeft: 10,
+    color: '#FFFFFF',
+  },
+  titleAccent: {
+    color: '#00D4FF',
+  },
   buttonPressed: {
     opacity: 0.7,
   },
-
-  // ----- Logged out: sign-in card -----
-  signinCard: {
+  avatarButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 212, 255, 0.35)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  avatarImage: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+  },
+  avatarCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#00D4FF',
+  },
+  backdrop: {
+    position: 'absolute',
+    top: -1000,
+    left: -1000,
+    right: -1000,
+    bottom: -1000,
+    zIndex: 40,
+  },
+  menu: {
+    position: 'absolute',
+    top: 95,
+    left: 20,
+    right: 20,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 212, 255, 0.25)',
+    backgroundColor: 'rgb(0, 0, 0)',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    zIndex: 50,
+    shadowColor: '#00D4FF',
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  menuHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  menuAvatarImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 212, 255, 0.35)',
+  },
+  menuAvatarCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 212, 255, 0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuHeaderText: {
+    flex: 1,
+  },
+  menuName: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    lineHeight: 16,
+  },
+  menuEmail: {
+    fontSize: 11.5,
+    color: '#9BA4C0',
+    marginTop: 2,
+    lineHeight: 14,
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    marginVertical: 10,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+    borderRadius: 8,
+  },
+  menuItemPressed: {
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+  },
+  menuItemText: {
+    color: '#FF6B6B',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  signinBanner: {
     marginHorizontal: 20,
     marginBottom: 30,
     backgroundColor: '#16213E',
@@ -161,23 +300,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: 'rgba(0, 212, 255, 0.25)',
-    gap: 14,
-  },
-  signinHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-  },
-  signinIconWrap: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: 'rgba(0, 212, 255, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  signinTextWrap: {
-    flex: 1,
+    gap: 10,
   },
   signinTitle: {
     fontSize: 15,
@@ -188,7 +311,6 @@ const styles = StyleSheet.create({
   signinSubtitle: {
     fontSize: 12,
     color: '#9BA4C0',
-    marginTop: 3,
     lineHeight: 16,
   },
   loginButton: {
@@ -199,95 +321,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     backgroundColor: 'rgb(0, 208, 255)',
+    marginTop: 4,
   },
   loginButtonText: {
     color: '#0A1A0A',
     fontSize: 14,
     fontWeight: '700',
-  },
-
-  // ----- Logged in: profile card -----
-  profileCard: {
-    marginHorizontal: 20,
-    marginBottom: 30,
-    backgroundColor: '#1C1C1E',
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    gap: 12,
-  },
-  profileTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  avatarImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 212, 255, 0.35)',
-  },
-  avatarCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 212, 255, 0.35)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#00D4FF',
-  },
-  profileInfo: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 2,
-  },
-  statusDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: '#4ADE80',
-  },
-  statusLabel: {
-    fontSize: 11,
-    color: '#A0A0A0',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    lineHeight: 13,
-  },
-  profileEmail: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    lineHeight: 17,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 9,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.25)',
-  },
-  logoutButtonText: {
-    color: '#FF6B6B',
-    fontSize: 13,
-    fontWeight: '600',
   },
 })

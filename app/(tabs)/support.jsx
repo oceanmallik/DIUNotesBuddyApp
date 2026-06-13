@@ -19,7 +19,7 @@ const SupportUs = () => {
                     showsVerticalScrollIndicator={false}>
 
                     <Tree title="DIU Notes Buddy is free and open for everyone. Your donation keeps our servers running and helps us expand resources for students." />
-                    <Planet title="Why Your Support Matters" style={{ textAlign: 'center' }} />
+                    <Planet title="Why Your Support Matters" style={{ textAlign: 'center', marginTop: 0 }} />
 
                     <ScrollView
                         horizontal
@@ -45,7 +45,7 @@ const SupportUs = () => {
                         />
                     </ScrollView>
 
-                    <Planet title="How to Support Us" style={{ textAlign: 'center' }} />
+                    <Planet title="How to Support Us" style={{ textAlign: 'center', marginBottom: 0 }} />
                     <Tree title="You can support us by sharing our app with your friends, providing feedback, donating, making a payment via google play store or even watching a small ad to help us grow and improve." />
                     <Tree title="Click the methods below to support us:" />
                     <TitleCardLinked
@@ -58,7 +58,7 @@ const SupportUs = () => {
                         icon={IconQrcode}
                         link="/bKash"
                     />
-                    <Planet title="Other Ways to Support Us" style={{ textAlign: 'center' }} />
+                    <Planet title="Other Ways to Support Us" style={{ textAlign: 'center', marginBottom: 0, marginTop: 0 }} />
                     <Tree title="Leave a review on the Google Play Store or follow us on social media!" />
                     <TitleCardLinked
                         title="Rate Us on Google Play Store"

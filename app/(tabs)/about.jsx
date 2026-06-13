@@ -15,7 +15,7 @@ const AboutUs = () => {
           showsVerticalScrollIndicator={false}
         >
           <Tree title="DIU Notes Buddy is a passion project crafted by a dedicated team of Software Engineering students!" />
-          <Planet title="Meet the Team Behind" style={{ textAlign: 'center' }} />
+          <Planet title="Meet the Team Behind" style={{ textAlign: 'center', marginTop: 0 }} />
           <NameCard
             name="Ocean Mallik"
             username="@oceanmallik"

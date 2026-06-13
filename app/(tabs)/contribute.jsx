@@ -48,9 +48,9 @@ const Contribute = () => {
             />
           </View>
 
-          <Image source={'https://raw.githubusercontent.com/AxiomVessel/DIUNotesBuddyWeb/refs/heads/main/webAssets/tom_meme.png'} style={[styles.meme, { height: 250 }]} />
+          <Planet title="How to Contribute?" style={{ textAlign: 'center', marginTop: 10, marginBottom: 2 }} />
 
-          <Planet title="How to Contribute?" style={{ textAlign: 'center', marginTop: 30 }} />
+          <Image source={require('../../assets/images/tom_meme.png')} style={[styles.meme, { height: 250, marginTop: 5 }]} />
 
           <Tree title="1. Click the 'Contribute Notes' button above to submit your notes or report any issues you find." />
           <Image source={'https://raw.githubusercontent.com/AxiomVessel/DIUNotesBuddyWeb/refs/heads/main/webAssets/submission3.jpg'} style={[styles.picture, { height: 85 }]} />

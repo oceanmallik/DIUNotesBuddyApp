@@ -1,7 +1,30 @@
-# DIUNotesBuddy App
+DIU Notes is a free, open-source note-sharing mobile app for students at Daffodil International University (DIU). No sign-ups, no paywalls — just organized, accessible study materials for everyone. [Note: Signup is required if someone needs to contribute notes.]
 
-> The native mobile experience for [diunotesbuddy.live](https://diunotesbuddy.live) — your academic companion at Daffodil International University.
+![Used Languages](https://img.shields.io/badge/Used%20Languages%3A-black?style=flat) 
+![React Native](https://img.shields.io/badge/React-Native-black?style=flat&logo=react&logoColor=black&labelColor=white)
+![JS](https://img.shields.io/badge/JavaScript-black?style=flat&logo=javascript&logoColor=black&labelColor=white)
+![TS](https://img.shields.io/badge/TypeScript-black?style=flat&logo=typescript&logoColor=black&labelColor=white)
+![PYTHON](https://img.shields.io/badge/Python-black?style=flat&logo=python&logoColor=black&labelColor=white)
 
+<div align="center">
+
+[![Repo](https://img.shields.io/badge/-%2FDIUNotesBuddyApp-black?style=for-the-badge&logo=github&logoColor=black&labelColor=14FF82)](https://github.com/oceanmallik/DIUNotesBuddyApp)
+[![Google Play](https://img.shields.io/badge/Get_it_on-Google_Play-red?logo=google-play&logoColor=white&style=for-the-badge)](https://play.google.com/store/apps/details?id=com.oceanmallik.diunote)
+[![Repo](https://img.shields.io/badge/-%2FDIUNotesBuddyAppDATABASE-black?style=for-the-badge&logo=github&logoColor=black&labelColor=14FF82)](https://github.com/oceanmallik/DIUNotesBuddyDATABASE)
+
+</div>
+
+<div align="center">
+	<a href="https://play.google.com/store/apps/details?id=com.oceanmallik.diunote">
+		<img src="./project-assets/DIUNotesBuddy/DNBApp.png" alt="DIU Notes Buddy" width="100%" />
+	</a>
+</div>
+
+<div align="right">
+
+[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="60" alt="Get it on Google Play"/>](https://play.google.com/store/apps/details?id=com.oceanmallik.diunote)
+
+</div>
 ---
 
 ## About

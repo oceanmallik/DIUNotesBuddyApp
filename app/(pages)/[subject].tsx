@@ -56,7 +56,6 @@ const SubjectScreen = () => {
         try {
             setIsLoading(true);
             
-            // Added the cache-buster timestamp to match the first page
             const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
             const response = await fetch(MANIFEST_URL);
 
@@ -158,7 +157,7 @@ const SubjectScreen = () => {
                                                                     }}
                                                                 >
                                                                     <View style={styles.fileLeft}>
-                                                                        <IconFileText color="#4285F4" size={24} />
+                                                                        <IconFileText color="#42f463" size={24} />
                                                                         <Tree title={file.filename} style={styles.filenameText} />
                                                                     </View>
                                                                     <IconChevronRight color="#A0A0A0" size={20} />
@@ -201,10 +200,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#131313'
     },
     headerArea: {
-        position: 'absolute', // Updated to absolute to overlay scroll content like Page 1
+        position: 'absolute',
         top: 0,
         width: '100%',
-        zIndex: 100 // Added to ensure buttons remain clickable over the scroll view
+        zIndex: 100
     },
     backButton: {
         position: 'absolute',
@@ -229,10 +228,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     pageTitle: {
-        fontSize: 26,
+        fontSize: 20,
         color: '#FFFFFF',
         textAlign: 'center',
-        marginBottom: 30
+        marginBottom: 20
     },
     categoryBlock: {
         marginBottom: 24
@@ -269,7 +268,7 @@ const styles = StyleSheet.create({
         gap: 12
     },
     topicTitle: {
-        fontSize: 16,
+        fontSize: 15,
         color: '#E0E0E0'
     },
     filesContainer: {

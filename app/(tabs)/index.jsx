@@ -1,10 +1,10 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconLogin, IconLogout, IconUser, IconWorld } from '@tabler/icons-react-native'
+import { IconBook2, IconLogin, IconLogout, IconUser } from '@tabler/icons-react-native'
 import { BlurView } from 'expo-blur'
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { TitleCard } from '../../appDesign/cards.js'
 import { Tree } from '../../appDesign/texts.js'
 import { supabase } from '../../lib/supabase'
@@ -40,7 +40,8 @@ const app = () => {
               <Text style={styles.titleText}>
                 DIU <Text style={styles.titleAccent}>Notes</Text> Buddy
               </Text>
-              <Tree title="Your Ultimate Study Companion" style={{ textAlign: 'left', fontSize: 10, marginVertical: 2, marginLeft: 10 }} />
+              <Tree title="Your Ultimate Study Companion" style={{ textAlign: 'left', fontSize: 11, marginVertical: 2, marginLeft: 10 }} />
+              <Tree title="A fork of www.diunotesbuddy.live" style={{ textAlign: 'left', fontSize: 8.5, marginVertical: 0, marginLeft: 10 }} />
             </View>
 
             {/* Account control */}
@@ -102,13 +103,12 @@ const app = () => {
             </>
           )}
 
-          {/* Website card */}
           <View style={{ width: '100%', paddingHorizontal: 0, marginVertical: 20 }}>
-            <Pressable onPress={() => Linking.openURL('https://www.diunotesbuddy.live')}>
+            <Pressable onPress={() => router.push('/notes')}>
               <TitleCard
-                title="Visit our Website!"
-                description="www.diunotesbuddy.live"
-                icon={IconWorld}
+                title='Tap on "Notes" to access'
+                description="Our notes are also available on web! www.diunotesbuddy.live"
+                icon={IconBook2}
               />
             </Pressable>
           </View>

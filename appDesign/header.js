@@ -8,7 +8,7 @@ export const fonts = {
 export default function Header({ title }) {
   return (
     <View style={styles.topBar}>
-      <BlurView intensity={120} tint="dark" style={StyleSheet.absoluteFill} />
+      <BlurView intensity={130} tint="dark" style={StyleSheet.absoluteFill} />
       <Text style={styles.galaxy}>{title}</Text>
     </View>
   );
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     overflow: 'hidden',
-    height: 88, // adjust to your liking
+    height: 82,
   },
   galaxy: {
     color: 'white',

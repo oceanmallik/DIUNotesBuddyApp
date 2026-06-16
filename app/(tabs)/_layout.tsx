@@ -27,14 +27,14 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarActiveTintColor: activeColor,
-        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.5)',
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.6)',
         tabBarShowLabel: true,
         tabBarLabelStyle: styles.label,
         tabBarItemStyle: styles.item,
         tabBarStyle: [styles.tabBar, { bottom: bottomOffset }],
         tabBarBackground: () => (
           <BlurView
-            intensity={80}
+            intensity={130}
             tint="dark"
             style={[StyleSheet.absoluteFill, styles.blur]}
           >

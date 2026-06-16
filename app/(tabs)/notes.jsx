@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     titleText: {
-        fontSize: 18,
+        fontSize: 16,
         color: '#E0E0E0',
         marginTop: 0,
         marginBottom: 0,
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1C1C1C',
     },
     yearTitle: {
-        fontSize: 16,
+        fontSize: 14,
         color: '#CCCCCC',
     },
     semestersContainer: {
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     semesterRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
+        paddingVertical: 10,
         paddingHorizontal: 30,
         gap: 10,
         borderBottomWidth: 1,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#0A0A0A',
     },
     semesterTitle: {
-        fontSize: 15,
+        fontSize: 14,
         color: '#BBBBBB',
     },
     subjectsContainer: {
@@ -277,14 +277,14 @@ const styles = StyleSheet.create({
     subjectRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
+        paddingVertical: 4,
         gap: 12,
     },
     subjectIconBullet: {
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: '#4285F4',
+        backgroundColor: '#45f442',
     },
     subjectTitle: {
         fontSize: 14,

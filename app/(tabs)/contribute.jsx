@@ -21,8 +21,7 @@ const Contribute = () => {
           contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
           showsVerticalScrollIndicator={false}>
 
-          <Tree title="Add your notes, fix broken resources, and help make the study library more complete for other DIU students." />
-
+          
           <TitleCard
             title="Your Contribution Matters"
             description="Every note you share, every error you report, helps build a stronger, more helpful resource for all DIU students. "

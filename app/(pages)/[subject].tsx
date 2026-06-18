@@ -184,7 +184,7 @@ const SubjectScreen = () => {
             {/* Moved headerArea to the bottom and positioned it absolutely */}
             <View style={styles.headerArea}>
                 <Pressable onPress={() => router.back()} style={styles.backButton}>
-                    <IconArrowLeft color="#FFFFFF" size={28} />
+                    <IconArrowLeft color="#FFFFFF" size={24} />
                 </Pressable>
                 <Header title="Subject Materials" />
             </View>
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute',
         left: 10,
-        top: 45,
+        top: 30,
         padding: 10,
         zIndex: 50
     },

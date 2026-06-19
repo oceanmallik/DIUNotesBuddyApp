@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 24,
         marginBottom: 30,
+        backgroundColor: '#290000',
     },
     card: {
         marginTop: 32,

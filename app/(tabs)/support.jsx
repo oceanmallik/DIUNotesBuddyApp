@@ -46,17 +46,16 @@ const SupportUs = () => {
                     </ScrollView>
 
                     <Planet title="How to Support Us" style={{ textAlign: 'center', marginBottom: 0 }} />
-                    <Tree title="You can support us by sharing our app with your friends, providing feedback, donating, making a payment via google play store or even watching a small ad to help us grow and improve." />
-                    <Tree title="Click the methods below to support us:" />
+                    <Tree title="Click any methods from below to support us:" />
+                    <TitleCardLinked
+                        title="Donate via MFS (bKash)"
+                        icon={IconQrcode}
+                        link="/bKash"
+                    />
                     <TitleCardLinked
                         title="Watch an Ad to Support Us (Free)"
                         icon={IconBadgeAd}
                         link="/ads"
-                    />
-                    <TitleCardLinked
-                        title="Donate via bKash (Donation)"
-                        icon={IconQrcode}
-                        link="/bKash"
                     />
                     <Planet title="Other Ways to Support Us" style={{ textAlign: 'center', marginBottom: 0, marginTop: 0 }} />
                     <Tree title="Leave a review on the Google Play Store or follow us on social media!" />
@@ -66,9 +65,9 @@ const SupportUs = () => {
                         link="https://play.google.com/store/apps/details?id=com.oceanmallik.diunote"
                     />
                     <TitleCardLinked
-                        title="Visit the Website Version"
+                        title="Visit the Web Version (External Link)"
                         icon={IconWorld}
-                        link="/about"
+                        link="https://diunotesbuddy.live/"
                     />
                     <TitleCardLinked
                         title="Get to know the team (About Us)"

@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(20, 20, 20, 0.4)',
+    backgroundColor: 'rgba(20, 20, 20, 0.60)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 24,

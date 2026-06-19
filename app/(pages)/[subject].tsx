@@ -55,7 +55,7 @@ const SubjectScreen = () => {
     const fetchSubjectData = async () => {
         try {
             setIsLoading(true);
-            
+
             const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
             const response = await fetch(MANIFEST_URL);
 
@@ -149,9 +149,9 @@ const SubjectScreen = () => {
                                                                     onPress={() => {
                                                                         router.push({
                                                                             pathname: '/Viewer' as any,
-                                                                            params: { 
+                                                                            params: {
                                                                                 url: file.url,
-                                                                                title: file.filename 
+                                                                                title: file.filename
                                                                             }
                                                                         });
                                                                     }}
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#2A2A2A'
     },
-    topicHeaderLeft: { 
+    topicHeaderLeft: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12

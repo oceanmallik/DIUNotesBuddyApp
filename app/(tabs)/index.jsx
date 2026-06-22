@@ -1,6 +1,6 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconBook2, IconLogin, IconLogout, IconUser } from '@tabler/icons-react-native'
+import { IconBook2, IconLogin, IconLogout, IconTrash, IconUser } from '@tabler/icons-react-native'
 import { BlurView } from 'expo-blur'
 import { router } from 'expo-router'
 import { useState } from 'react'
@@ -22,6 +22,33 @@ const app = () => {
     } catch (err) {
       Alert.alert("Logout Error", err.message);
     }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to permanently delete your account? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const { error } = await supabase.rpc('delete_user');
+
+              if (error) throw error;
+
+              await supabase.auth.signOut();
+              setMenuOpen(false);
+              Alert.alert("Account Deleted", "Your account has been successfully deleted.");
+            } catch (err) {
+              Alert.alert("Error Deleting Account", err.message);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
@@ -63,7 +90,6 @@ const app = () => {
             </Pressable>
           </View>
 
-          {/* Glassmorphic dropdown, shown only when logged in, full width */}
           {user && menuOpen && (
             <>
               {/* Invisible backdrop to close menu on outside tap */}
@@ -92,12 +118,22 @@ const app = () => {
 
                 <View style={styles.menuDivider} />
 
+                {/* Delete Account */}
+                <Pressable
+                  onPress={handleDeleteAccount}
+                  style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+                >
+                  <IconTrash size={16} color="#FF6B6B" />
+                  <Text style={styles.menuItemText}>Delete Account</Text>
+                </Pressable>
+
+                {/* Log out */}
                 <Pressable
                   onPress={handleLogout}
                   style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
                 >
-                  <IconLogout size={16} color="#FF6B6B" />
-                  <Text style={styles.menuItemText}>Log out</Text>
+                  <IconLogout size={16} color="#9BA4C0" />
+                  <Text style={[styles.menuItemText, { color: '#9BA4C0' }]}>Log out</Text>
                 </Pressable>
               </BlurView>
             </>

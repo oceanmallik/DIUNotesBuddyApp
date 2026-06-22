@@ -53,6 +53,11 @@ const SupportUs = () => {
                         link="/bKash"
                     />
                     <TitleCardLinked
+                        title="Donate via Bank (Citytouch)"
+                        icon={IconQrcode}
+                        link="/Bank"
+                    />
+                    <TitleCardLinked
                         title="Watch an Ad to Support Us (Free)"
                         icon={IconBadgeAd}
                         link="/ads"

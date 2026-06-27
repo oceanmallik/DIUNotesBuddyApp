@@ -61,19 +61,20 @@ const AboutUs = () => {
             button3="Email"
             ID="253-35-515"
           />
+
           <NameCard
-            name="Syed Al Muti"
-            username="@muti9"
-            photoURL="https://github.com/muti9.png"
-            cardURL="https://github.com/muti9"
-            webURL="https://www.instagram.com/syed_al_muti/"
-            otherURL="https://www.facebook.com/syed.al.muti"
-            email="mailto:syedalmuti9@gmail.com"
-            contribution="Notes Contributor & Review Squad Member (SWE)"
+            name="Dhrubo Mitra"
+            username="@dhrubo04-oneman"
+            photoURL="https://github.com/dhrubo04-oneman.png"
+            cardURL="https://github.com/dhrubo04-oneman"
+            webURL="https://www.instagram.com/dhrubo7304/"
+            otherURL="https://www.facebook.com/dhrubo.mitra.90"
+            email="mailto:balnuru411@gmail.com"
+            contribution="Notes Contributor & Review Squad Member (ITM)"
             button1="Instagram"
             button2="Facebook"
             button3="Email"
-            ID="253-35-625"
+            ID="261-51-004"
           />
           <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" />
         </ScrollView>

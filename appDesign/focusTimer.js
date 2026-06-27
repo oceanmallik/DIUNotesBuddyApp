@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { IconClock, IconPlayerPlay, IconPlayerStop } from '@tabler/icons-react-native';
-import { useAppTheme } from '../logic/ThemeProvider';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import Slider from '@react-native-community/slider';
+import { IconClock, IconPlayerPlay, IconPlayerStop } from '@tabler/icons-react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useAppTheme } from '../logic/ThemeProvider';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -218,7 +218,7 @@ export default function FocusTimer() {
                             onPress={() => startFocus(customMinutes)}
                         >
                             <IconPlayerPlay size={20} color="#FFFFFF" />
-                            <Text style={styles.startButtonText}>Start Lekha Pora Session</Text>
+                            <Text style={styles.startButtonText}>Start "Lekha Pora" Session</Text>
                         </Pressable>
                     </View>
 

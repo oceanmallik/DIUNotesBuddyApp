@@ -3,7 +3,7 @@ import { IconSend, IconUpload, IconUserCheck } from '@tabler/icons-react-native'
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { AppButton } from '../../appDesign/button.js';
 import { TitleCard } from '../../appDesign/cards.js';
 import Header from '../../appDesign/header.js';
@@ -31,14 +31,9 @@ const Contribute = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleAuthButton = async () => {
+  const handleAuthButton = () => {
     if (session) {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        Alert.alert('Error logging out', error.message);
-      } else {
-        Alert.alert('Logged Out', 'You have been successfully logged out.');
-      }
+      router.push('/profile');
     } else {
       router.push('/login');
     }
@@ -51,9 +46,7 @@ const Contribute = () => {
           style={styles.scrollView}
           contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
           showsVerticalScrollIndicator={false}>
-
-          <Planet title="Become a Contributor" style={{ textAlign: 'center', marginTop: 10, marginBottom: 5, color: colors.textPrimary }} />
-          
+  
           <TitleCard
             title="Your Contribution Matters"
             description="Every note you share helps build a stronger, more helpful resource for all DIU students."
@@ -70,7 +63,7 @@ const Contribute = () => {
             <View style={styles.buttonRow}>
               <AppButton
                 onPress={handleAuthButton}
-                title={session ? "Logout" : "Login"}
+                title={session ? "Profile" : "Login"}
                 style={styles.halfButton}
               />
               <AppButton

@@ -10,7 +10,7 @@ export const fonts = {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function NameCard({ name, username, webURL, cardURL, otherURL, email, photoURL, contribution, button1, button2, button3, ID }) {
+export function NameCard({ name, username, webURL, cardURL, email, photoURL, contribution, button1, button3, ID }) {
     const { colors, activeTheme } = useAppTheme();
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const [expanded, setExpanded] = useState(false);
@@ -49,9 +49,6 @@ export function NameCard({ name, username, webURL, cardURL, otherURL, email, pho
                     </Pressable>
                     <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.background }, pressed && { backgroundColor: colors.border }]} onPress={() => Linking.openURL(webURL)}>
                         <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button1}</Text>
-                    </Pressable>
-                    <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.background }, pressed && { backgroundColor: colors.border }]} onPress={() => Linking.openURL(otherURL)}>
-                        <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button2}</Text>
                     </Pressable>
                     <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.background }, pressed && { backgroundColor: colors.border }]} onPress={() => Linking.openURL(email)}>
                         <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button3}</Text>

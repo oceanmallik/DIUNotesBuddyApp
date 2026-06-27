@@ -29,7 +29,7 @@ export default function FocusTimer() {
     const updateNotification = async (currentLeft, total, endTimeMs) => {
         const channelId = await notifee.createChannel({
             id: 'focus_mode',
-            name: 'Focus Mode',
+            name: 'Lekha Pora Mode',
             importance: AndroidImportance.DEFAULT,
         });
 
@@ -38,8 +38,8 @@ export default function FocusTimer() {
         
         await notifee.displayNotification({
             id: 'focus_mode_timer',
-            title: 'Focus Mode Active 📚',
-            body: 'Focus session in progress...',
+            title: 'Porasuna koro too? 🤔',
+            body: 'Porte hobe... Nokol ar hobena... 📚✍️',
             android: {
                 channelId,
                 ongoing: true,
@@ -81,7 +81,7 @@ export default function FocusTimer() {
                     
                     const completeChannelId = await notifee.createChannel({
                         id: 'focus_mode_alerts',
-                        name: 'Focus Mode Alerts',
+                        name: 'Lekha Pora Mode Alerts',
                         importance: AndroidImportance.HIGH,
                         sound: 'default',
                         vibration: true,
@@ -89,8 +89,8 @@ export default function FocusTimer() {
                     });
                     
                     await notifee.displayNotification({
-                        title: "Focus Session Complete! 🎉",
-                        body: "Great job! Take a short break before your next session.",
+                        title: "Lekha Pora Session Complete! 🎉",
+                        body: "Jak tomar pora ses, jao rest nao... 😌🛋️",
                         android: {
                             channelId: completeChannelId,
                             sound: 'default',
@@ -160,7 +160,7 @@ export default function FocusTimer() {
                 <View style={[styles.iconWrap, { backgroundColor: activeTheme === 'dark' ? 'rgba(76, 175, 80, 0.15)' : '#E8F5E9' }]}>
                     <IconClock size={20} color={activeTheme === 'dark' ? '#4CAF50' : '#2E7D32'} />
                 </View>
-                <Text style={[styles.title, { color: colors.textPrimary }]}>Focus Mode</Text>
+                <Text style={[styles.title, { color: colors.textPrimary }]}>Lekha Pora Mode</Text>
             </View>
 
             {isFocusing ? (
@@ -218,7 +218,7 @@ export default function FocusTimer() {
                             onPress={() => startFocus(customMinutes)}
                         >
                             <IconPlayerPlay size={20} color="#FFFFFF" />
-                            <Text style={styles.startButtonText}>Start Focus Session</Text>
+                            <Text style={styles.startButtonText}>Start Lekha Pora Session</Text>
                         </Pressable>
                     </View>
 

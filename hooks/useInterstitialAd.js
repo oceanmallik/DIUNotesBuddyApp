@@ -14,7 +14,7 @@ const interstitial = InterstitialAd.createForAdRequest(AD_UNIT_ID, {
 });
 
 export default function useInterstitialAd() {
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(interstitial.loaded);
 
   useEffect(() => {
     const onLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
@@ -25,9 +25,9 @@ export default function useInterstitialAd() {
       setLoaded(false);
       interstitial.load(); // preload next ad after user closes
     });
-
-    interstitial.load(); // start loading immediately
-
+    if (!interstitial.loaded) {
+      interstitial.load(); // start loading immediately
+    }
     return () => {
       onLoaded();
       onClosed();

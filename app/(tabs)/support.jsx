@@ -7,6 +7,7 @@ import { TitleCard, TitleCardLinked, TitleCardScroll } from '../../appDesign/car
 import Header from '../../appDesign/header.js'
 import { Planet, Tree } from '../../appDesign/texts.js'
 import { useAppTheme } from '../../logic/ThemeProvider'
+import useInterstitialAd from '../../hooks/useInterstitialAd'
 
 const CARD_WIDTH = 340
 
@@ -14,6 +15,7 @@ const CARD_WIDTH = 340
 const SupportUs = () => {
     const tabBarHeight = useBottomTabBarHeight();
     const { colors, activeTheme } = useAppTheme();
+    const { showAd, loaded } = useInterstitialAd();
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={[styles.bg, { backgroundColor: colors.background }]}>
@@ -62,8 +64,8 @@ const SupportUs = () => {
                     
                     <View style={styles.actionGrid}>
                         <AppButton
-                            onPress={() => router.push('/ads')}
-                            title="Watch an Ad (Free)"
+                            onPress={() => loaded ? showAd() : null}
+                            title={loaded ? "Watch an Ad (Free)" : "Ad Loading..."}
                             style={styles.fullWidthButton}
                         />
                         <View style={styles.buttonRow}>

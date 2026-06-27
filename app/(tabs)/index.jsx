@@ -1,6 +1,6 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconBook2, IconLogin, IconLogout, IconMoon, IconSun, IconTrash, IconUser } from '@tabler/icons-react-native'
+import { IconBook2, IconLogout, IconMoon, IconSun, IconTrash, IconUser } from '@tabler/icons-react-native'
 import { BlurView } from 'expo-blur'
 import { router } from 'expo-router'
 import { useRef, useState } from 'react'
@@ -65,7 +65,7 @@ const app = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.bg, { paddingBottom: tabBarHeight + 5 }]}>
+      <View style={[styles.bg, { paddingBottom: tabBarHeight + 25 }]}>
         <View>
           {/* Top bar */}
           <View style={[
@@ -214,7 +214,7 @@ const app = () => {
           ]}>
             <View style={styles.signinContent}>
               <Text style={[styles.signinTitle, { color: colors.textPrimary }]}>Not signed in</Text>
-              <Text style={[styles.signinSubtitle, { color: colors.textSecondary }]}>Log in to submit notes, sync progress, and unlock more features.</Text>
+              <Text style={[styles.signinSubtitle, { color: colors.textSecondary }]}>Log in to submit notes, sync progress, and unlock more features. Make sure to use @diu.edu.bd email provided by Daffodil University. </Text>
             </View>
           </View>
         )}
@@ -397,7 +397,6 @@ const styles = StyleSheet.create({
   signinSubtitle: {
     fontSize: 13,
     textAlign: 'center',
-    marginBottom: 20,
     lineHeight: 18,
   },
   loginButton: {

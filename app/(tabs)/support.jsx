@@ -82,7 +82,7 @@ const SupportUs = () => {
 
                     <Planet title="Other Ways to Help" style={{ textAlign: 'center', marginBottom: 10, marginTop: 15, marginHorizontal: 16 }} />
                     
-                    <View style={{ gap: 0 }}>
+                    <View style={{ gap: 0, marginBottom: 30 }}>
                         <TitleCardLinked
                             title="Rate Us on Google Play"
                             icon={IconBrandGooglePlay}

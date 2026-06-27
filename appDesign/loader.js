@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
 import { useAppTheme } from '../logic/ThemeProvider';
 import { Tree } from './texts';
-import appLogo from "@/assets/images/android-icon-foreground.png";
+import { IconSchool } from '@tabler/icons-react-native';
 
 export const BentoLoader = ({ text = "Loading...", style = {} }) => {
     const { colors, activeTheme } = useAppTheme();
@@ -37,8 +37,8 @@ export const BentoLoader = ({ text = "Loading...", style = {} }) => {
                     shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05
                 }
             ]}>
-                <Animated.View style={{ transform: [{ scale: scaleAnim }], opacity: opacityAnim, backgroundColor: colors.background, padding: 8, borderRadius: 16 }}>
-                    <Image source={appLogo} style={styles.logo} />
+                <Animated.View style={{ transform: [{ scale: scaleAnim }], opacity: opacityAnim, backgroundColor: colors.background, padding: 12, borderRadius: 16 }}>
+                    <IconSchool size={40} color={colors.accent} />
                 </Animated.View>
                 <Tree title={text} style={{ marginTop: 20, color: colors.textSecondary }} />
             </View>

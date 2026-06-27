@@ -76,7 +76,7 @@ const AboutUs = () => {
             button3="Email"
             ID="261-51-004"
           />
-          <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" />
+          <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" style={{ marginBottom: 30 }} />
         </ScrollView>
       </View>
       <Header title="A small team, with big ideas" />

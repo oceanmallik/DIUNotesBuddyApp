@@ -79,10 +79,10 @@ const app = () => {
             </View>
 
             <View style={styles.titleWrap}>
-              <Text style={[styles.titleText, { color: colors.textPrimary }]}>
+              <Text style={[styles.titleText, { color: colors.textPrimary }]} numberOfLines={1} adjustsFontSizeToFit>
                 DIU <Text style={[styles.titleAccent, { color: colors.accent }]}>Notes</Text>
               </Text>
-              <Tree title="Your Ultimate Study Companion" style={{ textAlign: 'left', fontSize: 12, marginVertical: 2, marginLeft: 10, color: colors.textSecondary }} />
+              <Tree title="Your Ultimate Study Companion" style={{ textAlign: 'left', fontSize: 11, marginVertical: 2, marginHorizontal: 0, color: colors.textSecondary }} numberOfLines={1} adjustsFontSizeToFit />
             </View>
 
             {/* Theme Toggle */}
@@ -261,7 +261,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontFamily: 'SpaceGrotesk-Bold',
-    marginLeft: 10,
   },
   titleAccent: {
     // Dynamic color

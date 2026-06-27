@@ -2,14 +2,21 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
+import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards.js';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 import Header from '../../appDesign/header.js';
 import { Mountain, Planet, Tree } from '../../appDesign/texts.js';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 const Notes = () => {
     const router = useRouter();
     const tabBarHeight = useBottomTabBarHeight();
+    const { colors, activeTheme } = useAppTheme();
 
     const [manifest, setManifest] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +34,6 @@ const Notes = () => {
             setIsLoading(true);
             setError(null);
             
-            // Added the cache-buster timestamp here so you don't have to wait 5 mins for GitHub updates!
             const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
             const response = await fetch(MANIFEST_URL);
             
@@ -43,102 +49,119 @@ const Notes = () => {
     };
 
     const toggleDepartment = (deptId) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         setExpandedDepartment(expandedDepartment === deptId ? null : deptId);
         setExpandedYear(null);
         setExpandedSemester(null);
     };
 
     const toggleYear = (yearId) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         setExpandedYear(expandedYear === yearId ? null : yearId);
         setExpandedSemester(null); 
     };
 
     const toggleSemester = (semId) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         setExpandedSemester(expandedSemester === semId ? null : semId);
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.bg}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <View style={[styles.bg, { backgroundColor: colors.background }]}>
                 <ScrollView
                     style={styles.scrollView}
-                    contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
+                    contentContainerStyle={[styles.scrollContent, { paddingTop: 110, paddingBottom: tabBarHeight + 20 }]}
                     showsVerticalScrollIndicator={false}>
 
                     {isLoading ? (
-                        <View style={styles.statusContainer}>
-                            <ActivityIndicator size="large" color="#00D0FF" />
-                            <Tree title="Fetching latest notes from GitHub..." style={{ textAlign: 'center', marginTop: 15 }} />
-                        </View>
+                        <BentoLoader text="Fetching latest notes..." />
                     ) : error ? (
                         <TitleCard title="Connection Error" description={error} icon={IconAlertCircle} />
                     ) : manifest && manifest.departments ? (
                         <View style={styles.manifestContainer}>
-                            <Planet title="Academic Departments" style={{ textAlign: 'center', marginVertical: 15, fontSize: 22 }} />
                             
                             {/* LEVEL 1: DEPARTMENTS */}
                             {manifest.departments.map((dept) => {
                                 const isDeptOpen = expandedDepartment === dept.id;
 
                                 return (
-                                    <View key={dept.id} style={styles.deptWrapper}>
+                                    <View key={dept.id} style={[
+                                        styles.deptWrapper, 
+                                        { 
+                                            backgroundColor: colors.card,
+                                            shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05
+                                        }
+                                    ]}>
                                         <Pressable 
-                                            style={[styles.deptHeader, isDeptOpen && styles.deptHeaderActive]} 
+                                            style={styles.deptHeader} 
                                             onPress={() => toggleDepartment(dept.id)}
                                         >
                                             <View style={styles.headerLeft}>
-                                                <IconSchool color={isDeptOpen ? "#00D0FF" : "#A0A0A0"} size={24} />
-                                                <Mountain title={dept.title} style={[styles.titleText, isDeptOpen && { color: '#00D0FF' }]} />
+                                                <View style={[
+                                                    styles.iconBox, 
+                                                    { backgroundColor: isDeptOpen ? colors.accent : (activeTheme === 'dark' ? '#1A3340' : '#F0F8FF') }
+                                                ]}>
+                                                    <IconSchool color={isDeptOpen ? "#FFFFFF" : colors.accent} size={22} />
+                                                </View>
+                                                <Mountain title={dept.title} style={styles.titleText} />
                                             </View>
-                                            {isDeptOpen ? <IconChevronDown color="#00D0FF" size={20} /> : <IconChevronRight color="#A0A0A0" size={20} />}
+                                            {isDeptOpen ? <IconChevronDown color={colors.textSecondary} size={20} /> : <IconChevronRight color={colors.textSecondary} size={20} />}
                                         </Pressable>
 
                                         {isDeptOpen && (
-                                            <View style={styles.nestedContainer}>
+                                            <View style={[styles.nestedContainer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
                                                 {/* LEVEL 2: YEARS */}
                                                 {dept.years.map((year) => {
                                                     const isYearOpen = expandedYear === year.id;
 
                                                     return (
-                                                        <View key={year.id}>
+                                                        <View key={year.id} style={[styles.yearBlock, { borderBottomColor: colors.border }]}>
                                                             <Pressable 
-                                                                style={[styles.yearHeader, isYearOpen && styles.yearHeaderActive]} 
+                                                                style={[styles.yearHeader, { backgroundColor: colors.card }]} 
                                                                 onPress={() => toggleYear(year.id)}
                                                             >
                                                                 <View style={styles.headerLeft}>
-                                                                    {isYearOpen ? <IconFolderOpen color="#00D0FF" size={20} /> : <IconFolder color="#A0A0A0" size={20} />}
-                                                                    <Tree title={year.label} style={[styles.yearTitle, isYearOpen && { color: '#00D0FF' }]} />
+                                                                    {isYearOpen ? <IconFolderOpen color="#34C759" size={20} /> : <IconFolder color={colors.textSecondary} size={20} />}
+                                                                    <Tree title={year.label} style={styles.yearTitle} />
                                                                 </View>
-                                                                {isYearOpen ? <IconChevronDown color="#00D0FF" size={18} /> : <IconChevronRight color="#A0A0A0" size={18} />}
+                                                                {isYearOpen ? <IconChevronDown color={colors.textSecondary} size={18} /> : <IconChevronRight color={colors.textSecondary} size={18} />}
                                                             </Pressable>
 
                                                             {/* LEVEL 3: SEMESTERS */}
                                                             {isYearOpen && (
-                                                                <View style={styles.semestersContainer}>
+                                                                <View style={[styles.semestersContainer, { backgroundColor: activeTheme === 'dark' ? '#121212' : '#F9F9FB' }]}>
                                                                     {year.semesters.map((sem) => {
                                                                         const isSemOpen = expandedSemester === sem.id;
 
                                                                         return (
                                                                             <View key={sem.id}>
                                                                                 <Pressable 
-                                                                                    style={[styles.semesterRow, isSemOpen && styles.semesterRowActive]} 
+                                                                                    style={[
+                                                                                        styles.semesterRow, 
+                                                                                        { borderBottomColor: colors.border },
+                                                                                        isSemOpen && { backgroundColor: colors.background }
+                                                                                    ]} 
                                                                                     onPress={() => toggleSemester(sem.id)}
                                                                                 >
-                                                                                    {isSemOpen ? <IconChevronDown color="#00D0FF" size={16} /> : <IconChevronRight color="#555" size={16} />}
-                                                                                    <Tree title={sem.label} style={[styles.semesterTitle, isSemOpen && { color: '#00D0FF' }]} />
+                                                                                    {isSemOpen ? <IconChevronDown color="#AF52DE" size={16} /> : <IconChevronRight color={colors.textSecondary} size={16} />}
+                                                                                    <Tree title={sem.label} style={styles.semesterTitle} />
                                                                                 </Pressable>
 
                                                                                 {/* LEVEL 4: SUBJECTS */}
                                                                                 {isSemOpen && (
-                                                                                    <View style={styles.subjectsContainer}>
+                                                                                    <View style={[styles.subjectsContainer, { backgroundColor: colors.background }]}>
                                                                                         {sem.subjects && sem.subjects.length > 0 ? (
                                                                                             sem.subjects.map((sub) => (
                                                                                                 <Pressable 
                                                                                                     key={sub.id} 
-                                                                                                    style={styles.subjectRow}
+                                                                                                    style={({ pressed }) => [
+                                                                                                        styles.subjectRow, 
+                                                                                                        pressed && { backgroundColor: colors.border }
+                                                                                                    ]}
                                                                                                     onPress={() => router.push(`/(pages)/${sub.id}`)}
                                                                                                 >
-                                                                                                    <View style={styles.subjectIconBullet} />
+                                                                                                    <View style={[styles.subjectIconBullet, { backgroundColor: colors.accent }]} />
                                                                                                     <Tree title={sub.title} style={styles.subjectTitle} />
                                                                                                 </Pressable>
                                                                                             ))
@@ -180,14 +203,12 @@ const styles = StyleSheet.create({
     bg: {
         flex: 1,
         width: '100%',
-        backgroundColor: '#131313',
     },
     scrollView: {
         flex: 1,
     },
     scrollContent: {
-        padding: 10,
-        paddingBottom: 40,
+        padding: 16,
     },
     statusContainer: {
         marginTop: 60,
@@ -196,26 +217,23 @@ const styles = StyleSheet.create({
     },
     manifestContainer: {
         width: '100%',
+        marginTop: 10,
     },
     deptWrapper: {
-        marginBottom: 12,
-        backgroundColor: '#1A1A1A',
-        borderRadius: 12,
+        borderRadius: 20,
         overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: '#2A2A2A',
+        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 10,
+        elevation: 2,
     },
     deptHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 18,
+        paddingVertical: 16,
         paddingHorizontal: 16,
-    },
-    deptHeaderActive: {
-        backgroundColor: '#222222',
-        borderBottomWidth: 1,
-        borderBottomColor: '#2A2A2A',
     },
     headerLeft: {
         flexDirection: 'row',
@@ -223,15 +241,24 @@ const styles = StyleSheet.create({
         gap: 12,
         flex: 1,
     },
+    iconBox: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     titleText: {
         fontSize: 16,
-        color: '#E0E0E0',
         marginTop: 0,
         marginBottom: 0,
         flexShrink: 1,
     },
     nestedContainer: {
-        backgroundColor: '#161616',
+        borderTopWidth: StyleSheet.hairlineWidth,
+    },
+    yearBlock: {
+        borderBottomWidth: StyleSheet.hairlineWidth,
     },
     yearHeader: {
         flexDirection: 'row',
@@ -239,60 +266,47 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 14,
         paddingHorizontal: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.02)',
-    },
-    yearHeaderActive: {
-        backgroundColor: '#1C1C1C',
     },
     yearTitle: {
-        fontSize: 14,
-        color: '#CCCCCC',
+        fontSize: 15,
     },
     semestersContainer: {
-        backgroundColor: '#121212',
+        // dynamic bg
     },
     semesterRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 30,
+        paddingVertical: 12,
+        paddingHorizontal: 32,
         gap: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.01)',
-    },
-    semesterRowActive: {
-        backgroundColor: '#0A0A0A',
+        borderBottomWidth: StyleSheet.hairlineWidth,
     },
     semesterTitle: {
         fontSize: 14,
-        color: '#BBBBBB',
     },
     subjectsContainer: {
-        backgroundColor: '#050505',
         paddingVertical: 8,
-        paddingLeft: 52,
-        paddingRight: 24,
+        paddingLeft: 56,
+        paddingRight: 16,
     },
     subjectRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 4,
-        gap: 12,
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        gap: 10,
+        borderRadius: 12,
     },
     subjectIconBullet: {
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: '#45f442',
     },
     subjectTitle: {
         fontSize: 14,
-        color: '#A0A0A0',
     },
     emptyText: {
-        fontSize: 14,
-        color: '#555555',
+        fontSize: 13,
         fontStyle: 'italic',
         paddingVertical: 10,
     },

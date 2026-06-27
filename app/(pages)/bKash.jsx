@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Planet, Tree } from '../../appDesign/texts.js';
 import DonationHeader from '../../components/Donationheader.jsx';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 export default function bKash() {
     const [copied, setCopied] = useState(false);
     const bkashNumber = '01864103655';
+    const { colors, activeTheme } = useAppTheme();
 
     const handleCopy = () => {
         Clipboard.setString(bkashNumber);
@@ -19,19 +21,19 @@ export default function bKash() {
             <DonationHeader
                 title="Support via bKash"
                 accentColor="#E2136E"
-                backgroundColor="#290000"
+                backgroundColor={colors.background}
             />
-            <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
-                <Planet title="Support Us via bKash" />
+            <ScrollView style={[styles.scroll, { backgroundColor: colors.background }]} contentContainerStyle={styles.container}>
+                <Planet title="Support Us via bKash" style={{ color: colors.textPrimary }} />
                 <Tree
                     title="Click the copy button below to copy our bKash number and help us keep this project alive!"
-                    style={{ textAlign: 'center' }}
+                    style={{ textAlign: 'center', color: colors.textSecondary }}
                 />
 
-                <View style={styles.card}>
+                <View style={[styles.card, { backgroundColor: colors.card, borderColor: activeTheme === 'dark' ? '#E2136E' : colors.border, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
                     <Image
                         source={{ uri: 'https://diunotesbuddy.live/webAssets/bkash.jpg' }}
-                        style={styles.image}
+                        style={[styles.image, { borderColor: colors.border, borderWidth: 1 }]}
                         resizeMode="contain"
                     />
                     <Text style={styles.label}>bKash Number</Text>
@@ -45,7 +47,7 @@ export default function bKash() {
 
                     <Tree
                         title="Note: Make sure to use Send Money option."
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'center', color: colors.textSecondary }}
                     />
                 </View>
             </ScrollView>
@@ -56,7 +58,6 @@ export default function bKash() {
 const styles = StyleSheet.create({
     scroll: {
         flex: 1,
-        backgroundColor: '#290000',
     },
     container: {
         alignItems: 'center',
@@ -65,13 +66,15 @@ const styles = StyleSheet.create({
     },
     card: {
         marginTop: 32,
-        backgroundColor: '#370000',
         borderRadius: 16,
         padding: 20,
         alignItems: 'center',
         width: '100%',
         borderWidth: 1,
-        borderColor: '#E2136E',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 10,
+        elevation: 2,
     },
     image: {
         width: '100%',
@@ -95,7 +98,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#E2136E',
         paddingVertical: 12,
         paddingHorizontal: 32,
-        borderRadius: 10,
+        borderRadius: 20,
         marginBottom: 16,
     },
     buttonText: {

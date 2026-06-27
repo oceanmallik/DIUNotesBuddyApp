@@ -1,71 +1,73 @@
 import { Linking, StyleSheet, Text } from 'react-native';
+import { useAppTheme } from '../logic/ThemeProvider';
 
 export const fonts = {
     regular: "SpaceGrotesk-Regular",
     bold: "SpaceGrotesk-Bold",
 }
 
-export function Planet ({ title, style }) {
+export function Planet({ title, style }) {
+    const { colors } = useAppTheme();
     return (
-        <Text style={[styles.globalStyle, styles.planet, style]}>{title}</Text>
+        <Text style={[styles.planet, { color: colors.textPrimary }, style]}>{title}</Text>
     );
 }
 
-export function Mountain ({ title, style }) {
+export function Mountain({ title, style }) {
+    const { colors } = useAppTheme();
     return (
-        <Text style={[styles.globalStyle, styles.mountain, style]}>{title}</Text>
+        <Text style={[styles.mountain, { color: colors.textPrimary }, style]}>{title}</Text>
     );
 }
 
-export function Tree ({ title, style }) {
+export function Tree({ title, style }) {
+    const { colors } = useAppTheme();
     return (
-        <Text style={[styles.globalStyle, styles.tree, style]}>{title}</Text>
+        <Text style={[styles.tree, { color: colors.textSecondary }, style]}>{title}</Text>
     );
 }
 
-export function Leaf ({ title, style, linkURL }) {
+export function Leaf({ title, style, linkURL }) {
+    const { colors } = useAppTheme();
     return (
-        <Text style={[styles.leaf, style]}>
-            {title} <Text onPress={() => Linking.openURL(linkURL)} style={styles.link}>Privacy Policy</Text>
+        <Text style={[styles.leaf, { color: colors.textSecondary }, style]}>
+            {title} {linkURL && <Text onPress={() => Linking.openURL(linkURL)} style={[styles.link, { color: colors.accent }]}>Privacy Policy</Text>}
         </Text>
     );
 }
 
 const styles = StyleSheet.create({
-    globalStyle: {
-        color: 'white',
-    },
     planet: {
         fontFamily: fonts.bold,
-        fontSize: 23,
+        fontSize: 24,
         textAlign: 'left',
-        marginHorizontal: 20,
-        marginVertical: 10,
+        marginHorizontal: 16,
+        marginVertical: 12,
+        letterSpacing: 0.5,
     },
     mountain: {
-        fontFamily: fonts.regular,
-        fontSize: 22,
+        fontFamily: fonts.bold,
+        fontSize: 20,
         textAlign: 'left',
-        marginHorizontal: 20,
-        marginVertical: 10,
+        marginHorizontal: 16,
+        marginVertical: 8,
     },
     tree: {
         fontFamily: fonts.regular,
-        fontSize: 14,
+        fontSize: 15,
         textAlign: 'left',
-        marginHorizontal: 20,
-        marginVertical: 10,
+        marginHorizontal: 16,
+        marginVertical: 6,
+        lineHeight: 22,
     },
     leaf: {
         fontFamily: fonts.regular,
-        fontSize: 12,
+        fontSize: 13,
         textAlign: 'center',
-        marginHorizontal: 20,
-        marginVertical: 10,
-        color: 'grey',
+        marginHorizontal: 16,
+        marginVertical: 8,
     },
     link: {
-        color: 'grey',
-        textDecorationLine: 'underline',
+        // dynamic color added via prop
     },
-})
+});

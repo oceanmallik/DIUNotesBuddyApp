@@ -3,12 +3,14 @@ import { ScrollView, StyleSheet, View } from 'react-native'
 import { NameCard } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
 import { Leaf, Planet, Tree } from '../../appDesign/texts.js'
+import { useAppTheme } from '../../logic/ThemeProvider'
 
 const AboutUs = () => {
   const tabBarHeight = useBottomTabBarHeight();
+  const { colors } = useAppTheme();
   return (
-    <View style={styles.container}>
-      <View style={styles.bg}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.bg, { backgroundColor: colors.background }]}>
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
@@ -57,21 +59,21 @@ const AboutUs = () => {
             button1="Instagram"
             button2="Facebook"
             button3="Email"
-            ID="253-35-381"
+            ID="253-35-515"
           />
           <NameCard
-            name="Dhrubo Mitra"
-            username="@dhrubo04-oneman"
-            photoURL="https://github.com/dhrubo04-oneman.png"
-            cardURL="https://github.com/dhrubo04-oneman"
-            webURL="https://www.instagram.com/dhrubo7304/"
-            otherURL="https://www.facebook.com/dhrubo.mitra.90"
-            email="mailto:balnuru411@gmail.com"
-            contribution="Notes Contributor & Review Squad Member (ITM)"
+            name="Syed Al Muti"
+            username="@muti9"
+            photoURL="https://github.com/muti9.png"
+            cardURL="https://github.com/muti9"
+            webURL="https://www.instagram.com/syed_al_muti/"
+            otherURL="https://www.facebook.com/syed.al.muti"
+            email="mailto:syedalmuti9@gmail.com"
+            contribution="Notes Contributor & Review Squad Member (SWE)"
             button1="Instagram"
             button2="Facebook"
             button3="Email"
-            ID="261-51-004"
+            ID="253-35-625"
           />
           <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" />
         </ScrollView>
@@ -91,7 +93,6 @@ const styles = StyleSheet.create({
   bg: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#131313',
   },
   scrollView: {
     flex: 1,

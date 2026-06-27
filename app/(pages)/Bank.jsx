@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Planet, Tree } from '../../appDesign/texts.js';
 import DonationHeader from '../../components/Donationheader.jsx';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 export default function Citytouch() {
     const [copied, setCopied] = useState(false);
     const bankNumber = '01326174513';
+    const { colors, activeTheme } = useAppTheme();
 
     const handleCopy = () => {
         Clipboard.setString(bankNumber);
@@ -19,21 +21,21 @@ export default function Citytouch() {
             <DonationHeader
                 title="Support via Citytouch"
                 accentColor="#00D4FF"
-                backgroundColor="#0A1628"
+                backgroundColor={colors.background}
             />
-            <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
-                <Planet title="Support Us via Citytouch" />
+            <ScrollView style={[styles.scroll, { backgroundColor: colors.background }]} contentContainerStyle={styles.container}>
+                <Planet title="Support Us via Citytouch" style={{ color: colors.textPrimary }} />
                 <Tree
                     title="Scan the QR below or copy the account number to support DIU Notes Buddy!"
-                    style={{ textAlign: 'center' }}
+                    style={{ textAlign: 'center', color: colors.textSecondary }}
                 />
 
-                <View style={styles.card}>
+                <View style={[styles.card, { backgroundColor: colors.card, borderColor: activeTheme === 'dark' ? '#00D4FF' : colors.border, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
                     <Image
                         source={{
                             uri: 'https://raw.githubusercontent.com/oceanmallik/myWebsite/refs/heads/seed/pages/support/citytouch.png',
                         }}
-                        style={styles.image}
+                        style={[styles.image, { borderColor: colors.border }]}
                         resizeMode="contain"
                     />
                     <Text style={styles.label}>Account Number</Text>
@@ -47,7 +49,7 @@ export default function Citytouch() {
 
                     <Tree
                         title="Note: Use the Citytouch app to scan the QR or use the phone number to send via phone number. Only CityTouch users can donate for now."
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'center', color: colors.textSecondary }}
                     />
                 </View>
             </ScrollView>
@@ -58,7 +60,6 @@ export default function Citytouch() {
 const styles = StyleSheet.create({
     scroll: {
         flex: 1,
-        backgroundColor: '#0A1628',
     },
     container: {
         alignItems: 'center',
@@ -67,13 +68,15 @@ const styles = StyleSheet.create({
     },
     card: {
         marginTop: 32,
-        backgroundColor: '#0F2040',
         borderRadius: 16,
         padding: 20,
         alignItems: 'center',
         width: '100%',
         borderWidth: 1,
-        borderColor: '#00D4FF',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 10,
+        elevation: 2,
     },
     image: {
         width: '100%',
@@ -81,7 +84,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#1A3050',
     },
     label: {
         fontSize: 13,
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#00D4FF',
         paddingVertical: 12,
         paddingHorizontal: 32,
-        borderRadius: 10,
+        borderRadius: 20,
         marginBottom: 16,
     },
     buttonText: {

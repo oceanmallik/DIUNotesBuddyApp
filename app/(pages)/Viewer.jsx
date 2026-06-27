@@ -3,10 +3,12 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import Pdf from 'react-native-pdf';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 const PdfViewer = () => {
     const { url, title } = useLocalSearchParams();
     const router = useRouter();
+    const { colors } = useAppTheme();
 
     const pdfSource = { 
         uri: typeof url === 'string' ? url : '', 
@@ -15,12 +17,12 @@ const PdfViewer = () => {
 
     if (!url) {
         return (
-            <View style={styles.container}>
-                <View style={styles.customHeader}>
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <View style={[styles.customHeader, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
                     <Pressable onPress={() => router.back()} style={styles.backButton}>
-                        <IconArrowLeft color="#FFFFFF" size={28} />
+                        <IconArrowLeft color={colors.textPrimary} size={28} />
                     </Pressable>
-                    <Text style={styles.headerTitle}>Error</Text>
+                    <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Error</Text>
                 </View>
                 <View style={styles.errorContainer}>
                     <Text style={styles.errorText}>No document URL was provided.</Text>
@@ -30,22 +32,19 @@ const PdfViewer = () => {
     }
 
     return (
-        <View style={styles.container}>
-            {/* Ensures the default Expo navigation header is hidden */}
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <Stack.Screen options={{ headerShown: false }} />
             
-            {/* Custom Minimal Header */}
-            <View style={styles.customHeader}>
+            <View style={[styles.customHeader, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
                 <Pressable onPress={() => router.back()} style={styles.backButton}>
-                    <IconArrowLeft color="#FFFFFF" size={28} />
+                    <IconArrowLeft color={colors.textPrimary} size={28} />
                 </Pressable>
-                <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
+                <Text style={[styles.headerTitle, { color: colors.textPrimary }]} numberOfLines={1} ellipsizeMode="tail">
                     {typeof title === 'string' ? title : "Reading Note"}
                 </Text>
             </View>
             
-            {/* PDF Viewer */}
-            <View style={styles.pdfContainer}>
+            <View style={[styles.pdfContainer, { backgroundColor: colors.card }]}>
                 <Pdf
                     trustAllCerts={false}
                     source={pdfSource}
@@ -60,7 +59,7 @@ const PdfViewer = () => {
                     }}
                     style={styles.pdf}
                     renderActivityIndicator={() => (
-                        <ActivityIndicator color="#00D0FF" size="large" />
+                        <ActivityIndicator color={colors.accent} size="large" />
                     )}
                 />
             </View>
@@ -73,27 +72,23 @@ export default PdfViewer;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#131313',
     },
     customHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingTop: 50, // Pushes it down past the phone's status bar
+        paddingTop: 50,
         paddingBottom: 16,
         paddingHorizontal: 20,
-        backgroundColor: '#131313',
         borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.05)',
     },
     backButton: {
         marginRight: 16,
-        padding: 4, // Adds a slightly larger tap area for the user
+        padding: 4,
     },
     headerTitle: {
-        color: '#FFFFFF',
         fontSize: 18,
-        flex: 1, // Ensures the text takes up remaining space and cuts off cleanly
-        fontFamily: 'SpaceGrotesk-Bold', // Feel free to remove if you aren't using this font here
+        flex: 1,
+        fontFamily: 'SpaceGrotesk-Bold',
     },
     errorContainer: {
         flex: 1,
@@ -107,7 +102,6 @@ const styles = StyleSheet.create({
     pdfContainer: {
         flex: 1,
         width: '100%',
-        backgroundColor: '#1E1E1E',
     },
     pdf: {
         flex: 1,

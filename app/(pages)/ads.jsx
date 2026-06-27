@@ -2,22 +2,24 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Planet, Tree } from '../../appDesign/texts.js';
 import DonationHeader from '../../components/Donationheader.jsx';
 import useInterstitialAd from '../../hooks/useInterstitialAd';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 export default function AdsPage() {
   const { showAd, loaded } = useInterstitialAd();
+  const { colors, activeTheme } = useAppTheme();
 
   return (
     <>
       <DonationHeader
         title="Support via Ads"
         accentColor="#06d42f"
-        backgroundColor="#001c07"
+        backgroundColor={colors.background}
       />
-      <View style={styles.container}>
-        <Planet title="Support Us via Ads" />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Planet title="Support Us via Ads" style={{ color: colors.textPrimary }} />
         <Tree
           title="Click the button below to watch a short ad and help us keep this project alive!"
-          style={{ textAlign: 'center' }}
+          style={{ textAlign: 'center', color: colors.textSecondary }}
         />
 
         <TouchableOpacity
@@ -30,7 +32,7 @@ export default function AdsPage() {
           </Text>
         </TouchableOpacity>
 
-        <Text style={styles.subtitle}>Watch a short ad to help us keep this project alive.</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Watch a short ad to help us keep this project alive.</Text>
       </View>
     </>
   );
@@ -42,20 +44,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
-    backgroundColor: '#001c07',
   },
   subtitle: {
     fontSize: 14,
     textAlign: 'center',
     marginTop: 20,
     marginBottom: 50,
-    color: '#cacaca',
   },
   button: {
     backgroundColor: '#06d42f',
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 40,
-    borderRadius: 10,
+    borderRadius: 20,
+    marginTop: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 10,
+    elevation: 2,
   },
   buttonDisabled: {
     backgroundColor: '#af5959',

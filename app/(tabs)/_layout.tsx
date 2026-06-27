@@ -1,6 +1,4 @@
 import { HapticTab } from '@/components/haptic-tab';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -9,10 +7,10 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const activeColor = Colors[colorScheme ?? 'light'].tint;
+  const { colors, activeTheme } = useAppTheme();
   const insets = useSafeAreaInsets();
 
   const bottomOffset = Platform.select({
@@ -26,19 +24,25 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarActiveTintColor: activeColor,
-        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.6)',
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarShowLabel: true,
         tabBarLabelStyle: styles.label,
         tabBarItemStyle: styles.item,
         tabBarStyle: [styles.tabBar, { bottom: bottomOffset }],
         tabBarBackground: () => (
           <BlurView
-            intensity={130}
-            tint="dark"
+            intensity={90}
+            tint={colors.blurTint as any}
             style={[StyleSheet.absoluteFill, styles.blur]}
           >
-            <View style={styles.overlay} />
+            <View style={[
+              styles.overlay, 
+              { 
+                backgroundColor: colors.menuBackground, 
+                borderColor: activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' 
+              }
+            ]} />
           </BlurView>
         ),
       }}
@@ -55,7 +59,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="contribute"
         options={{
-          title: 'Contribute',
+          title: 'Send',
           tabBarIcon: ({ color, focused }) => (
             <FontAwesome
               size={20}
@@ -112,37 +116,39 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 16,
     right: 16,
-    height: 72,
-    borderRadius: 24,
+    height: 64,
+    borderRadius: 32,
     borderTopWidth: 0,
     elevation: 0,
     overflow: 'hidden',
     paddingTop: 0,
     paddingBottom: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
   },
   blur: {
-    borderRadius: 24,
+    borderRadius: 32,
     overflow: 'hidden',
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(20, 20, 20, 0.60)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 24,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 32,
   },
   item: {
     paddingTop: 6,
-    paddingBottom: 8,
-    height: 72,
+    paddingBottom: 6,
+    height: 64,
   },
   label: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 0,
+    fontSize: 10,
+    fontFamily: 'SpaceGrotesk-Bold',
+    marginTop: 2,
     marginBottom: 0,
   },
   iconFocused: {
-    transform: [{ translateY: -1 }],
+    transform: [{ translateY: -2 }],
   },
 });

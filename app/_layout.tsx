@@ -1,4 +1,3 @@
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -8,8 +7,8 @@ import { useEffect } from 'react';
 import MobileAds from 'react-native-google-mobile-ads';
 import 'react-native-reanimated';
 
-// 1. Import the AuthProvider we just created
 import { AuthProvider } from '../logic/AuthProvider';
+import { AppThemeProvider, useAppTheme } from '../logic/ThemeProvider';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -17,8 +16,38 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
+function RootLayoutNav() {
+  const { activeTheme, colors } = useAppTheme();
+
+  const baseTheme = activeTheme === 'dark' ? DarkTheme : DefaultTheme;
+  const navTheme = {
+    ...baseTheme,
+    colors: {
+      ...baseTheme.colors,
+      primary: colors.accent,
+      background: colors.background,
+      card: colors.card,
+      text: colors.textPrimary,
+      border: colors.border,
+      notification: colors.destructive,
+    },
+  };
+
+  return (
+    <ThemeProvider value={navTheme}>
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(pages)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        </Stack>
+        <StatusBar style={activeTheme === 'dark' ? 'light' : 'dark'} />
+      </AuthProvider>
+    </ThemeProvider>
+  );
+}
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     'Aubrey-Regular': require('../assets/fonts/Aubrey-Regular.ttf'),
     'BitcountSingle-Regular': require('../assets/fonts/BitcountSingle-Regular.ttf'),
@@ -50,15 +79,8 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(pages)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </AuthProvider>
-    </ThemeProvider>
+    <AppThemeProvider>
+      <RootLayoutNav />
+    </AppThemeProvider>
   );
 }

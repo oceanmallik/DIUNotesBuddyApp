@@ -1,10 +1,12 @@
 import { IconAlertCircle, IconArrowLeft, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards';
 import Header from '../../appDesign/header';
 import { Mountain, Tree } from '../../appDesign/texts';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 interface MaterialFile {
     filename: string;
@@ -40,6 +42,7 @@ const SubjectScreen = () => {
     const router = useRouter();
     const params = useLocalSearchParams();
     const subjectId = Array.isArray(params.subject) ? params.subject[0] : params.subject;
+    const { colors, activeTheme } = useAppTheme();
 
     const [subjectData, setSubjectData] = useState<Subject | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -98,54 +101,63 @@ const SubjectScreen = () => {
     const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <Stack.Screen options={{ headerShown: false }} />
 
             <View style={styles.bg}>
-                {/* Applied inline paddingTop: 90 here to match the first page */}
                 <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: 90 }]}>
 
                     {isLoading ? (
-                        <View style={styles.statusContainer}>
-                            <ActivityIndicator size="large" color="#00D0FF" />
-                            <Tree title="Loading materials..." style={{ textAlign: 'center', marginTop: 15 }} />
-                        </View>
+                        <BentoLoader text="Loading materials..." />
                     ) : error ? (
                         <TitleCard title="Error" description={error} icon={IconAlertCircle} />
                     ) : subjectData ? (
                         <View>
-                            <Mountain title={subjectData.title} style={styles.pageTitle} />
+                            <Mountain title={subjectData.title} style={[styles.pageTitle, { color: colors.textPrimary }]} />
 
                             {Object.entries(subjectData.materials).map(([categoryName, topicsArray]) => {
                                 if (!topicsArray || topicsArray.length === 0) return null;
 
                                 return (
                                     <View key={categoryName} style={styles.categoryBlock}>
-                                        <Mountain title={`${capitalize(categoryName)}`} style={styles.categoryTitle} />
+                                        <Mountain title={`${capitalize(categoryName)}`} style={[styles.categoryTitle, { color: colors.textSecondary }]} />
 
                                         {topicsArray.map((topicFolder, index) => {
                                             const topicKey = `${categoryName}-${topicFolder.topic}`;
                                             const isTopicOpen = expandedTopic === topicKey;
 
                                             return (
-                                                <View key={index} style={styles.topicWrapper}>
+                                                <View key={index} style={[
+                                                    styles.topicWrapper, 
+                                                    { 
+                                                        backgroundColor: colors.card,
+                                                        shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05
+                                                    }
+                                                ]}>
                                                     <Pressable
-                                                        style={[styles.topicHeader, isTopicOpen && styles.topicHeaderActive]}
+                                                        style={[
+                                                            styles.topicHeader, 
+                                                            isTopicOpen && { 
+                                                                backgroundColor: colors.background, 
+                                                                borderBottomWidth: StyleSheet.hairlineWidth, 
+                                                                borderBottomColor: colors.border 
+                                                            }
+                                                        ]}
                                                         onPress={() => toggleTopic(topicKey)}
                                                     >
                                                         <View style={styles.topicHeaderLeft}>
-                                                            {isTopicOpen ? <IconFolderOpen color="#00D0FF" size={22} /> : <IconFolder color="#A0A0A0" size={22} />}
-                                                            <Tree title={topicFolder.topic} style={[styles.topicTitle, isTopicOpen && { color: '#00D0FF' }]} />
+                                                            {isTopicOpen ? <IconFolderOpen color={colors.accent} size={22} /> : <IconFolder color={colors.textSecondary} size={22} />}
+                                                            <Tree title={topicFolder.topic} style={[styles.topicTitle, { color: isTopicOpen ? colors.accent : colors.textPrimary }]} />
                                                         </View>
-                                                        {isTopicOpen ? <IconChevronDown color="#00D0FF" size={20} /> : <IconChevronRight color="#A0A0A0" size={20} />}
+                                                        {isTopicOpen ? <IconChevronDown color={colors.accent} size={20} /> : <IconChevronRight color={colors.textSecondary} size={20} />}
                                                     </Pressable>
 
                                                     {isTopicOpen && (
-                                                        <View style={styles.filesContainer}>
+                                                        <View style={[styles.filesContainer, { backgroundColor: activeTheme === 'dark' ? '#121212' : '#F9F9FB' }]}>
                                                             {topicFolder.files.map((file, fileIndex) => (
                                                                 <Pressable
                                                                     key={fileIndex}
-                                                                    style={styles.fileCard}
+                                                                    style={[styles.fileCard, { backgroundColor: colors.background, borderColor: colors.border }]}
                                                                     onPress={() => {
                                                                         router.push({
                                                                             pathname: '/Viewer' as any,
@@ -157,10 +169,10 @@ const SubjectScreen = () => {
                                                                     }}
                                                                 >
                                                                     <View style={styles.fileLeft}>
-                                                                        <IconFileText color="#42f463" size={24} />
-                                                                        <Tree title={file.filename} style={styles.filenameText} />
+                                                                        <IconFileText color={colors.accent} size={24} />
+                                                                        <Tree title={file.filename} style={[styles.filenameText, { color: colors.textPrimary }]} />
                                                                     </View>
-                                                                    <IconChevronRight color="#A0A0A0" size={20} />
+                                                                    <IconChevronRight color={colors.textSecondary} size={20} />
                                                                 </Pressable>
                                                             ))}
                                                         </View>
@@ -173,7 +185,7 @@ const SubjectScreen = () => {
                             })}
 
                             {Object.values(subjectData.materials).every(arr => arr.length === 0) && (
-                                <Tree title="No materials have been uploaded for this subject yet." style={styles.emptyText} />
+                                <Tree title="No materials have been uploaded for this subject yet." style={[styles.emptyText, { color: colors.textSecondary }]} />
                             )}
                         </View>
                     ) : null}
@@ -181,10 +193,9 @@ const SubjectScreen = () => {
                 </ScrollView>
             </View>
 
-            {/* Moved headerArea to the bottom and positioned it absolutely */}
             <View style={styles.headerArea}>
                 <Pressable onPress={() => router.back()} style={styles.backButton}>
-                    <IconArrowLeft color="#FFFFFF" size={24} />
+                    <IconArrowLeft color={colors.textPrimary} size={24} />
                 </Pressable>
                 <Header title="Subject Materials" />
             </View>
@@ -197,7 +208,6 @@ export default SubjectScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#131313'
     },
     headerArea: {
         position: 'absolute',
@@ -208,9 +218,9 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute',
         left: 10,
-        top: 30,
+        top: 35,
         padding: 10,
-        zIndex: 50
+        zIndex: 110,
     },
     bg: {
         flex: 1,
@@ -229,7 +239,6 @@ const styles = StyleSheet.create({
     },
     pageTitle: {
         fontSize: 20,
-        color: '#FFFFFF',
         textAlign: 'center',
         marginBottom: 20
     },
@@ -238,17 +247,17 @@ const styles = StyleSheet.create({
     },
     categoryTitle: {
         fontSize: 20,
-        color: '#E0E0E0',
         marginBottom: 12,
         paddingLeft: 4
     },
     topicWrapper: {
-        marginBottom: 10,
-        backgroundColor: '#1A1A1A',
-        borderRadius: 12,
+        marginBottom: 16,
+        borderRadius: 20,
         overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: '#2A2A2A'
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 10,
+        elevation: 2,
     },
     topicHeader: {
         flexDirection: 'row',
@@ -257,11 +266,6 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 16
     },
-    topicHeaderActive: {
-        backgroundColor: '#222222',
-        borderBottomWidth: 1,
-        borderBottomColor: '#2A2A2A'
-    },
     topicHeaderLeft: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -269,21 +273,18 @@ const styles = StyleSheet.create({
     },
     topicTitle: {
         fontSize: 15,
-        color: '#E0E0E0'
     },
     filesContainer: {
-        backgroundColor: '#0F0F0F',
-        padding: 12, gap: 8
+        padding: 12, 
+        gap: 12
     },
     fileCard: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#161616',
         padding: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#222222'
+        borderRadius: 16,
+        borderWidth: StyleSheet.hairlineWidth,
     },
     fileLeft: {
         flexDirection: 'row',
@@ -293,12 +294,10 @@ const styles = StyleSheet.create({
     },
     filenameText: {
         fontSize: 14,
-        color: '#CCCCCC',
         flex: 1
     },
     emptyText: {
         textAlign: 'center',
-        color: '#777777',
         fontStyle: 'italic',
         marginTop: 40
     }

@@ -3,9 +3,11 @@ import { decode } from 'base64-arraybuffer';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { BentoLoader } from '../../appDesign/loader';
 import { Mountain, Tree } from '../../appDesign/texts';
 import { supabase } from '../../lib/supabase';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 const SubmitForm = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +26,8 @@ const SubmitForm = () => {
     const [modalTitle, setModalTitle] = useState('');
     const [onSelectCallback, setOnSelectCallback] = useState(() => { });
     const categories = ['midterm', 'final', 'assignment', 'presentation'];
+    
+    const { colors, activeTheme } = useAppTheme();
 
     useEffect(() => {
         fetchManifest();
@@ -100,7 +104,6 @@ const SubmitForm = () => {
 
             if (dbError) throw new Error("Database error: " + dbError.message);
 
-            // Success Reset
             setSuccess(true);
             setSelectedSubj(null);
             setTopic('');
@@ -160,32 +163,52 @@ const SubmitForm = () => {
         });
         setModalVisible(true);
     };
+
     const DropdownButton = ({ label, value, onPress, disabled }) => (
         <View style={styles.inputGroup}>
-            <Tree title={label} style={styles.label} />
+            <Tree title={label} style={[styles.label, { color: colors.textSecondary }]} />
             <Pressable
-                style={[styles.dropdownBtn, disabled && styles.dropdownBtnDisabled]}
+                style={[
+                    styles.dropdownBtn, 
+                    { backgroundColor: colors.background, borderColor: colors.border },
+                    disabled && { backgroundColor: activeTheme === 'dark' ? '#0A0A0A' : '#F2F2F7', borderColor: colors.border }
+                ]}
                 onPress={onPress}
             >
-                <Text style={[styles.dropdownText, !value && styles.dropdownPlaceholder]}>
+                <Text style={[
+                    styles.dropdownText, 
+                    { color: colors.textPrimary },
+                    !value && { color: colors.textSecondary }
+                ]}>
                     {value || `Select ${label}...`}
                 </Text>
-                <IconChevronDown color={disabled ? "#555" : "#A0A0A0"} size={20} />
+                <IconChevronDown color={disabled ? colors.textSecondary : colors.textPrimary} size={20} />
             </Pressable>
         </View>
     );
 
     const SelectionRow = ({ label, options, selectedValue, onSelect }) => (
         <View style={styles.inputGroup}>
-            <Tree title={label} style={styles.label} />
+            <Tree title={label} style={[styles.label, { color: colors.textSecondary }]} />
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipContainer}>
                 {options.map((opt) => (
                     <Pressable
                         key={opt}
-                        style={[styles.chip, selectedValue === opt && styles.chipActive]}
+                        style={[
+                            styles.chip, 
+                            { backgroundColor: colors.background, borderColor: colors.border },
+                            selectedValue === opt && { backgroundColor: colors.accent, borderColor: colors.accent }
+                        ]}
                         onPress={() => onSelect(opt)}
                     >
-                        <Tree title={opt} style={[styles.chipText, selectedValue === opt && styles.chipTextActive]} />
+                        <Tree 
+                            title={opt} 
+                            style={[
+                                styles.chipText, 
+                                { color: colors.textPrimary },
+                                selectedValue === opt && { color: '#FFFFFF' }
+                            ]} 
+                        />
                     </Pressable>
                 ))}
             </ScrollView>
@@ -193,26 +216,23 @@ const SubmitForm = () => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.bg}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
-                    <Mountain title="Submit a File" style={styles.pageTitle} />
-                    <Tree title="Your submission will be reviewed by an admin before being published." style={styles.subtitle} />
+                    <Mountain title="Submit a File" style={[styles.pageTitle, { color: colors.textPrimary }]} />
+                    <Tree title="Your submission will be reviewed by an admin before being published." style={[styles.subtitle, { color: colors.textSecondary }]} />
 
                     {isFetchingData ? (
-                        <View style={styles.loadingContainer}>
-                            <ActivityIndicator size="large" color="#c3ff00" />
-                            <Tree title="Syncing curriculum from GitHub..." style={{ marginTop: 15 }} />
-                        </View>
+                        <BentoLoader text="Syncing curriculum from GitHub..." />
                     ) : success ? (
-                        <View style={styles.successBox}>
+                        <View style={[styles.successBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
                             <IconCheck color="#00E676" size={40} />
                             <Mountain title="Upload Successful!" style={{ color: '#00E676', marginTop: 10 }} />
-                            <Tree title="Your file is now pending approval." style={{ textAlign: 'center', marginTop: 5 }} />
+                            <Tree title="Your file is now pending approval." style={{ textAlign: 'center', marginTop: 5, color: colors.textSecondary }} />
                         </View>
                     ) : (
-                        <View style={styles.formCard}>
+                        <View style={[styles.formCard, { backgroundColor: colors.card, borderColor: colors.border, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
 
                             <DropdownButton label="Department" value={selectedDept?.title} onPress={openDeptPicker} />
                             <DropdownButton label="Academic Year" value={selectedYear?.label} onPress={openYearPicker} disabled={!selectedDept} />
@@ -222,26 +242,33 @@ const SubmitForm = () => {
                             <SelectionRow label="Material Category" options={categories} selectedValue={category} onSelect={setCategory} />
 
                             <View style={styles.inputGroup}>
-                                <Tree title="Specific Topic" style={styles.label} />
-                                <View style={styles.fakeDropdown}>
+                                <Tree title="Specific Topic" style={[styles.label, { color: colors.textSecondary }]} />
+                                <View style={[styles.fakeDropdown, { backgroundColor: colors.background, borderColor: colors.border }]}>
                                     <TextInput
-                                        style={styles.textInput}
+                                        style={[styles.textInput, { color: colors.textPrimary }]}
                                         value={topic}
                                         onChangeText={setTopic}
                                         placeholder="e.g., Binary Logic"
-                                        placeholderTextColor="#555"
+                                        placeholderTextColor={colors.textSecondary}
                                     />
                                 </View>
                             </View>
                             <View style={styles.inputGroup}>
-                                <Tree title="Select PDF File" style={styles.label} />
-                                <Pressable style={[styles.fileBox, selectedFile && styles.fileBoxSelected]} onPress={pickDocument}>
+                                <Tree title="Select PDF File" style={[styles.label, { color: colors.textSecondary }]} />
+                                <Pressable 
+                                    style={[
+                                        styles.fileBox, 
+                                        { backgroundColor: activeTheme === 'dark' ? '#1E1E1E' : '#FAFAFA', borderColor: colors.border },
+                                        selectedFile && { borderColor: colors.accent, backgroundColor: activeTheme === 'dark' ? '#001A22' : '#E6F9FF' }
+                                    ]} 
+                                    onPress={pickDocument}
+                                >
                                     {selectedFile ? (
                                         <View style={styles.fileBoxInner}>
-                                            <IconFileText color="#00D0FF" size={32} />
+                                            <IconFileText color={colors.accent} size={32} />
                                             <View style={styles.fileTextContainer}>
-                                                <Tree title={selectedFile.name} style={styles.fileName} numberOfLines={1} />
-                                                <Tree title={`${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`} style={styles.fileSize} />
+                                                <Tree title={selectedFile.name} style={[styles.fileName, { color: colors.textPrimary }]} numberOfLines={1} />
+                                                <Tree title={`${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`} style={[styles.fileSize, { color: colors.textSecondary }]} />
                                             </View>
                                             <Pressable onPress={() => setSelectedFile(null)} style={styles.clearFileBtn}>
                                                 <IconX color="#FF4444" size={20} />
@@ -249,20 +276,24 @@ const SubmitForm = () => {
                                         </View>
                                     ) : (
                                         <View style={styles.fileBoxInnerCenter}>
-                                            <IconUpload color="#A0A0A0" size={32} />
-                                            <Mountain title="Tap to browse files" style={styles.browseText} />
+                                            <IconUpload color={colors.textSecondary} size={32} />
+                                            <Mountain title="Tap to browse files" style={[styles.browseText, { color: colors.textSecondary }]} />
                                         </View>
                                     )}
                                 </Pressable>
                             </View>
 
                             <Pressable
-                                style={[styles.submitButton, (!selectedSubj || !topic || !selectedFile) && styles.submitButtonDisabled]}
+                                style={[
+                                    styles.submitButton, 
+                                    { backgroundColor: colors.accent },
+                                    (!selectedSubj || !topic || !selectedFile) && { backgroundColor: activeTheme === 'dark' ? '#333' : '#E0E0E0' }
+                                ]}
                                 onPress={handleSubmit}
                                 disabled={isLoading || !selectedSubj || !topic || !selectedFile}
                             >
                                 {isLoading ? (
-                                    <ActivityIndicator color="#000000" />
+                                    <ActivityIndicator color="#FFFFFF" />
                                 ) : (
                                     <Mountain title="Submit Note" style={styles.submitButtonText} />
                                 )}
@@ -275,19 +306,19 @@ const SubmitForm = () => {
 
             <Modal visible={modalVisible} transparent={true} animationType="slide" onRequestClose={() => setModalVisible(false)}>
                 <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.modalHeader}>
-                            <Mountain title={modalTitle} style={styles.modalTitleText} />
+                    <View style={[styles.modalContent, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                        <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                            <Mountain title={modalTitle} style={[styles.modalTitleText, { color: colors.textPrimary }]} />
                             <Pressable onPress={() => setModalVisible(false)} style={styles.modalCloseBtn}>
-                                <IconX color="#A0A0A0" size={24} />
+                                <IconX color={colors.textSecondary} size={24} />
                             </Pressable>
                         </View>
                         <FlatList
                             data={modalData}
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={({ item }) => (
-                                <Pressable style={styles.modalItem} onPress={() => onSelectCallback(item)}>
-                                    <Text style={styles.modalItemText}>{item.label}</Text>
+                                <Pressable style={[styles.modalItem, { borderBottomColor: colors.border }]} onPress={() => onSelectCallback(item)}>
+                                    <Text style={[styles.modalItemText, { color: colors.textPrimary }]}>{item.label}</Text>
                                 </Pressable>
                             )}
                             contentContainerStyle={{ paddingBottom: 40 }}
@@ -305,7 +336,6 @@ export default SubmitForm;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#131313',
     },
     bg: {
         flex: 1,
@@ -320,13 +350,11 @@ const styles = StyleSheet.create({
     },
     pageTitle: {
         fontSize: 24,
-        color: '#FFFFFF',
         textAlign: 'center',
         marginTop: 10,
     },
     subtitle: {
         fontSize: 14,
-        color: '#888888',
         textAlign: 'center',
         marginBottom: 24,
         paddingHorizontal: 20,
@@ -336,23 +364,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     formCard: {
-        backgroundColor: '#1A1A1A',
-        borderRadius: 16,
+        borderRadius: 20,
         padding: 20,
         borderWidth: 1,
-        borderColor: '#2A2A2A',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 10,
+        elevation: 2,
     },
     inputGroup: {
         marginBottom: 20,
     },
-    rowGroup: {
-        flexDirection: 'row',
-        gap: 12,
-        marginBottom: 0,
-    },
     label: {
         fontSize: 14,
-        color: '#A0A0A0',
         marginBottom: 8,
         marginLeft: 4,
     },
@@ -360,34 +384,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#111111',
-        borderRadius: 20,
+        borderRadius: 16,
         borderWidth: 1,
-        borderColor: '#333333',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-    },
-    dropdownBtnDisabled: {
-        backgroundColor: '#0A0A0A',
-        borderColor: '#222',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
     },
     dropdownText: {
-        color: '#FFFFFF',
         fontSize: 16,
     },
-    dropdownPlaceholder: {
-        color: '#555555',
-    },
     fakeDropdown: {
-        backgroundColor: '#111111',
-        borderRadius: 10,
+        borderRadius: 16,
         borderWidth: 1,
-        borderColor: '#333333',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
     },
     textInput: {
-        color: '#FFFFFF',
         fontSize: 16,
     },
     chipContainer: {
@@ -395,37 +406,19 @@ const styles = StyleSheet.create({
         paddingRight: 20,
     },
     chip: {
-        backgroundColor: '#111111',
-        paddingVertical: 1,
+        paddingVertical: 8,
         paddingHorizontal: 16,
-        borderRadius: 30,
+        borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#333333',
-    },
-    chipActive: {
-        backgroundColor: '#00ff5955',
-        borderColor: '#00D0FF',
     },
     chipText: {
-        color: '#ffffff',
         fontSize: 14,
-    },
-    chipTextActive: {
-        color: '#ffffff',
-        fontWeight: 'bold',
     },
     fileBox: {
         borderStyle: 'dashed',
         borderWidth: 2,
-        borderColor: '#333333',
-        borderRadius: 12,
+        borderRadius: 16,
         padding: 20,
-        backgroundColor: '#1c682b2c',
-    },
-    fileBoxSelected: {
-        borderStyle: 'solid',
-        borderColor: '#00eeff',
-        backgroundColor: '#233749',
     },
     fileBoxInnerCenter: {
         alignItems: 'center',
@@ -435,22 +428,19 @@ const styles = StyleSheet.create({
     fileBoxInner: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 1,
+        gap: 12,
     },
     fileTextContainer: {
         flex: 1,
     },
     fileName: {
-        color: '#FFFFFF',
         fontSize: 14,
     },
     fileSize: {
-        color: '#b3b3b3',
         fontSize: 12,
         marginTop: 2,
     },
     browseText: {
-        color: '#A0A0A0',
         fontSize: 16,
     },
     clearFileBtn: {
@@ -459,27 +449,21 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     submitButton: {
-        backgroundColor: '#00D0FF',
-        paddingVertical: 1,
-        borderRadius: 12,
+        paddingVertical: 14,
+        borderRadius: 16,
         alignItems: 'center',
         marginTop: 10,
     },
-    submitButtonDisabled: {
-        backgroundColor: '#333333',
-    },
     submitButtonText: {
-        color: '#000000',
+        color: '#FFFFFF',
         fontSize: 18,
     },
     successBox: {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 40,
-        backgroundColor: '#1A1A1A',
-        borderRadius: 16,
+        borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#2A2A2A',
         marginTop: 20,
     },
     modalOverlay: {
@@ -488,37 +472,31 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     modalContent: {
-        backgroundColor: '#1A1A1A',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
         maxHeight: '60%',
-        padding: 20,
+        padding: 24,
         borderWidth: 1,
-        borderColor: '#2A2A2A',
     },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#333',
+        borderBottomWidth: StyleSheet.hairlineWidth,
         paddingBottom: 15,
     },
     modalTitleText: {
         fontSize: 20,
-        color: '#FFF',
     },
     modalCloseBtn: {
         padding: 5,
     },
     modalItem: {
         paddingVertical: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#222',
+        borderBottomWidth: StyleSheet.hairlineWidth,
     },
     modalItemText: {
-        color: '#E0E0E0',
         fontSize: 16,
     },
 });

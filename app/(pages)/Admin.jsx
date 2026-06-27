@@ -2,9 +2,11 @@ import { IconCheck, IconEye, IconFileText, IconFolderPlus, IconShieldLock, IconT
 import { File } from 'expo-file-system';
 import { cacheDirectory, downloadAsync } from 'expo-file-system/legacy';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { BentoLoader } from '../../appDesign/loader';
 import { Mountain, Tree } from '../../appDesign/texts';
 import { supabase } from '../../lib/supabase';
+import { useAppTheme } from '../../logic/ThemeProvider';
 
 const AdminDashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -12,12 +14,13 @@ const AdminDashboard = () => {
     const [submissions, setSubmissions] = useState([]);
     const [processingId, setProcessingId] = useState(null);
 
-    // NEW: Publishing Modal State
     const [manifest, setManifest] = useState(null);
     const [publishModalVisible, setPublishModalVisible] = useState(false);
     const [activeSub, setActiveSub] = useState(null);
     const [finalTopic, setFinalTopic] = useState('');
     const [existingTopics, setExistingTopics] = useState([]);
+
+    const { colors, activeTheme } = useAppTheme();
 
     useEffect(() => {
         checkAccessAndFetch();
@@ -123,7 +126,6 @@ const AdminDashboard = () => {
         );
     };
 
-
     const openPublishModal = (submission) => {
         setActiveSub(submission);
         setFinalTopic(submission.topic);
@@ -155,27 +157,22 @@ const AdminDashboard = () => {
             const githubToken = process.env.EXPO_PUBLIC_GITHUB_TOKEN;
             if (!githubToken) throw new Error("GitHub token is missing from .env configuration.");
 
-            // 1. Get temporary download link
             const { data: urlData, error: urlError } = await supabase.storage
                 .from('pending_pdfs')
                 .createSignedUrl(activeSub.file_url, 60);
             if (urlError) throw urlError;
 
-            // 2. Download to cache
             const safeName = activeSub.file_name.replace(/[^a-zA-Z0-9.-_]/g, '');
             const localUri = cacheDirectory + safeName;
             const { uri } = await downloadAsync(urlData.signedUrl, localUri);
 
-            // 3. Convert to Base64
             const downloadedFile = new File(uri);
             const base64Content = await downloadedFile.base64();
 
-            // 4. Build the GitHub Path WITH THE NEW TOPIC FOLDER!
             const clean = (str) => str.replace(/[^a-zA-Z0-9.\-_ \(\)]/g, '').trim();
             const githubPath = `${clean(activeSub.department)}/${clean(activeSub.academic_year)}/${clean(activeSub.semester)}/${clean(activeSub.subject_id).toUpperCase()}/${clean(activeSub.category)}/${clean(finalTopic)}/${clean(activeSub.file_name)}`;
             const apiUrl = `https://api.github.com/repos/oceanmallik/DIUNotesBuddyDATABASE/contents/${encodeURIComponent(githubPath)}`;
 
-            // 5. Push to GitHub
             const githubResponse = await fetch(apiUrl, {
                 method: 'PUT',
                 headers: {
@@ -194,7 +191,6 @@ const AdminDashboard = () => {
                 throw new Error(errorData.message || "Failed to push to GitHub.");
             }
 
-            // 6. Cleanup
             await supabase.storage.from('pending_pdfs').remove([activeSub.file_url]);
             await supabase.from('submissions').update({ status: 'approved' }).eq('id', activeSub.id);
             setSubmissions(prev => (prev || []).filter(sub => sub.id !== activeSub.id));
@@ -211,22 +207,19 @@ const AdminDashboard = () => {
 
     if (isLoading) {
         return (
-            <View style={styles.container}>
-                <View style={styles.centerBox}>
-                    <ActivityIndicator size="large" color="#00D0FF" />
-                    <Tree title="Verifying admin credentials..." style={{ marginTop: 20 }} />
-                </View>
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <BentoLoader text="Verifying admin credentials..." />
             </View>
         );
     }
 
     if (!isAuthorized) {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
                 <View style={styles.centerBox}>
                     <IconShieldLock color="#FF4444" size={60} />
                     <Mountain title="Access Restricted" style={{ color: '#FF4444', fontSize: 24, marginTop: 15 }} />
-                    <Tree title="Only authorized administrators using a GitHub login can view this page." style={{ textAlign: 'center', marginTop: 10, paddingHorizontal: 40 }} />
+                    <Tree title="Only authorized administrators using a GitHub login can view this page." style={{ textAlign: 'center', marginTop: 10, paddingHorizontal: 40, color: colors.textSecondary }} />
                 </View>
             </View>
         );
@@ -235,43 +228,43 @@ const AdminDashboard = () => {
     const safeSubmissions = submissions || [];
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.bg}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
                     <View style={styles.headerRow}>
-                        <Mountain title="Pending Notes" style={styles.pageTitle} />
-                        <View style={styles.badge}>
+                        <Mountain title="Pending Notes" style={[styles.pageTitle, { color: colors.textPrimary }]} />
+                        <View style={[styles.badge, { backgroundColor: colors.accent }]}>
                             <Text style={styles.badgeText}>{safeSubmissions.length}</Text>
                         </View>
                     </View>
 
                     {safeSubmissions.length === 0 ? (
-                        <View style={styles.emptyBox}>
+                        <View style={[styles.emptyBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
                             <IconCheck color="#00E676" size={48} />
-                            <Tree title="You are all caught up!" style={{ marginTop: 15, fontSize: 16 }} />
-                            <Tree title="No pending submissions to review." style={{ color: '#777', marginTop: 5, marginHorizontal: 0 }} />
+                            <Tree title="You are all caught up!" style={{ marginTop: 15, fontSize: 16, color: colors.textPrimary }} />
+                            <Tree title="No pending submissions to review." style={{ color: colors.textSecondary, marginTop: 5, marginHorizontal: 0 }} />
                         </View>
                     ) : (
                         safeSubmissions.map((sub) => (
-                            <View key={sub.id} style={styles.card}>
+                            <View key={sub.id} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
 
                                 <View style={styles.cardHeader}>
                                     <View style={styles.tagContainer}>
-                                        <Text style={styles.tag}>{sub.department}</Text>
-                                        <Text style={styles.tag}>{sub.subject_id.toUpperCase()}</Text>
+                                        <Text style={[styles.tag, { backgroundColor: colors.background, color: colors.textSecondary }]}>{sub.department}</Text>
+                                        <Text style={[styles.tag, { backgroundColor: colors.background, color: colors.textSecondary }]}>{sub.subject_id.toUpperCase()}</Text>
                                     </View>
-                                    <Tree title={new Date(sub.created_at).toLocaleDateString()} style={styles.dateText} />
+                                    <Tree title={new Date(sub.created_at).toLocaleDateString()} style={[styles.dateText, { color: colors.textSecondary }]} />
                                 </View>
 
-                                <Mountain title={`Suggested: ${sub.topic}`} style={styles.topicTitle} />
-                                <Tree title={`Category: ${sub.category} • ${sub.academic_year} (${sub.semester})`} style={styles.subText} />
-                                <Tree title={`Submitted by: ${sub.submitter_email}`} style={styles.emailText} />
+                                <Mountain title={`Suggested: ${sub.topic}`} style={[styles.topicTitle, { color: colors.textPrimary }]} />
+                                <Tree title={`Category: ${sub.category} • ${sub.academic_year} (${sub.semester})`} style={[styles.subText, { color: colors.textSecondary }]} />
+                                <Tree title={`Submitted by: ${sub.submitter_email}`} style={[styles.emailText, { color: colors.textSecondary }]} />
 
-                                <Pressable style={styles.fileLink} onPress={() => handleViewPDF(sub.file_url)}>
-                                    <IconFileText color="#00D0FF" size={20} />
-                                    <Tree title={sub.file_name} style={styles.fileName} />
-                                    <IconEye color="#A0A0A0" size={20} style={{ marginLeft: 'auto' }} />
+                                <Pressable style={[styles.fileLink, { backgroundColor: colors.background, borderColor: colors.border }]} onPress={() => handleViewPDF(sub.file_url)}>
+                                    <IconFileText color={colors.accent} size={20} />
+                                    <Tree title={sub.file_name} style={[styles.fileName, { color: colors.textPrimary }]} />
+                                    <IconEye color={colors.textSecondary} size={20} style={{ marginLeft: 'auto' }} />
                                 </Pressable>
 
                                 <View style={styles.actionRow}>
@@ -289,13 +282,13 @@ const AdminDashboard = () => {
                                     </Pressable>
 
                                     <Pressable
-                                        style={[styles.actionBtn, styles.acceptBtn]}
+                                        style={[styles.actionBtn, { backgroundColor: colors.accent }]}
                                         onPress={() => openPublishModal(sub)}
                                         disabled={processingId === sub.id}
                                     >
-                                        {processingId === sub.id ? <ActivityIndicator color="#000000" /> : (
+                                        {processingId === sub.id ? <ActivityIndicator color="#FFFFFF" /> : (
                                             <>
-                                                <IconCheck color="#000000" size={20} />
+                                                <IconCheck color="#FFFFFF" size={20} />
                                                 <Text style={styles.acceptText}>Approve</Text>
                                             </>
                                         )}
@@ -310,54 +303,68 @@ const AdminDashboard = () => {
             {/* Admin Topic Selection Modal */}
             <Modal visible={publishModalVisible} transparent={true} animationType="fade" onRequestClose={() => setPublishModalVisible(false)}>
                 <Pressable style={styles.modalOverlay} onPress={() => setPublishModalVisible(false)}>
-                    <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
+                    <Pressable style={[styles.modalContent, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={(e) => e.stopPropagation()}>
 
-                        <View style={styles.modalHeader}>
-                            <Mountain title="Assign Topic Folder" style={styles.modalTitleText} />
+                        <View style={[styles.modalHeader, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+                            <Mountain title="Assign Topic Folder" style={[styles.modalTitleText, { color: colors.textPrimary }]} />
                             <Pressable onPress={() => setPublishModalVisible(false)} style={styles.modalCloseBtn}>
-                                <IconX color="#A0A0A0" size={24} />
+                                <IconX color={colors.textSecondary} size={24} />
                             </Pressable>
                         </View>
 
                         <View style={styles.modalBody}>
-                            <Tree title={`Student Suggestion: "${activeSub?.topic}"`} style={styles.studentSuggestionText} />
+                            <Tree title={`Student Suggestion: "${activeSub?.topic}"`} style={[styles.studentSuggestionText, { color: colors.accent, backgroundColor: activeTheme === 'dark' ? 'rgba(10, 126, 164, 0.2)' : 'rgba(10, 126, 164, 0.1)' }]} />
 
-                            <Tree title="Select Existing Folder:" style={styles.modalLabel} />
+                            <Tree title="Select Existing Folder:" style={[styles.modalLabel, { color: colors.textSecondary }]} />
                             {existingTopics.length > 0 ? (
                                 <View style={styles.chipsWrap}>
                                     {existingTopics.map(topic => (
                                         <Pressable
                                             key={topic}
-                                            style={[styles.topicChip, finalTopic === topic && styles.topicChipActive]}
+                                            style={[
+                                                styles.topicChip, 
+                                                { backgroundColor: colors.background, borderColor: colors.border },
+                                                finalTopic === topic && { backgroundColor: colors.accent, borderColor: colors.accent }
+                                            ]}
                                             onPress={() => setFinalTopic(topic)}
                                         >
-                                            <Text style={[styles.topicChipText, finalTopic === topic && styles.topicChipTextActive]}>{topic}</Text>
+                                            <Text style={[
+                                                styles.topicChipText, 
+                                                { color: colors.textSecondary },
+                                                finalTopic === topic && { color: '#FFFFFF', fontWeight: 'bold' }
+                                            ]}>
+                                                {topic}
+                                            </Text>
                                         </Pressable>
                                     ))}
                                 </View>
                             ) : (
-                                <Tree title="No existing folders for this category yet." style={styles.noFoldersText} />
+                                <Tree title="No existing folders for this category yet." style={[styles.noFoldersText, { color: colors.textSecondary }]} />
                             )}
 
-                            <Tree title="Or Create New Folder:" style={[styles.modalLabel, { marginTop: 20 }]} />
-                            <View style={styles.fakeInput}>
-                                <IconFolderPlus color="#A0A0A0" size={20} />
+                            <Tree title="Or Create New Folder:" style={[styles.modalLabel, { marginTop: 20, color: colors.textSecondary }]} />
+                            <View style={[styles.fakeInput, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                                <IconFolderPlus color={colors.textSecondary} size={20} />
                                 <TextInput
-                                    style={styles.textInput}
+                                    style={[styles.textInput, { color: colors.textPrimary }]}
                                     value={finalTopic}
                                     onChangeText={setFinalTopic}
                                     placeholder="Type folder name..."
-                                    placeholderTextColor="#555"
+                                    placeholderTextColor={colors.textSecondary}
                                 />
                             </View>
 
                             <Pressable
-                                style={[styles.submitButton, !finalTopic.trim() && styles.submitButtonDisabled]}
+                                style={[
+                                    styles.submitButton, 
+                                    { backgroundColor: colors.accent },
+                                    !finalTopic.trim() && { backgroundColor: activeTheme === 'dark' ? '#333' : '#E0E0E0' }
+                                ]}
                                 onPress={confirmPublish}
                                 disabled={!finalTopic.trim()}
                             >
-                                <IconCheck color={!finalTopic.trim() ? "#555" : "#000"} size={20} />
-                                <Mountain title="Confirm & Publish" style={[styles.submitButtonText, !finalTopic.trim() && { color: '#555' }]} />
+                                <IconCheck color={!finalTopic.trim() ? colors.textSecondary : "#FFFFFF"} size={20} />
+                                <Mountain title="Confirm & Publish" style={[styles.submitButtonText, !finalTopic.trim() ? { color: colors.textSecondary } : { color: '#FFFFFF' }]} />
                             </Pressable>
 
                         </View>
@@ -373,7 +380,6 @@ export default AdminDashboard;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#131313',
     },
     bg: {
         flex: 1,
@@ -402,16 +408,14 @@ const styles = StyleSheet.create({
     },
     pageTitle: {
         fontSize: 24,
-        color: '#FFFFFF',
     },
     badge: {
-        backgroundColor: '#00D0FF',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 12,
     },
     badgeText: {
-        color: '#000000',
+        color: '#FFFFFF',
         fontWeight: 'bold',
         fontSize: 14,
     },
@@ -419,19 +423,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 40,
-        backgroundColor: '#1A1A1A',
-        borderRadius: 12,
+        borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#2A2A2A',
         marginTop: 20,
     },
     card: {
-        backgroundColor: '#1A1A1A',
-        borderRadius: 12,
+        borderRadius: 16,
         padding: 20,
         borderWidth: 1,
-        borderColor: '#2A2A2A',
         marginBottom: 16,
+        elevation: 2,
     },
     cardHeader: {
         flexDirection: 'row',
@@ -444,47 +445,38 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     tag: {
-        backgroundColor: '#222222',
-        color: '#A0A0A0',
         fontSize: 12,
-        paddingHorizontal: 8,
+        paddingHorizontal: 10,
         paddingVertical: 4,
-        borderRadius: 6,
+        borderRadius: 8,
         overflow: 'hidden',
     },
     dateText: {
-        color: '#666666',
         fontSize: 12,
     },
     topicTitle: {
         fontSize: 20,
-        color: '#FFFFFF',
         marginBottom: 4,
     },
     subText: {
         fontSize: 14,
-        color: '#888888',
         marginBottom: 4,
     },
     emailText: {
         fontSize: 13,
-        color: '#555555',
         fontStyle: 'italic',
         marginBottom: 16,
     },
     fileLink: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#111111',
         padding: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#333333',
+        borderRadius: 12,
+        borderWidth: StyleSheet.hairlineWidth,
         marginBottom: 20,
         gap: 10,
     },
     fileName: {
-        color: '#CCCCCC',
         fontSize: 14,
         flexShrink: 1,
     },
@@ -498,7 +490,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: 12,
-        borderRadius: 10,
+        borderRadius: 12,
         gap: 8,
     },
     rejectBtn: {
@@ -511,11 +503,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    acceptBtn: {
-        backgroundColor: '#00D0FF',
-    },
     acceptText: {
-        color: '#000000',
+        color: '#FFFFFF',
         fontSize: 16,
         fontWeight: 'bold',
     },
@@ -527,11 +516,9 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     modalContent: {
-        backgroundColor: '#1A1A1A',
-        borderRadius: 16,
+        borderRadius: 20,
         width: '100%',
         borderWidth: 1,
-        borderColor: '#333',
         overflow: 'hidden',
     },
     modalHeader: {
@@ -539,13 +526,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#2A2A2A',
-        backgroundColor: '#1E1E1E',
+        borderBottomWidth: StyleSheet.hairlineWidth,
     },
     modalTitleText: {
         fontSize: 20,
-        color: '#FFF',
     },
     modalCloseBtn: {
         padding: 5,
@@ -554,16 +538,13 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     studentSuggestionText: {
-        color: '#00D0FF',
         fontSize: 14,
         fontStyle: 'italic',
         marginBottom: 20,
-        backgroundColor: 'rgba(0, 208, 255, 0.1)',
-        padding: 10,
-        borderRadius: 8,
+        padding: 12,
+        borderRadius: 10,
     },
     modalLabel: {
-        color: '#A0A0A0',
         fontSize: 14,
         marginBottom: 10,
     },
@@ -574,27 +555,15 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     topicChip: {
-        backgroundColor: '#111',
         paddingVertical: 8,
         paddingHorizontal: 14,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#333',
-    },
-    topicChipActive: {
-        backgroundColor: '#00D0FF',
-        borderColor: '#00D0FF',
     },
     topicChipText: {
-        color: '#888',
         fontSize: 14,
     },
-    topicChipTextActive: {
-        color: '#000',
-        fontWeight: 'bold',
-    },
     noFoldersText: {
-        color: '#555',
         fontStyle: 'italic',
         marginBottom: 10,
     },
@@ -602,16 +571,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
-        backgroundColor: '#111',
-        borderRadius: 10,
+        borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#333',
         paddingHorizontal: 16,
         paddingVertical: 12,
         marginBottom: 25,
     },
     textInput: {
-        color: '#FFF',
         fontSize: 16,
         flex: 1,
     },
@@ -620,15 +586,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 10,
-        backgroundColor: '#00D0FF',
         paddingVertical: 16,
-        borderRadius: 12,
-    },
-    submitButtonDisabled: {
-        backgroundColor: '#222',
+        borderRadius: 16,
     },
     submitButtonText: {
-        color: '#000',
         fontSize: 18,
     },
 });

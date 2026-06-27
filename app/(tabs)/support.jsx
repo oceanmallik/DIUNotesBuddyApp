@@ -4,15 +4,17 @@ import { ScrollView, StyleSheet, View } from 'react-native'
 import { TitleCardLinked, TitleCardScroll } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
 import { Planet, Tree } from '../../appDesign/texts.js'
+import { useAppTheme } from '../../logic/ThemeProvider'
 
 const CARD_WIDTH = 340
 
 
 const SupportUs = () => {
     const tabBarHeight = useBottomTabBarHeight();
+    const { colors } = useAppTheme();
     return (
-        <View style={styles.container}>
-            <View style={styles.bg}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <View style={[styles.bg, { backgroundColor: colors.background }]}>
                 <ScrollView
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
@@ -40,7 +42,7 @@ const SupportUs = () => {
                         />
                         <TitleCardScroll
                             title="Community Growth"
-                            description="Supports contributors and builds a stronger learning community."
+                            description="Supports contributors and builds a stronger community."
                             icon={IconUsersGroup}
                         />
                     </ScrollView>
@@ -96,7 +98,6 @@ const styles = StyleSheet.create({
     bg: {
         flex: 1,
         width: '100%',
-        backgroundColor: '#131313',
     },
     scrollView: {
         flex: 1,

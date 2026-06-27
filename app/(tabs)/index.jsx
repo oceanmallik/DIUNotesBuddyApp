@@ -83,7 +83,7 @@ const app = () => {
               <Text style={[styles.titleText, { color: colors.textPrimary }]} numberOfLines={1} adjustsFontSizeToFit>
                 DIU <Text style={[styles.titleAccent, { color: colors.accent }]}>Notes</Text>
               </Text>
-              <Tree title="Your Ultimate Study Companion" style={{ textAlign: 'left', fontSize: 11, marginVertical: 2, marginHorizontal: 0, color: colors.textSecondary }} numberOfLines={1} adjustsFontSizeToFit />
+              <Tree title="Your Ultimate Study Buddy" style={{ textAlign: 'left', fontSize: 10, marginVertical: 2, marginHorizontal: 0, color: colors.textSecondary }} numberOfLines={1} adjustsFontSizeToFit />
             </View>
 
             {/* Theme Toggle */}
@@ -214,7 +214,7 @@ const app = () => {
           ]}>
             <View style={styles.signinContent}>
               <Text style={[styles.signinTitle, { color: colors.textPrimary }]}>Not signed in</Text>
-              <Text style={[styles.signinSubtitle, { color: colors.textSecondary }]}>Log in to submit notes, sync progress, and unlock more features. Make sure to use @diu.edu.bd email provided by Daffodil University. </Text>
+              <Text style={[styles.signinSubtitle, { color: colors.textSecondary }]}>Log in to submit notes and unlock more features. Make sure to use @diu.edu.bd email. </Text>
             </View>
           </View>
         )}

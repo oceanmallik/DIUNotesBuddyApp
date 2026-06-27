@@ -1,13 +1,13 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconBadgeAd, IconBookUpload, IconBrandGooglePlay, IconFriends, IconHeart, IconServer, IconUsersGroup, IconWorld, IconBuildingBank, IconQrcode } from '@tabler/icons-react-native'
+import { IconBookUpload, IconBrandGooglePlay, IconFriends, IconHeart, IconServer, IconUsersGroup, IconWorld } from '@tabler/icons-react-native'
 import { router } from 'expo-router'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { AppButton } from '../../appDesign/button.js'
-import { TitleCard, TitleCardLinked, TitleCardScroll } from '../../appDesign/cards.js'
+import { TitleCard, TitleCardLinked } from '../../appDesign/cards.js'
 import Header from '../../appDesign/header.js'
 import { Planet, Tree } from '../../appDesign/texts.js'
-import { useAppTheme } from '../../logic/ThemeProvider'
 import useInterstitialAd from '../../hooks/useInterstitialAd'
+import { useAppTheme } from '../../logic/ThemeProvider'
 
 const CARD_WIDTH = 340
 
@@ -162,10 +162,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     bentoSubtitle: {
-        fontSize: 12,
+        fontSize: 11,
         fontFamily: 'SpaceGrotesk-Regular',
         textAlign: 'center',
-        marginTop: 4,
+        marginTop: 1,
     },
     actionGrid: {
         width: '100%',

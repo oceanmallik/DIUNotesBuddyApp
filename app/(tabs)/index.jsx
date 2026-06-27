@@ -6,6 +6,7 @@ import { router } from 'expo-router'
 import { useRef, useState } from 'react'
 import { Alert, Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { TitleCard } from '../../appDesign/cards.js'
+import FocusTimer from '../../appDesign/focusTimer.js'
 import { Tree } from '../../appDesign/texts.js'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../logic/AuthProvider'
@@ -191,7 +192,9 @@ const app = () => {
             </>
           )}
 
-          <View style={{ width: '100%', paddingHorizontal: 0, marginVertical: 20 }}>
+          <FocusTimer />
+
+          <View style={{ width: '100%', paddingHorizontal: 0, marginBottom: 20 }}>
             <TitleCard
               title='Notes Explorer'
               description="Tap the book icon in the tabs below."

@@ -76,6 +76,10 @@ export function NameCard({ name, username, webURL, cardURL, email, photoURL, con
                             inputRange: [0, 1],
                             outputRange: [0, 15]
                         }),
+                        paddingBottom: expandAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 14]
+                        }),
                         transform: [{
                             translateY: expandAnim.interpolate({
                                 inputRange: [0, 1],

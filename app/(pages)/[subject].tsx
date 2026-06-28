@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards';
+import { triggerAccordionAnimation } from '../../appDesign/animations';
 import Header, { useHeaderHeight } from '../../appDesign/header';
 import { Mountain, Tree } from '../../appDesign/texts';
 import { useAppTheme } from '../../logic/ThemeProvider';
@@ -96,6 +97,7 @@ const SubjectScreen = () => {
     };
 
     const toggleTopic = (topicKey: string) => {
+        triggerAccordionAnimation();
         setExpandedTopic(expandedTopic === topicKey ? null : topicKey);
     };
 

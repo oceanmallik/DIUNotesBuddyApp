@@ -2,13 +2,10 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards.js';
-
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+import { triggerAccordionAnimation } from '../../appDesign/animations.js';
 import Header, { useHeaderHeight } from '../../appDesign/header.js';
 import { Mountain, Planet, Tree } from '../../appDesign/texts.js';
 import { useAppTheme } from '../../logic/ThemeProvider';
@@ -50,20 +47,20 @@ const Notes = () => {
     };
 
     const toggleDepartment = (deptId) => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        triggerAccordionAnimation();
         setExpandedDepartment(expandedDepartment === deptId ? null : deptId);
         setExpandedYear(null);
         setExpandedSemester(null);
     };
 
     const toggleYear = (yearId) => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        triggerAccordionAnimation();
         setExpandedYear(expandedYear === yearId ? null : yearId);
         setExpandedSemester(null); 
     };
 
     const toggleSemester = (semId) => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        triggerAccordionAnimation();
         setExpandedSemester(expandedSemester === semId ? null : semId);
     };
 

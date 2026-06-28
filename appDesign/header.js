@@ -21,11 +21,11 @@ export default function Header({ title, showBack = false }) {
   const router = useRouter();
 
   return (
-    <View style={[styles.topBar, { height: headerHeight }]}>
+    <View style={[styles.topBar, { height: headerHeight, paddingTop: insets.top }]}>
       <BlurView intensity={80} tint={colors.blurTint} style={StyleSheet.absoluteFill} experimentalBlurMethod="dimezisBlurView" />
       <View style={[styles.bottomBorder, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />
       
-      <View style={[styles.contentContainer, { paddingTop: insets.top }]}>
+      <View style={styles.contentContainer}>
         {showBack && (
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <IconArrowLeft color={colors.textPrimary} size={24} />
@@ -63,7 +63,10 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     left: 10,
-    padding: 10,
+    top: 0,
+    bottom: 0,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
     zIndex: 10,
   },
   galaxy: {

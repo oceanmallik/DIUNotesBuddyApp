@@ -13,10 +13,22 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 export function NameCard({ name, username, webURL, cardURL, email, photoURL, contribution, button1, button3, ID }) {
     const { colors, activeTheme } = useAppTheme();
     const scaleAnim = useRef(new Animated.Value(1)).current;
+    const expandAnim = useRef(new Animated.Value(0)).current;
     const [expanded, setExpanded] = useState(false);
 
     const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.98, useNativeDriver: true }).start();
     const handlePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+
+    const toggleExpand = () => {
+        const nextState = !expanded;
+        setExpanded(nextState);
+        Animated.spring(expandAnim, {
+            toValue: nextState ? 1 : 0,
+            useNativeDriver: false,
+            friction: 7,
+            tension: 50,
+        }).start();
+    };
 
     return (
         <View style={styles.wrapper}>
@@ -29,32 +41,61 @@ export function NameCard({ name, username, webURL, cardURL, email, photoURL, con
                         shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
                     }
                 ]} 
-                onPress={() => setExpanded(!expanded)}
+                onPress={toggleExpand}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
             >
                 <Image source={{ uri: photoURL }} style={[styles.avatar, { backgroundColor: colors.background }]} />
                 <View style={styles.content}>
-                    <Text style={[styles.name, { color: colors.textPrimary }]}>{name}</Text>
-                    <Text style={[styles.uName, { color: colors.accent }]}>{username}</Text>
+                    <View style={styles.nameRow}>
+                        <Text style={[styles.name, { color: colors.textPrimary }]} numberOfLines={1}>{name}</Text>
+                        <View style={[styles.handleBox, { backgroundColor: colors.background }]}>
+                            <Text style={[styles.uName, { color: colors.accent }]} numberOfLines={1}>{username}</Text>
+                        </View>
+                    </View>
                     <Text style={[styles.contribution, { color: colors.textSecondary }]}>{contribution}</Text>
                     <Text style={[styles.contributionLight, { color: colors.textSecondary }]}>ID: {ID}</Text>
                 </View>
             </AnimatedPressable>
 
-            {expanded && (
-                <View style={styles.buttonContainer}>
-                    <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.background }, pressed && { backgroundColor: colors.border }]} onPress={() => Linking.openURL(cardURL)}>
-                        <Text style={[styles.buttonText, { color: colors.textPrimary }]}>GitHub</Text>
-                    </Pressable>
-                    <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.background }, pressed && { backgroundColor: colors.border }]} onPress={() => Linking.openURL(webURL)}>
-                        <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button1}</Text>
-                    </Pressable>
-                    <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.background }, pressed && { backgroundColor: colors.border }]} onPress={() => Linking.openURL(email)}>
-                        <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button3}</Text>
-                    </Pressable>
-                </View>
-            )}
+            <Animated.View 
+                style={[
+                    styles.buttonContainer, 
+                    { 
+                        zIndex: -1,
+                        opacity: expandAnim,
+                        maxHeight: expandAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 150]
+                        }),
+                        marginTop: expandAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, -15]
+                        }),
+                        paddingTop: expandAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 15]
+                        }),
+                        transform: [{
+                            translateY: expandAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [-20, 0]
+                            })
+                        }]
+                    }
+                ]}
+                pointerEvents={expanded ? 'auto' : 'none'}
+            >
+                <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }, pressed && { opacity: 0.8 }]} onPress={() => Linking.openURL(cardURL)}>
+                    <Text style={[styles.buttonText, { color: colors.textPrimary }]}>GitHub</Text>
+                </Pressable>
+                <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }, pressed && { opacity: 0.8 }]} onPress={() => Linking.openURL(webURL)}>
+                    <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button1}</Text>
+                </Pressable>
+                <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }, pressed && { opacity: 0.8 }]} onPress={() => Linking.openURL(email)}>
+                    <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button3}</Text>
+                </Pressable>
+            </Animated.View>
         </View>
     );
 }
@@ -132,13 +173,13 @@ export function TitleCardLinked({ title, link, icon: Icon }) {
 const styles = StyleSheet.create({
     wrapper: {
         marginHorizontal: 16,
-        marginVertical: 8,
+        marginVertical: 5,
     },
     nameCard: {
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 20,
-        padding: 16,
+        padding: 12,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 10,
@@ -146,14 +187,14 @@ const styles = StyleSheet.create({
     },
     titleCardWrapper: {
         marginHorizontal: 16,
-        marginVertical: 8,
+        marginVertical: 5,
     },
     titleCard: {
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 16,
-        padding: 16,
-        gap: 14,
+        padding: 12,
+        gap: 12,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 10,
@@ -177,14 +218,14 @@ const styles = StyleSheet.create({
     },
     titleCardLinkedWrapper: {
         marginHorizontal: 16,
-        marginVertical: 8,
+        marginVertical: 5,
     },
     titleCardLinked: {
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 16,
-        padding: 16,
-        gap: 14,
+        padding: 12,
+        gap: 12,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 10,
@@ -196,22 +237,34 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     avatar: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        marginRight: 16,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        marginRight: 12,
     },
     iconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
     },
     name: {
         fontFamily: fonts.bold,
-        fontSize: 18,
-        marginBottom: 2,
+        fontSize: 17,
+        flex: 1,
+        marginRight: 8,
+    },
+    nameRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
+    handleBox: {
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 8,
     },
     nameTwo: {
         fontFamily: fonts.bold,
@@ -238,23 +291,28 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     uName: {
-        fontFamily: fonts.regular,
-        fontSize: 14,
-        marginBottom: 2,
+        fontFamily: fonts.bold,
+        fontSize: 11,
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         flexWrap: 'wrap',
-        marginTop: 8,
+        overflow: 'hidden',
     },
     cleanButton: {
-        marginTop: 8,
         marginHorizontal: 4,
-        paddingVertical: 8,
+        paddingVertical: 10,
         paddingHorizontal: 16,
-        borderRadius: 20,
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 16,
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 6,
+        elevation: 1,
     },
     buttonText: {
         fontFamily: fonts.bold,

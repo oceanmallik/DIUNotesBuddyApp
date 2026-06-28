@@ -7,6 +7,7 @@ import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native
 import { TitleCard } from '../../appDesign/cards.js'
 import FocusTimer from '../../appDesign/focusTimer.js'
 import { Tree } from '../../appDesign/texts.js'
+import { AppButton } from '../../appDesign/button.js'
 import { useAuth } from '../../logic/AuthProvider'
 import { useAppTheme } from '../../logic/ThemeProvider'
 

@@ -66,17 +66,20 @@ const Contribute = () => {
                 onPress={handleAuthButton}
                 title={session ? "Profile" : "Login"}
                 style={styles.halfButton}
+                variant="secondary"
               />
               <AppButton
                 onPress={() => router.push('/Admin')}
                 title="Admin Portal"
                 style={styles.halfButton}
+                variant="secondary"
               />
             </View>
             <AppButton
               onPress={() => router.push('mailto:oceanmallik@oceanmallik.com')}
               title="Need Assistance?"
-              style={styles.secondaryButton}
+              style={styles.tertiaryButton}
+              variant="tertiary"
             />
           </View>
 
@@ -156,14 +159,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
     marginTop: 0,
   },
-  secondaryButton: {
+  tertiaryButton: {
     width: '100%',
     marginHorizontal: 0,
     marginTop: 0,
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    elevation: 0,
-    shadowOpacity: 0,
   },
   instructionsContainer: {
     marginHorizontal: 16,

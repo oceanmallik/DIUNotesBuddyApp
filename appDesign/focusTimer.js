@@ -4,6 +4,7 @@ import { IconClock, IconPlayerPlay, IconPlayerStop } from '@tabler/icons-react-n
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '../logic/ThemeProvider';
+import { AppButton } from './button.js';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -213,13 +214,13 @@ export default function FocusTimer() {
                             maximumTrackTintColor={activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : '#F2F2F7'}
                             thumbTintColor={colors.accent}
                         />
-                        <Pressable 
-                            style={[styles.startButton, { backgroundColor: colors.accent }]} 
+                        <AppButton 
+                            title='Start "Lekha Pora" Session'
                             onPress={() => startFocus(customMinutes)}
-                        >
-                            <IconPlayerPlay size={20} color="#FFFFFF" />
-                            <Text style={styles.startButtonText}>Start "Lekha Pora" Session</Text>
-                        </Pressable>
+                            icon={IconPlayerPlay}
+                            style={styles.startButton}
+                            variant="primary"
+                        />
                     </View>
 
                     <Text style={[styles.orText, { color: colors.textSecondary }]}>Or choose a preset:</Text>

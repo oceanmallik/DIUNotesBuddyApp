@@ -75,11 +75,13 @@ const SupportUs = () => {
                                 onPress={() => router.push('/bKash')}
                                 title="bKash"
                                 style={styles.halfButton}
+                                variant="secondary"
                             />
                             <AppButton
                                 onPress={() => router.push('/Bank')}
                                 title="Bank"
                                 style={styles.halfButton}
+                                variant="secondary"
                             />
                         </View>
                     </View>

@@ -20,12 +20,7 @@ export default function FocusTimer() {
     // Animated progress width (0 to 100%)
     const progressAnim = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
-        const requestPermissions = async () => {
-            await notifee.requestPermission();
-        };
-        requestPermissions();
-    }, []);
+
 
     const updateNotification = async (currentLeft, total, endTimeMs) => {
         const channelId = await notifee.createChannel({
@@ -126,7 +121,8 @@ export default function FocusTimer() {
         }).start();
     }, [timeLeft, totalTime]);
 
-    const startFocus = (minutes) => {
+    const startFocus = async (minutes) => {
+        await notifee.requestPermission();
         const seconds = minutes * 60;
         setTotalTime(seconds);
         setTimeLeft(seconds);

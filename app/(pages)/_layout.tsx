@@ -4,10 +4,6 @@ export default function PagesLayout() {
   return (
     <Stack>
       <Stack.Screen 
-        name="ads" 
-        options={{ headerShown: false }} 
-      />
-      <Stack.Screen 
         name="bKash" 
         options={{ headerShown: false }} 
       />

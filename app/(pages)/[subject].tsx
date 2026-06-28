@@ -108,7 +108,7 @@ const SubjectScreen = () => {
             <Stack.Screen options={{ headerShown: false }} />
 
             <View style={styles.bg}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight }]}>
+                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 12 }]}>
 
                     {isLoading ? (
                         <BentoLoader text="Loading materials..." />

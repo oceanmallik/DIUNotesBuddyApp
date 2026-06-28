@@ -69,7 +69,7 @@ const Notes = () => {
             <View style={[styles.bg, { backgroundColor: colors.background }]}>
                 <ScrollView
                     style={styles.scrollView}
-                    contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 20, paddingBottom: tabBarHeight + 20 }]}
+                    contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 12, paddingBottom: tabBarHeight + 20 }]}
                     showsVerticalScrollIndicator={false}>
 
                     {isLoading ? (

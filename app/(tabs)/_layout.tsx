@@ -32,7 +32,7 @@ export default function TabLayout() {
         tabBarStyle: [styles.tabBar, { bottom: bottomOffset }],
         tabBarBackground: () => (
           <BlurView
-            intensity={90}
+            intensity={80}
             tint={colors.blurTint as any}
             style={[StyleSheet.absoluteFill, styles.blur]}
             experimentalBlurMethod="dimezisBlurView"
@@ -40,7 +40,6 @@ export default function TabLayout() {
             <View style={[
               styles.overlay, 
               { 
-                backgroundColor: colors.menuBackground, 
                 borderColor: activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' 
               }
             ]} />

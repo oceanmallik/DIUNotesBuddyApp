@@ -1,17 +1,19 @@
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MobileAds from 'react-native-google-mobile-ads';
-import 'react-native-reanimated';
 
 import { AuthProvider } from '../logic/AuthProvider';
 import { AppThemeProvider, useAppTheme } from '../logic/ThemeProvider';
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  initialRouteName: 'index',
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -37,6 +39,7 @@ function RootLayoutNav() {
     <ThemeProvider value={navTheme}>
       <AuthProvider>
         <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(pages)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
@@ -79,8 +82,10 @@ export default function RootLayout() {
   }
 
   return (
-    <AppThemeProvider>
-      <RootLayoutNav />
-    </AppThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AppThemeProvider>
+        <RootLayoutNav />
+      </AppThemeProvider>
+    </GestureHandlerRootView>
   );
 }

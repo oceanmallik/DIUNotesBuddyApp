@@ -11,7 +11,7 @@ export const fonts = {
 
 export function useHeaderHeight() {
   const insets = useSafeAreaInsets();
-  return 44 + insets.top;
+  return 60 + insets.top;
 }
 
 export default function Header({ title, showBack = false }) {

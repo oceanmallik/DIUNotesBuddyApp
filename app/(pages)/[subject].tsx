@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards';
-import Header from '../../appDesign/header';
+import Header, { useHeaderHeight } from '../../appDesign/header';
 import { Mountain, Tree } from '../../appDesign/texts';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
@@ -43,6 +43,7 @@ const SubjectScreen = () => {
     const params = useLocalSearchParams();
     const subjectId = Array.isArray(params.subject) ? params.subject[0] : params.subject;
     const { colors, activeTheme } = useAppTheme();
+    const headerHeight = useHeaderHeight();
 
     const [subjectData, setSubjectData] = useState<Subject | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -105,7 +106,7 @@ const SubjectScreen = () => {
             <Stack.Screen options={{ headerShown: false }} />
 
             <View style={styles.bg}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: 90 }]}>
+                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight }]}>
 
                     {isLoading ? (
                         <BentoLoader text="Loading materials..." />
@@ -193,12 +194,7 @@ const SubjectScreen = () => {
                 </ScrollView>
             </View>
 
-            <View style={styles.headerArea}>
-                <Pressable onPress={() => router.back()} style={styles.backButton}>
-                    <IconArrowLeft color={colors.textPrimary} size={24} />
-                </Pressable>
-                <Header title="Subject Materials" />
-            </View>
+            <Header title="Knowledge Vault" showBack />
         </View>
     );
 };
@@ -208,19 +204,6 @@ export default SubjectScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    headerArea: {
-        position: 'absolute',
-        top: 0,
-        width: '100%',
-        zIndex: 100
-    },
-    backButton: {
-        position: 'absolute',
-        left: 10,
-        top: 35,
-        padding: 10,
-        zIndex: 110,
     },
     bg: {
         flex: 1,

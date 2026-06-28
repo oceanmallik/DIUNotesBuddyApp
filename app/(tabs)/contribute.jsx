@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { AppButton } from '../../appDesign/button.js';
 import { TitleCard } from '../../appDesign/cards.js';
-import Header from '../../appDesign/header.js';
+import Header, { useHeaderHeight } from '../../appDesign/header.js';
 import { Planet, Tree } from '../../appDesign/texts.js';
 import { supabase } from '../../lib/supabase';
 import { useAppTheme } from '../../logic/ThemeProvider';
@@ -15,6 +15,7 @@ const Contribute = () => {
   const router = useRouter();
   const tabBarHeight = useBottomTabBarHeight();
   const { colors } = useAppTheme();
+  const headerHeight = useHeaderHeight();
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ const Contribute = () => {
       <View style={[styles.bg, { backgroundColor: colors.background }]}>
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight, paddingBottom: tabBarHeight + 20 }]}
           showsVerticalScrollIndicator={false}>
   
           <TitleCard
@@ -109,7 +110,7 @@ const Contribute = () => {
         </ScrollView>
       </View>
 
-      <Header title="Want to become a part?" />
+      <Header title="Shape the Future" />
     </View>
   )
 }

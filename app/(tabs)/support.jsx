@@ -4,7 +4,7 @@ import { router } from 'expo-router'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { AppButton } from '../../appDesign/button.js'
 import { TitleCard, TitleCardLinked } from '../../appDesign/cards.js'
-import Header from '../../appDesign/header.js'
+import Header, { useHeaderHeight } from '../../appDesign/header.js'
 import { Planet, Tree } from '../../appDesign/texts.js'
 import useInterstitialAd from '../../hooks/useInterstitialAd'
 import { useAppTheme } from '../../logic/ThemeProvider'
@@ -16,12 +16,14 @@ const SupportUs = () => {
     const tabBarHeight = useBottomTabBarHeight();
     const { colors, activeTheme } = useAppTheme();
     const { showAd, loaded } = useInterstitialAd();
+    const headerHeight = useHeaderHeight();
+
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={[styles.bg, { backgroundColor: colors.background }]}>
                 <ScrollView
                     style={styles.scrollView}
-                    contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
+                    contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight, paddingBottom: tabBarHeight + 20 }]}
                     showsVerticalScrollIndicator={false}>
 
                     <TitleCard
@@ -103,7 +105,7 @@ const SupportUs = () => {
                     </View>
                 </ScrollView>
             </View>
-            <Header title="Help Us Keep the Lights On" />
+            <Header title="Fuel Our Journey" />
         </View>
     )
 }

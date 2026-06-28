@@ -1,22 +1,28 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
+import { IconHeart } from '@tabler/icons-react-native'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import { NameCard } from '../../appDesign/cards.js'
-import Header from '../../appDesign/header.js'
-import { Leaf, Planet, Tree } from '../../appDesign/texts.js'
+import { NameCard, TitleCard } from '../../appDesign/cards.js'
+import Header, { useHeaderHeight } from '../../appDesign/header.js'
+import { Leaf, Planet } from '../../appDesign/texts.js'
 import { useAppTheme } from '../../logic/ThemeProvider'
 
 const AboutUs = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const { colors } = useAppTheme();
+  const headerHeight = useHeaderHeight();
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.bg, { backgroundColor: colors.background }]}>
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[styles.scrollContent, { paddingTop: 90, paddingBottom: tabBarHeight + 20 }]}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight, paddingBottom: tabBarHeight + 20 }]}
           showsVerticalScrollIndicator={false}
         >
-          <Tree title="DIU Notes Buddy is a passion project crafted by a dedicated team of Software Engineering students!" />
+          <TitleCard
+            title="About the team at work"
+            description="DIU Notes Buddy is a passion project crafted by a dedicated team of Software Engineering students!"
+            icon={IconHeart}
+          />
           <Planet title="Meet the Team Behind" style={{ textAlign: 'center', marginTop: 0 }} />
           <NameCard
             name="Ocean Mallik"
@@ -71,7 +77,7 @@ const AboutUs = () => {
           <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" style={{ marginBottom: 30 }} />
         </ScrollView>
       </View>
-      <Header title="A small team, with big ideas" />
+      <Header title="Crafted with Passion" />
     </View>
   )
 }

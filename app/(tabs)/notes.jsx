@@ -9,7 +9,7 @@ import { TitleCard } from '../../appDesign/cards.js';
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-import Header from '../../appDesign/header.js';
+import Header, { useHeaderHeight } from '../../appDesign/header.js';
 import { Mountain, Planet, Tree } from '../../appDesign/texts.js';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
@@ -17,6 +17,7 @@ const Notes = () => {
     const router = useRouter();
     const tabBarHeight = useBottomTabBarHeight();
     const { colors, activeTheme } = useAppTheme();
+    const headerHeight = useHeaderHeight();
 
     const [manifest, setManifest] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -71,7 +72,7 @@ const Notes = () => {
             <View style={[styles.bg, { backgroundColor: colors.background }]}>
                 <ScrollView
                     style={styles.scrollView}
-                    contentContainerStyle={[styles.scrollContent, { paddingTop: 110, paddingBottom: tabBarHeight + 20 }]}
+                    contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 20, paddingBottom: tabBarHeight + 20 }]}
                     showsVerticalScrollIndicator={false}>
 
                     {isLoading ? (
@@ -188,7 +189,7 @@ const Notes = () => {
                 </ScrollView>
             </View>
 
-            <Header title="Notes Explorer" />
+            <Header title="Explore the Archives" />
         </View>
     );
 };

@@ -1,19 +1,38 @@
 import { BlurView } from 'expo-blur';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { IconArrowLeft } from '@tabler/icons-react-native';
+import { useRouter } from 'expo-router';
 import { useAppTheme } from '../logic/ThemeProvider';
 
 export const fonts = {
   bold: "SpaceGrotesk-Bold",
 }
 
-export default function Header({ title }) {
+export function useHeaderHeight() {
+  const insets = useSafeAreaInsets();
+  return 56 + Math.max(insets.top, 20);
+}
+
+export default function Header({ title, showBack = false }) {
   const { colors, activeTheme } = useAppTheme();
+  const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
+  const router = useRouter();
 
   return (
-    <View style={styles.topBar}>
+    <View style={[styles.topBar, { height: headerHeight }]}>
       <BlurView intensity={80} tint={colors.blurTint} style={StyleSheet.absoluteFill} />
       <View style={[styles.bottomBorder, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />
-      <Text style={[styles.galaxy, { color: colors.textPrimary }]}>{title}</Text>
+      
+      <View style={[styles.contentContainer, { paddingTop: Math.max(insets.top, 20) }]}>
+        {showBack && (
+          <Pressable onPress={() => router.back()} style={styles.backButton}>
+            <IconArrowLeft color={colors.textPrimary} size={24} />
+          </Pressable>
+        )}
+        <Text style={[styles.galaxy, { color: colors.textPrimary }]} numberOfLines={1}>{title}</Text>
+      </View>
     </View>
   );
 }
@@ -26,9 +45,6 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     width: '100%',
-    justifyContent: 'flex-end',
-    height: 90,
-    paddingBottom: 14,
   },
   bottomBorder: {
     position: 'absolute',
@@ -37,10 +53,24 @@ const styles = StyleSheet.create({
     right: 0,
     height: StyleSheet.hairlineWidth,
   },
+  contentContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 10,
+    padding: 10,
+    zIndex: 10,
+  },
   galaxy: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: fonts.bold,
     textAlign: 'center',
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
+    paddingHorizontal: 40,
   },
 });

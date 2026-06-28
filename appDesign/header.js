@@ -11,7 +11,7 @@ export const fonts = {
 
 export function useHeaderHeight() {
   const insets = useSafeAreaInsets();
-  return 56 + Math.max(insets.top, 20);
+  return 44 + insets.top;
 }
 
 export default function Header({ title, showBack = false }) {
@@ -22,10 +22,10 @@ export default function Header({ title, showBack = false }) {
 
   return (
     <View style={[styles.topBar, { height: headerHeight }]}>
-      <BlurView intensity={80} tint={colors.blurTint} style={StyleSheet.absoluteFill} />
+      <BlurView intensity={80} tint={colors.blurTint} style={StyleSheet.absoluteFill} experimentalBlurMethod="dimezisBlurView" />
       <View style={[styles.bottomBorder, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />
       
-      <View style={[styles.contentContainer, { paddingTop: Math.max(insets.top, 20) }]}>
+      <View style={[styles.contentContainer, { paddingTop: insets.top }]}>
         {showBack && (
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <IconArrowLeft color={colors.textPrimary} size={24} />

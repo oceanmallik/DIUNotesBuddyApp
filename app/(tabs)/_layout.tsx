@@ -35,6 +35,7 @@ export default function TabLayout() {
             intensity={90}
             tint={colors.blurTint as any}
             style={[StyleSheet.absoluteFill, styles.blur]}
+            experimentalBlurMethod="dimezisBlurView"
           >
             <View style={[
               styles.overlay, 

@@ -2,19 +2,12 @@ import { Stack } from 'expo-router';
 
 export default function PagesLayout() {
   return (
-    <Stack>
-      <Stack.Screen 
-        name="bKash" 
-        options={{ headerShown: false }} 
-      />
-      <Stack.Screen 
-        name="Bank" 
-        options={{ headerShown: false }} 
-      />
-      <Stack.Screen 
-        name="profile" 
-        options={{ headerShown: false }} 
-      />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="bKash" />
+      <Stack.Screen name="Bank" />
+      <Stack.Screen name="profile" />
+      <Stack.Screen name="[subject]" />
+      <Stack.Screen name="Viewer" />
     </Stack>
   );
 }

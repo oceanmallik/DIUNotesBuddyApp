@@ -44,7 +44,11 @@ const PdfViewer = () => {
                 </Text>
             </View>
             
-            <View style={[styles.pdfContainer, { backgroundColor: colors.card }]}>
+            <View
+                style={[styles.pdfContainer, { backgroundColor: colors.card }]}
+                collapsable={false}
+                renderToHardwareTextureAndroid={true}
+            >
                 <Pdf
                     trustAllCerts={false}
                     source={pdfSource}

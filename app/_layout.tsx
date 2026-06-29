@@ -6,6 +6,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MobileAds from 'react-native-google-mobile-ads';
 
@@ -16,7 +17,7 @@ export const unstable_settings = {
   initialRouteName: 'index',
 };
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function RootLayoutNav() {
   const { activeTheme, colors } = useAppTheme();
@@ -67,22 +68,21 @@ export default function RootLayout() {
     MobileAds().initialize();
   }, []);
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
+
 
   if (error) {
     throw error;
   }
 
   if (!loaded) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#0A0F1E' }} />;
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView
+      style={{ flex: 1 }}
+      onLayout={() => { SplashScreen.hideAsync().catch(() => {}); }}
+    >
       <AppThemeProvider>
         <RootLayoutNav />
       </AppThemeProvider>

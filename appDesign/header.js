@@ -22,7 +22,9 @@ export default function Header({ title, showBack = false }) {
 
   return (
     <View style={[styles.topBar, { height: headerHeight, paddingTop: insets.top }]}>
-      <BlurView intensity={80} tint={colors.blurTint} style={StyleSheet.absoluteFill} />
+      <BlurView intensity={80} tint={colors.blurTint} style={StyleSheet.absoluteFill}>
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: activeTheme === 'dark' ? 'rgba(4, 17, 22, 0.85)' : 'rgba(244, 239, 230, 0.85)' }]} />
+      </BlurView>
       <View style={[styles.bottomBorder, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />
       
       <View style={styles.contentContainer}>

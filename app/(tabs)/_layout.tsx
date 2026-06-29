@@ -39,6 +39,7 @@ export default function TabLayout() {
             <View style={[
               styles.overlay, 
               { 
+                backgroundColor: activeTheme === 'dark' ? 'rgba(4, 17, 22, 0.85)' : 'rgba(244, 239, 230, 0.85)',
                 borderColor: activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' 
               }
             ]} />

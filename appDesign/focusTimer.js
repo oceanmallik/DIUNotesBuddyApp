@@ -25,7 +25,7 @@ export default function FocusTimer() {
     const updateNotification = async (currentLeft, total, endTimeMs) => {
         const channelId = await notifee.createChannel({
             id: 'focus_mode',
-            name: 'Lekha Pora Mode',
+            name: 'Reading Mode',
             importance: AndroidImportance.DEFAULT,
         });
 
@@ -34,8 +34,8 @@ export default function FocusTimer() {
         
         await notifee.displayNotification({
             id: 'focus_mode_timer',
-            title: 'Porasuna koro too? 🤔',
-            body: 'Porte hobe... Nokol ar hobena... 📚✍️',
+            title: 'লেখাপড়া মোড 📚',
+            body: 'প্রোগ্রেস বার শেষ হয়ে গেলে বিরতি 📚✍️',
             android: {
                 channelId,
                 ongoing: true,
@@ -77,7 +77,7 @@ export default function FocusTimer() {
                     
                     const completeChannelId = await notifee.createChannel({
                         id: 'focus_mode_alerts',
-                        name: 'Lekha Pora Mode Alerts',
+                        name: 'Reading Mode Alerts',
                         importance: AndroidImportance.HIGH,
                         sound: 'default',
                         vibration: true,
@@ -85,8 +85,8 @@ export default function FocusTimer() {
                     });
                     
                     await notifee.displayNotification({
-                        title: "Lekha Pora Session Complete! 🎉",
-                        body: "Jak tomar pora ses, jao rest nao... 😌🛋️",
+                        title: "পড়ালেখার সময় শেষ, চিল করো! 🎉",
+                        body: "কিছুক্ষন পর আবার পড়তে বসতে হবে 😌🛋️",
                         android: {
                             channelId: completeChannelId,
                             sound: 'default',
@@ -157,7 +157,7 @@ export default function FocusTimer() {
                 <View style={[styles.iconWrap, { backgroundColor: activeTheme === 'dark' ? 'rgba(76, 175, 80, 0.15)' : '#E8F5E9' }]}>
                     <IconClock size={20} color={activeTheme === 'dark' ? '#4CAF50' : '#2E7D32'} />
                 </View>
-                <Text style={[styles.title, { color: colors.textPrimary }]}>Lekha Pora Mode</Text>
+                <Text style={[styles.title, { color: colors.textPrimary }]}>লেখাপড়া মোড</Text>
             </View>
 
             {isFocusing ? (
@@ -193,7 +193,7 @@ export default function FocusTimer() {
                 </View>
             ) : (
                 <View style={styles.idleContainer}>
-                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Set a timer for distraction-free reading.</Text>
+                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>ঘড়ি ধরে পড়ালেখা করতে নিচের টাইমার ব্যবহার করো 📚.</Text>
                     
                     <View style={styles.customTimerContainer}>
                         <View style={styles.sliderHeader}>
@@ -211,7 +211,7 @@ export default function FocusTimer() {
                             thumbTintColor={colors.accent}
                         />
                         <AppButton 
-                            title='Start "Lekha Pora" Session'
+                            title='Start your "লেখাপড়া" timer'
                             onPress={() => startFocus(customMinutes)}
                             icon={IconPlayerPlay}
                             style={styles.startButton}

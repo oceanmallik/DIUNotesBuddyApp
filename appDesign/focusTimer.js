@@ -16,7 +16,7 @@ export default function FocusTimer() {
     const [customMinutes, setCustomMinutes] = useState(25);
     const endTimeRef = useRef(null);
     const lastNotifiedMinuteRef = useRef(null);
-    
+
     // Animated progress width (0 to 100%)
     const progressAnim = useRef(new Animated.Value(0)).current;
 
@@ -31,7 +31,7 @@ export default function FocusTimer() {
 
         const percent = total > 0 ? ((total - currentLeft) / total) * 100 : 0;
         const safePercent = Math.max(0, Math.min(100, percent));
-        
+
         await notifee.displayNotification({
             id: 'focus_mode_timer',
             title: 'লেখাপড়া মোড 📚',
@@ -74,7 +74,7 @@ export default function FocusTimer() {
                     setIsFocusing(false);
                     endTimeRef.current = null;
                     clearNotification();
-                    
+
                     const completeChannelId = await notifee.createChannel({
                         id: 'focus_mode_alerts',
                         name: 'Reading Mode Alerts',
@@ -83,7 +83,7 @@ export default function FocusTimer() {
                         vibration: true,
                         vibrationPattern: [300, 500, 300, 500],
                     });
-                    
+
                     await notifee.displayNotification({
                         title: "পড়ালেখার সময় শেষ, চিল করো! 🎉",
                         body: "কিছুক্ষন পর আবার পড়তে বসতে হবে 😌🛋️",
@@ -92,7 +92,7 @@ export default function FocusTimer() {
                             sound: 'default',
                         }
                     });
-                    
+
                     clearInterval(interval);
                 } else {
                     const remainingSeconds = Math.ceil(remainingMs / 1000);
@@ -107,7 +107,7 @@ export default function FocusTimer() {
                 }
             }, 1000);
         }
-        
+
         return () => clearInterval(interval);
     }, [isFocusing, totalTime]);
 
@@ -146,8 +146,8 @@ export default function FocusTimer() {
 
     return (
         <View style={[
-            styles.container, 
-            { 
+            styles.container,
+            {
                 backgroundColor: colors.card,
                 borderColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
                 shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
@@ -163,13 +163,13 @@ export default function FocusTimer() {
             {isFocusing ? (
                 <View style={styles.activeContainer}>
                     <Text style={[styles.timerText, { color: colors.textPrimary }]}>{formatTime(timeLeft)}</Text>
-                    
+
                     {/* Progress Bar Background */}
                     <View style={[styles.progressTrack, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : '#F2F2F7' }]}>
                         {/* Progress Bar Fill */}
                         <Animated.View style={[
-                            styles.progressFill, 
-                            { 
+                            styles.progressFill,
+                            {
                                 backgroundColor: colors.accent,
                                 width: progressAnim.interpolate({
                                     inputRange: [0, 100],
@@ -194,7 +194,7 @@ export default function FocusTimer() {
             ) : (
                 <View style={styles.idleContainer}>
                     <Text style={[styles.subtitle, { color: colors.textSecondary }]}>ঘড়ি ধরে পড়ালেখা করতে নিচের টাইমার ব্যবহার করো 📚.</Text>
-                    
+
                     <View style={styles.customTimerContainer}>
                         <View style={styles.sliderHeader}>
                             <Text style={[styles.sliderLabel, { color: colors.textPrimary }]}>{customMinutes} Minutes</Text>
@@ -210,7 +210,7 @@ export default function FocusTimer() {
                             maximumTrackTintColor={activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : '#F2F2F7'}
                             thumbTintColor={colors.accent}
                         />
-                        <AppButton 
+                        <AppButton
                             title='Start your "লেখাপড়া" timer'
                             onPress={() => startFocus(customMinutes)}
                             icon={IconPlayerPlay}

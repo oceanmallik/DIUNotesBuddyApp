@@ -1,5 +1,5 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconBookUpload, IconBrandGooglePlay, IconFriends, IconHeart, IconServer, IconUsersGroup, IconWorld } from '@tabler/icons-react-native'
+import { IconBookUpload, IconBrandGooglePlay, IconFriends, IconHeart, IconPlayerPlay, IconServer, IconUsersGroup, IconWorld } from '@tabler/icons-react-native'
 import { router } from 'expo-router'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { AppButton } from '../../appDesign/button.js'
@@ -69,6 +69,7 @@ const SupportUs = () => {
                             onPress={() => loaded ? showAd() : null}
                             title={loaded ? "Watch an Ad (Free)" : "Ad Loading..."}
                             style={styles.fullWidthButton}
+                            icon={IconPlayerPlay}
                         />
                         <View style={styles.buttonRow}>
                             <AppButton
@@ -188,6 +189,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 0,
         marginTop: 0,
         paddingVertical: 16,
+        borderRadius: 16,
     },
     halfButton: {
         flex: 1,

@@ -4,6 +4,7 @@ import { IconBook2, IconMoon, IconSun, IconUser } from '@tabler/icons-react-nati
 import { router } from 'expo-router'
 import { useRef } from 'react'
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TitleCard } from '../../appDesign/cards.js'
 import FocusTimer from '../../appDesign/focusTimer.js'
 import { Tree } from '../../appDesign/texts.js'
@@ -17,6 +18,7 @@ const app = () => {
   const { user } = useAuth();
   const tabBarHeight = useBottomTabBarHeight();
   const { activeTheme, toggleTheme, colors } = useAppTheme();
+  const insets = useSafeAreaInsets();
 
   const avatarScale = useRef(new Animated.Value(1)).current;
   const themeScale = useRef(new Animated.Value(1)).current;
@@ -34,7 +36,8 @@ const app = () => {
             styles.topBar, 
             { 
               backgroundColor: colors.card,
-              shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05
+              shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
+              marginTop: insets.top + 10
             }
           ]}>
             <View style={[styles.logoWrapper, { backgroundColor: colors.background }]}>
@@ -134,7 +137,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   topBar: {
-    marginTop: 50,
     marginBottom: 10,
     marginHorizontal: 16,
     flexDirection: 'row',

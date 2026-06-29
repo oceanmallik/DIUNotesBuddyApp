@@ -19,7 +19,6 @@ const Notes = () => {
     const [manifest, setManifest] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [expandedDepartment, setExpandedDepartment] = useState(null);
     const [expandedYear, setExpandedYear] = useState(null);
     const [expandedSemester, setExpandedSemester] = useState(null);
 
@@ -46,12 +45,7 @@ const Notes = () => {
         }
     };
 
-    const toggleDepartment = (deptId) => {
-        triggerAccordionAnimation();
-        setExpandedDepartment(expandedDepartment === deptId ? null : deptId);
-        setExpandedYear(null);
-        setExpandedSemester(null);
-    };
+
 
     const toggleYear = (yearId) => {
         triggerAccordionAnimation();
@@ -81,8 +75,6 @@ const Notes = () => {
                             
                             {/* LEVEL 1: DEPARTMENTS */}
                             {manifest.departments.map((dept) => {
-                                const isDeptOpen = expandedDepartment === dept.id;
-
                                 return (
                                     <View key={dept.id} style={[
                                         styles.deptWrapper, 
@@ -91,24 +83,21 @@ const Notes = () => {
                                             shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05
                                         }
                                     ]}>
-                                        <Pressable 
+                                        <View 
                                             style={styles.deptHeader} 
-                                            onPress={() => toggleDepartment(dept.id)}
                                         >
                                             <View style={styles.headerLeft}>
                                                 <View style={[
                                                     styles.iconBox, 
-                                                    { backgroundColor: isDeptOpen ? colors.accent : (activeTheme === 'dark' ? '#1A3340' : '#F0F8FF') }
+                                                    { backgroundColor: activeTheme === 'dark' ? '#1A3340' : '#F0F8FF' }
                                                 ]}>
-                                                    <IconSchool color={isDeptOpen ? "#FFFFFF" : colors.accent} size={22} />
+                                                    <IconSchool color={colors.accent} size={22} />
                                                 </View>
                                                 <Mountain title={dept.title} style={styles.titleText} />
                                             </View>
-                                            {isDeptOpen ? <IconChevronDown color={colors.textSecondary} size={20} /> : <IconChevronRight color={colors.textSecondary} size={20} />}
-                                        </Pressable>
+                                        </View>
 
-                                        {isDeptOpen && (
-                                            <View style={[styles.nestedContainer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
+                                        <View style={[styles.nestedContainer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
                                                 {/* LEVEL 2: YEARS */}
                                                 {dept.years.map((year) => {
                                                     const isYearOpen = expandedYear === year.id;
@@ -177,7 +166,6 @@ const Notes = () => {
                                                     );
                                                 })}
                                             </View>
-                                        )}
                                     </View>
                                 );
                             })}

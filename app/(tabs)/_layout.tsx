@@ -57,20 +57,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="contribute"
-        options={{
-          title: 'Send',
-          tabBarIcon: ({ color, focused }) => (
-            <FontAwesome
-              size={20}
-              name="paper-plane-o"
-              color={color}
-              style={focused && styles.iconFocused}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="notes"
         options={{
           title: 'Notes',
@@ -78,6 +64,20 @@ export default function TabLayout() {
             <Feather
               size={22}
               name="book-open"
+              color={color}
+              style={focused && styles.iconFocused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="contribute"
+        options={{
+          title: 'Send',
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome
+              size={20}
+              name="paper-plane-o"
               color={color}
               style={focused && styles.iconFocused}
             />

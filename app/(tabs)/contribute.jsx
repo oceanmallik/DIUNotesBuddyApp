@@ -104,13 +104,6 @@ const Contribute = () => {
             </View>
           </View>
 
-          {/* Easter Egg Meme */}
-          <Image 
-            source={require('../../assets/images/tom_meme.png')} 
-            style={styles.meme} 
-            contentFit="contain" 
-          />
-
         </ScrollView>
       </View>
 
@@ -182,14 +175,5 @@ const styles = StyleSheet.create({
   stepText: {
     flex: 1,
     fontSize: 14,
-  },
-  meme: {
-    width: '90%',
-    height: 200,
-    marginTop: 5,
-    marginBottom: 60,
-    alignSelf: 'center',
-    borderRadius: 16,
-    opacity: 0.8,
   },
 })

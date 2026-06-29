@@ -1,4 +1,5 @@
-import { IconCheck, IconChevronDown, IconFileText, IconUpload, IconX } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconCheck, IconChevronDown, IconFileText, IconUpload, IconX } from '@tabler/icons-react-native';
+import { useRouter } from 'expo-router';
 import { decode } from 'base64-arraybuffer';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
@@ -6,10 +7,14 @@ import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { Mountain, Tree } from '../../appDesign/texts';
+import { AppButton } from '../../appDesign/button';
 import { supabase } from '../../lib/supabase';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
 const SubmitForm = () => {
+    const router = useRouter();
+    const [isAuthChecking, setIsAuthChecking] = useState(true);
+    const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [manifest, setManifest] = useState(null);
@@ -31,7 +36,14 @@ const SubmitForm = () => {
 
     useEffect(() => {
         fetchManifest();
+        checkAuth();
     }, []);
+
+    const checkAuth = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user || null);
+        setIsAuthChecking(false);
+    };
 
     const fetchManifest = async () => {
         try {
@@ -223,7 +235,16 @@ const SubmitForm = () => {
                     <Mountain title="Submit a File" style={[styles.pageTitle, { color: colors.textPrimary }]} />
                     <Tree title="Your submission will be reviewed by an admin before being published." style={[styles.subtitle, { color: colors.textSecondary }]} />
 
-                    {isFetchingData ? (
+                    {isAuthChecking ? (
+                        <BentoLoader text="Verifying session..." />
+                    ) : !user ? (
+                        <View style={[styles.successBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                            <IconAlertCircle color="#FF4444" size={40} />
+                            <Mountain title="Authentication Required" style={{ color: '#FF4444', marginTop: 10, textAlign: 'center' }} />
+                            <Tree title="You need to login with your @diu.edu.bd email to submit notes." style={{ textAlign: 'center', marginTop: 5, color: colors.textSecondary }} />
+                            <AppButton title="Go to Login" onPress={() => router.push('/login')} style={{ marginTop: 20, borderRadius: 16, width: '100%' }} />
+                        </View>
+                    ) : isFetchingData ? (
                         <BentoLoader text="Syncing curriculum from GitHub..." />
                     ) : success ? (
                         <View style={[styles.successBox, { backgroundColor: colors.card, borderColor: colors.border }]}>

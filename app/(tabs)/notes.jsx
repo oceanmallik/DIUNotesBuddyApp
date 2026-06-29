@@ -1,10 +1,11 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards.js';
+import { AppButton } from '../../appDesign/button.js';
 import { triggerAccordionAnimation } from '../../appDesign/animations.js';
 import Header, { useHeaderHeight } from '../../appDesign/header.js';
 import { Mountain, Planet, Tree } from '../../appDesign/texts.js';
@@ -176,7 +177,14 @@ const Notes = () => {
                 </ScrollView>
             </View>
 
-            <Header title="Explore the Archives" />
+            <Header 
+                title="Explore the Archives" 
+                rightComponent={
+                    <Pressable onPress={() => router.push('/Submit')}>
+                        <IconPlus color={colors.textPrimary} size={24} />
+                    </Pressable>
+                }
+            />
         </View>
     );
 };

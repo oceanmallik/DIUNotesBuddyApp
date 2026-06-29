@@ -14,7 +14,7 @@ export function useHeaderHeight() {
   return 60 + insets.top;
 }
 
-export default function Header({ title, showBack = false }) {
+export default function Header({ title, showBack = false, rightComponent = null }) {
   const { colors, activeTheme } = useAppTheme();
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -34,6 +34,11 @@ export default function Header({ title, showBack = false }) {
           </Pressable>
         )}
         <Text style={[styles.galaxy, { color: colors.textPrimary }]} numberOfLines={1}>{title}</Text>
+        {rightComponent && (
+          <View style={styles.rightContainer}>
+            {rightComponent}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -65,6 +70,15 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     left: 10,
+    top: 0,
+    bottom: 0,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  rightContainer: {
+    position: 'absolute',
+    right: 10,
     top: 0,
     bottom: 0,
     paddingHorizontal: 10,

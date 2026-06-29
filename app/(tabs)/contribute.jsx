@@ -59,7 +59,8 @@ const Contribute = () => {
             <AppButton
               onPress={() => router.push('/Submit')}
               title="Submit Notes"
-              style={styles.fullWidthButton}
+              icon={IconUpload}
+              style={[styles.fullWidthButton, { borderRadius: 16 }]}
             />
             <View style={styles.buttonRow}>
               <AppButton

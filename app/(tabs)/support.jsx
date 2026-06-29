@@ -32,7 +32,7 @@ const SupportUs = () => {
                         icon={IconHeart}
                     />
 
-                    <Planet title="Why Support Matters" style={{ textAlign: 'center', marginTop: 15, marginBottom: 5, marginHorizontal: 16 }} />
+                    <Planet title="Why Support Matters" style={{ textAlign: 'center' }} />
 
                     <View style={styles.bentoGrid}>
                         {/* Top Full Card */}
@@ -62,7 +62,7 @@ const SupportUs = () => {
                         </View>
                     </View>
 
-                    <Planet title="Donate & Support" style={{ textAlign: 'center', marginBottom: 10, marginHorizontal: 16 }} />
+                    <Planet title="Donate & Support" style={{ textAlign: 'center' }} />
                     
                     <View style={styles.actionGrid}>
                         <AppButton
@@ -86,7 +86,7 @@ const SupportUs = () => {
                         </View>
                     </View>
 
-                    <Planet title="Other Ways to Help" style={{ textAlign: 'center', marginBottom: 10, marginTop: 15, marginHorizontal: 16 }} />
+                    <Planet title="Other Ways to Help" style={{ textAlign: 'center' }} />
                     
                     <View style={{ gap: 0, marginBottom: 30 }}>
                         <TitleCardLinked
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     },
     bentoGrid: {
         width: '100%',
-        marginBottom: 20,
+        marginBottom: 5,
     },
     bentoRow: {
         flexDirection: 'row',
@@ -175,7 +175,8 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingHorizontal: 16,
         gap: 12,
-        marginBottom: 10,
+        marginTop: 5,
+        marginBottom: 5,
     },
     buttonRow: {
         flexDirection: 'row',

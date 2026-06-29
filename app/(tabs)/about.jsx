@@ -24,7 +24,7 @@ const AboutUs = () => {
             description="DIU Notes Buddy is a passion project crafted by a dedicated team of Software Engineering students!"
             icon={IconHeart}
           />
-          <Planet title="Meet the Team Behind" style={{ textAlign: 'center', marginTop: 0 }} />
+          <Planet title="Meet the Team Behind" style={{ textAlign: 'center' }} />
           <NameCard
             name="Ocean Mallik"
             username="@oceanmallik"

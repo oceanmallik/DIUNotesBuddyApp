@@ -100,13 +100,14 @@ const Notes = () => {
                                         <View style={[styles.nestedContainer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
                                                 {/* LEVEL 2: YEARS */}
                                                 {dept.years.map((year) => {
-                                                    const isYearOpen = expandedYear === year.id;
+                                                    const uniqueYearId = `${dept.id}-${year.id}`;
+                                                    const isYearOpen = expandedYear === uniqueYearId;
 
                                                     return (
                                                         <View key={year.id} style={[styles.yearBlock, { borderBottomColor: colors.border }]}>
                                                             <Pressable 
                                                                 style={[styles.yearHeader, { backgroundColor: colors.card }]} 
-                                                                onPress={() => toggleYear(year.id)}
+                                                                onPress={() => toggleYear(uniqueYearId)}
                                                             >
                                                                 <View style={styles.headerLeft}>
                                                                     {isYearOpen ? <IconFolderOpen color="#34C759" size={20} /> : <IconFolder color={colors.textSecondary} size={20} />}
@@ -117,9 +118,10 @@ const Notes = () => {
 
                                                             {/* LEVEL 3: SEMESTERS */}
                                                             {isYearOpen && (
-                                                                <View style={[styles.semestersContainer, { backgroundColor: activeTheme === 'dark' ? '#121212' : '#F9F9FB' }]}>
+                                                                <View style={[styles.semestersContainer, { backgroundColor: colors.background }]}>
                                                                     {year.semesters.map((sem) => {
-                                                                        const isSemOpen = expandedSemester === sem.id;
+                                                                        const uniqueSemId = `${dept.id}-${year.id}-${sem.id}`;
+                                                                        const isSemOpen = expandedSemester === uniqueSemId;
 
                                                                         return (
                                                                             <View key={sem.id}>
@@ -129,7 +131,7 @@ const Notes = () => {
                                                                                         { borderBottomColor: colors.border },
                                                                                         isSemOpen && { backgroundColor: colors.background }
                                                                                     ]} 
-                                                                                    onPress={() => toggleSemester(sem.id)}
+                                                                                    onPress={() => toggleSemester(uniqueSemId)}
                                                                                 >
                                                                                     {isSemOpen ? <IconChevronDown color="#AF52DE" size={16} /> : <IconChevronRight color={colors.textSecondary} size={16} />}
                                                                                     <Tree title={sem.label} style={styles.semesterTitle} />

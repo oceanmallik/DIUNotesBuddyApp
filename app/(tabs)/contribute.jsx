@@ -83,13 +83,6 @@ const Contribute = () => {
             />
           </View>
 
-          {/* Easter Egg Meme */}
-          <Image 
-            source={require('../../assets/images/tom_meme.png')} 
-            style={[styles.meme, { borderColor: colors.border }]} 
-            contentFit="contain" 
-          />
-
           {/* Simple Instructions */}
           <View style={[styles.instructionsContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Planet title="How it works" style={{ fontSize: 18, marginBottom: 15, color: colors.textPrimary }} />
@@ -109,6 +102,13 @@ const Contribute = () => {
               <Tree title="3. Wait for admin approval to see your notes live!" style={[styles.stepText, { color: colors.textSecondary }]} />
             </View>
           </View>
+
+          {/* Easter Egg Meme */}
+          <Image 
+            source={require('../../assets/images/tom_meme.png')} 
+            style={styles.meme} 
+            contentFit="contain" 
+          />
 
         </ScrollView>
       </View>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   actionGrid: {
     paddingHorizontal: 16,
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 5,
     gap: 12,
   },
   fullWidthButton: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     marginTop: 10,
-    marginBottom: 60,
+    marginBottom: 10,
   },
   stepRow: {
     flexDirection: 'row',
@@ -184,10 +184,10 @@ const styles = StyleSheet.create({
   },
   meme: {
     width: '90%',
-    height: 280,
-    marginTop: 10,
+    height: 200,
+    marginTop: 5,
+    marginBottom: 60,
     alignSelf: 'center',
-    borderWidth: 1,
     borderRadius: 16,
     opacity: 0.8,
   },

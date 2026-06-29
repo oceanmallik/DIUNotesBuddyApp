@@ -27,11 +27,11 @@ export function Tree({ title, style }) {
     );
 }
 
-export function Leaf({ title, style, linkURL }) {
+export function Leaf({ title, style, linkURL, linkText = "Privacy Policy" }) {
     const { colors } = useAppTheme();
     return (
         <Text style={[styles.leaf, { color: colors.textSecondary }, style]}>
-            {title} {linkURL && <Text onPress={() => Linking.openURL(linkURL)} style={[styles.link, { color: colors.accent }]}>Privacy Policy</Text>}
+            {title} {linkURL && <Text onPress={() => Linking.openURL(linkURL)} style={[styles.link, { color: colors.accent }]}>{linkText}</Text>}
         </Text>
     );
 }

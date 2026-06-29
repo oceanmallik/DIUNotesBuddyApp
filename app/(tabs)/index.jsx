@@ -96,6 +96,7 @@ const app = () => {
               title='Notes Explorer'
               description="Tap the book icon in the tabs below."
               icon={IconBook2}
+              onPress={() => router.push('/notes')}
             />
           </View>
         </View>

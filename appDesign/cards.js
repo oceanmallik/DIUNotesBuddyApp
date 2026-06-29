@@ -104,7 +104,7 @@ export function NameCard({ name, username, webURL, cardURL, email, photoURL, con
     );
 }
 
-export function TitleCard({ title, description, icon: Icon }) {
+export function TitleCard({ title, description, icon: Icon, onPress }) {
     const { colors, activeTheme } = useAppTheme();
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -112,7 +112,7 @@ export function TitleCard({ title, description, icon: Icon }) {
     const handlePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
 
     return (
-        <AnimatedPressable onPressIn={handlePressIn} onPressOut={handlePressOut} style={[styles.titleCardWrapper, { transform: [{ scale: scaleAnim }] }]}>
+        <AnimatedPressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut} style={[styles.titleCardWrapper, { transform: [{ scale: scaleAnim }] }]} >
             <View style={[styles.titleCard, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
                 <View style={[styles.iconContainer, { backgroundColor: colors.background }]}>
                     <Icon size={24} color={colors.accent} strokeWidth={2} />

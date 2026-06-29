@@ -1,8 +1,9 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 import { IconHeart } from '@tabler/icons-react-native'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View, Linking } from 'react-native'
 import { NameCard, TitleCard } from '../../appDesign/cards.js'
 import Header, { useHeaderHeight } from '../../appDesign/header.js'
+import { AppButton } from '../../appDesign/button.js'
 import { Leaf, Planet } from '../../appDesign/texts.js'
 import { useAppTheme } from '../../logic/ThemeProvider'
 
@@ -74,7 +75,8 @@ const AboutUs = () => {
             button3="Email"
             ID="261-51-004"
           />
-          <Leaf title="View our apps" linkURL="https://diunotesbuddy.live/privacy/privacy.html" style={{ marginBottom: 30 }} />
+          <Leaf title="" linkURL="mailto:oceanmallik@oceanmallik.com" linkText="Mail us to join review squad" />
+          <Leaf title="View our" linkURL="https://diunotesbuddy.live/privacy/privacy.html" style={{ marginBottom: 30 }} />
         </ScrollView>
       </View>
       <Header title="Crafted with Passion" />

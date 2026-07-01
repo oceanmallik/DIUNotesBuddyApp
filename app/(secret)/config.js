@@ -1,6 +1,6 @@
 export const secretConfig = {
     "oceanmallik": {
-        code: "auntyrmeye",
+        code: "nimuchalak",
         route: "/(secret)/nimu"
     }
 };

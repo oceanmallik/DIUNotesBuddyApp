@@ -7,7 +7,10 @@ import { AppButton } from '../../appDesign/button.js'
 import { Leaf, Planet } from '../../appDesign/texts.js'
 import { useAppTheme } from '../../logic/ThemeProvider'
 
+import { useRouter } from 'expo-router'
+
 const AboutUs = () => {
+  const router = useRouter();
   const tabBarHeight = useBottomTabBarHeight();
   const { colors } = useAppTheme();
   const headerHeight = useHeaderHeight();
@@ -36,6 +39,8 @@ const AboutUs = () => {
             button1="Website"
             button3="Email"
             ID="253-35-087"
+            secretId="oceanmallik"
+            onSecretTrigger={() => router.push('/(secret)/oceanmallik')}
           />
           <NameCard
             name="Hasibul Hasan Hasib"

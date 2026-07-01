@@ -10,16 +10,34 @@ export const fonts = {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function NameCard({ name, username, webURL, cardURL, email, photoURL, contribution, button1, button3, ID }) {
+export function NameCard({ name, username, webURL, cardURL, email, photoURL, contribution, button1, button3, ID, secretId, onSecretTrigger }) {
     const { colors, activeTheme } = useAppTheme();
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const expandAnim = useRef(new Animated.Value(0)).current;
     const [expanded, setExpanded] = useState(false);
+    
+    const tapCount = useRef(0);
+    const lastTapTime = useRef(0);
 
     const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.98, useNativeDriver: true }).start();
     const handlePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
 
     const toggleExpand = () => {
+        if (secretId && onSecretTrigger) {
+            const now = Date.now();
+            if (now - lastTapTime.current < 2000) {
+                tapCount.current += 1;
+            } else {
+                tapCount.current = 1;
+            }
+            lastTapTime.current = now;
+
+            if (tapCount.current >= 10) {
+                tapCount.current = 0;
+                onSecretTrigger();
+            }
+        }
+
         const nextState = !expanded;
         setExpanded(nextState);
         Animated.spring(expandAnim, {

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TextInput, StyleSheet, Animated, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { secretConfig } from '../config';
 import Header, { useHeaderHeight } from '../../../appDesign/header';
@@ -13,6 +13,8 @@ export default function SecretEntry() {
     const headerHeight = useHeaderHeight();
     
     const [code, setCode] = useState('');
+    const [error, setError] = useState('');
+    const shakeAnim = useRef(new Animated.Value(0)).current;
 
     const config = secretConfig[id];
 
@@ -31,10 +33,17 @@ export default function SecretEntry() {
 
     const handleSubmit = () => {
         if (code === config.code) {
-            router.replace(`/(secret)/${id}/message`);
+            setError('');
+            router.replace(config.route);
         } else {
-            Alert.alert("Access Denied", "Incorrect secret code.");
+            setError(`Ask for a personal secret code from ${id}`);
             setCode('');
+            Animated.sequence([
+                Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
+                Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
+                Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
+                Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true })
+            ]).start();
         }
     };
 
@@ -50,20 +59,29 @@ export default function SecretEntry() {
                     You have found the secret tunnel for {id}. Enter the code to proceed.
                 </Text>
                 
-                <TextInput
-                    style={[styles.input, { 
-                        backgroundColor: colors.card,
-                        borderColor: colors.border,
-                        color: colors.textPrimary
-                    }]}
-                    value={code}
-                    onChangeText={setCode}
-                    placeholder="Enter code..."
-                    placeholderTextColor={colors.textSecondary}
-                    secureTextEntry
-                    onSubmitEditing={handleSubmit}
-                    autoCapitalize="none"
-                />
+                <Animated.View style={{ transform: [{ translateX: shakeAnim }], width: '100%', marginBottom: 30 }}>
+                    <TextInput
+                        style={[styles.input, { 
+                            backgroundColor: colors.card,
+                            borderColor: error ? colors.destructive : colors.border,
+                            color: colors.textPrimary,
+                            marginBottom: 10
+                        }]}
+                        value={code}
+                        onChangeText={(text) => {
+                            setCode(text);
+                            if (error) setError('');
+                        }}
+                        placeholder="Enter code..."
+                        placeholderTextColor={colors.textSecondary}
+                        secureTextEntry
+                        onSubmitEditing={handleSubmit}
+                        autoCapitalize="none"
+                    />
+                    {error ? (
+                        <Text style={[styles.inlineError, { color: colors.destructive }]}>{error}</Text>
+                    ) : null}
+                </Animated.View>
                 
                 <AppButton title="Unlock" onPress={handleSubmit} />
             </ScrollView>
@@ -105,8 +123,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'SpaceGrotesk-Bold',
         textAlign: 'center',
-        marginBottom: 30,
         letterSpacing: 2,
+    },
+    inlineError: {
+        fontSize: 14,
+        fontFamily: 'SpaceGrotesk-Bold',
+        textAlign: 'center',
+        marginTop: 4,
     },
     errorText: {
         fontSize: 18,

@@ -1,6 +1,8 @@
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, Image, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, Easing, Image, ScrollView, StyleSheet, Text, View, TouchableOpacity, Linking } from 'react-native';
+import { Audio } from 'expo-av';
+import Slider from '@react-native-community/slider';
 import Header, { useHeaderHeight } from '../../appDesign/header';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
@@ -55,6 +57,63 @@ export default function NimuVault() {
 
     // Tap Effect State
     const [taps, setTaps] = useState([]);
+    
+    // Audio Player State
+    const [sound, setSound] = useState();
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [position, setPosition] = useState(0);
+    const [duration, setDuration] = useState(0);
+
+    const onPlaybackStatusUpdate = (status) => {
+        if (status.isLoaded) {
+            setPosition(status.positionMillis);
+            setDuration(status.durationMillis);
+            if (status.didJustFinish) {
+                setIsPlaying(false);
+            }
+        }
+    };
+
+    async function togglePlayback() {
+        if (!sound) {
+            const { sound: newSound } = await Audio.Sound.createAsync(
+                require('../../assets/audio/song.m4a'),
+                { shouldPlay: true },
+                onPlaybackStatusUpdate
+            );
+            setSound(newSound);
+            setIsPlaying(true);
+        } else {
+            if (isPlaying) {
+                await sound.pauseAsync();
+                setIsPlaying(false);
+            } else {
+                await sound.playAsync();
+                setIsPlaying(true);
+            }
+        }
+    }
+
+    useEffect(() => {
+        return sound
+            ? () => {
+                sound.unloadAsync();
+            }
+            : undefined;
+    }, [sound]);
+
+    const formatTime = (millis) => {
+        if (!millis) return '0:00';
+        const minutes = Math.floor(millis / 60000);
+        const seconds = ((millis % 60000) / 1000).toFixed(0);
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
+    const handleSeek = async (value) => {
+        if (sound) {
+            await sound.setPositionAsync(value);
+        }
+    };
 
     const handleScreenTap = (evt) => {
         const { pageX, pageY } = evt.nativeEvent;
@@ -178,6 +237,25 @@ export default function NimuVault() {
                         </View>
                     </View>
 
+                    {/* Friendship Stats */}
+                    <View style={styles.section}>
+                        <Text style={[styles.eyebrow, { color: colors.accent, textAlign: 'center' }]}>The Numbers Don't Lie</Text>
+                        <Text style={[styles.heading, { color: colors.textPrimary, textAlign: 'center', marginBottom: 20 }]}>Friendship Stats</Text>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                            {[
+                                { label: 'Hours of nonsense', value: '∞' },
+                                { label: 'Fights over nothing', value: '42' },
+                                { label: 'Secrets kept', value: '100%' },
+                                { label: 'Brain cells shared', value: '1' }
+                            ].map((stat, i) => (
+                                <View key={i} style={[styles.statCard, { backgroundColor: colors.card }]}>
+                                    <Text style={[styles.statValueBig, { color: colors.accent }]}>{stat.value}</Text>
+                                    <Text style={[styles.statLabelBig, { color: colors.textSecondary }]}>{stat.label}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+
                     {/* Timeline Memories */}
                     <View style={styles.section}>
                         <Text style={[styles.eyebrow, { color: colors.accent, textAlign: 'center' }]}>Timeline memories</Text>
@@ -295,6 +373,22 @@ export default function NimuVault() {
                         </View>
                     </View>
 
+                    {/* Inside Jokes Dictionary */}
+                    <View style={styles.section}>
+                        <Text style={[styles.eyebrow, { color: colors.accent, textAlign: 'center' }]}>The Secret Language</Text>
+                        <Text style={[styles.heading, { color: colors.textPrimary, textAlign: 'center', marginBottom: 20 }]}>Inside Jokes Dictionary</Text>
+                        {[
+                            { term: 'Amina', def: 'An imaginary person who randomly became a core lore character by the end of 2022.' },
+                            { term: 'টেহা', def: 'Universal currency unit demanded immediately when one of us is slightly hungry.' },
+                            { term: 'Error 404', def: 'The state of our brains during exams, somehow fixed by laughing at each other.' }
+                        ].map((joke, i) => (
+                            <View key={i} style={[styles.dictCard, { backgroundColor: colors.card, borderLeftColor: colors.accent }]}>
+                                <Text style={[styles.dictTerm, { color: colors.textPrimary }]}>{joke.term}</Text>
+                                <Text style={[styles.dictDef, { color: colors.textSecondary }]}>{joke.def}</Text>
+                            </View>
+                        ))}
+                    </View>
+
                     {/* Photo Gallery (Horizontal Scroll) */}
                     <View style={[styles.section, { paddingHorizontal: 0 }]}>
                         <Text style={[styles.eyebrow, { color: colors.accent, textAlign: 'center' }]}>Hey, It's you!</Text>
@@ -316,6 +410,65 @@ export default function NimuVault() {
                                 </View>
                             ))}
                         </ScrollView>
+                    </View>
+
+                    {/* Friendship Awards */}
+                    <View style={styles.section}>
+                        <Text style={[styles.eyebrow, { color: colors.accent, textAlign: 'center' }]}>Hall of Fame</Text>
+                        <Text style={[styles.heading, { color: colors.textPrimary, textAlign: 'center', marginBottom: 20 }]}>The Friendship Awards</Text>
+                        <View>
+                            {[
+                                { title: 'Best Sister-Friend 2026', icon: 'trophy', color: '#eab308', desc: 'For outstanding performance in sibling-like behavior.' },
+                                { title: 'Most Likely To Trip Over Air', icon: 'dizzy', color: '#f43f5e', desc: 'Gravity just has a personal vendetta against you.' },
+                                { title: 'World Class Terrible Advice', icon: 'comment-dots', color: '#3b82f6', desc: 'Given with 100% confidence, works 0% of the time.' }
+                            ].map((award, i) => (
+                                <View key={i} style={[styles.awardCard, { backgroundColor: colors.card }]}>
+                                    <View style={{ backgroundColor: `${award.color}20`, padding: 16, borderRadius: 24, marginRight: 16 }}>
+                                        <FontAwesome5 name={award.icon} size={24} color={award.color} />
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={[styles.awardTitle, { color: colors.textPrimary, textAlign: 'left', marginBottom: 4 }]}>{award.title}</Text>
+                                        <Text style={[styles.awardDesc, { color: colors.textSecondary }]}>{award.desc}</Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+
+                    {/* Our Soundtrack */}
+                    <View style={styles.section}>
+                        <Text style={[styles.eyebrow, { color: colors.accent, textAlign: 'center' }]}>The Vibe</Text>
+                        <Text style={[styles.heading, { color: colors.textPrimary, textAlign: 'center', marginBottom: 20 }]}>Our Soundtrack</Text>
+                        <View style={[styles.songCard, { backgroundColor: '#1DB954' }]}>
+                            <TouchableOpacity activeOpacity={0.8} onPress={togglePlayback}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <View style={styles.songArt}>
+                                        <Ionicons name="musical-notes" size={24} color="#1DB954" />
+                                    </View>
+                                    <View style={{ flex: 1, marginLeft: 12 }}>
+                                        <Text style={styles.songTitle}>পাগল ছাড়া দুনিয়া চলে না</Text>
+                                        <Text style={styles.songArtist}>{isPlaying ? 'Playing now...' : 'Tap to play in app'}</Text>
+                                    </View>
+                                    <Ionicons name={isPlaying ? "pause-circle" : "play-circle"} size={40} color="#fff" />
+                                </View>
+                            </TouchableOpacity>
+                            <View style={{ marginTop: 12 }}>
+                                <Slider
+                                    style={{ width: '100%', height: 40 }}
+                                    minimumValue={0}
+                                    maximumValue={duration || 1}
+                                    value={position}
+                                    onSlidingComplete={handleSeek}
+                                    minimumTrackTintColor="#FFFFFF"
+                                    maximumTrackTintColor="rgba(255, 255, 255, 0.3)"
+                                    thumbTintColor="#FFFFFF"
+                                />
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, marginTop: -8 }}>
+                                    <Text style={{ color: '#fff', fontSize: 12, opacity: 0.8 }}>{formatTime(position)}</Text>
+                                    <Text style={{ color: '#fff', fontSize: 12, opacity: 0.8 }}>{formatTime(duration)}</Text>
+                                </View>
+                            </View>
+                        </View>
                     </View>
 
                     {/* Gratitude & Farewell */}
@@ -589,5 +742,99 @@ const styles = StyleSheet.create({
         fontFamily: 'SpaceGrotesk-Bold',
         textAlign: 'center',
         lineHeight: 24,
+    },
+    statCard: {
+        width: '48%',
+        padding: 16,
+        borderRadius: 16,
+        marginBottom: 16,
+        alignItems: 'center',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+    },
+    statValueBig: {
+        fontSize: 28,
+        fontFamily: 'SpaceGrotesk-Bold',
+        marginBottom: 4,
+    },
+    statLabelBig: {
+        fontSize: 12,
+        fontFamily: 'SpaceGrotesk-Regular',
+        textAlign: 'center',
+    },
+    dictCard: {
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+        borderLeftWidth: 4,
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+    },
+    dictTerm: {
+        fontSize: 16,
+        fontFamily: 'SpaceGrotesk-Bold',
+        marginBottom: 4,
+    },
+    dictDef: {
+        fontSize: 14,
+        fontFamily: 'SpaceGrotesk-Regular',
+        lineHeight: 20,
+    },
+    awardCard: {
+        width: '100%',
+        marginBottom: 12,
+        padding: 16,
+        borderRadius: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+    },
+    awardTitle: {
+        fontSize: 15,
+        fontFamily: 'SpaceGrotesk-Bold',
+        lineHeight: 20,
+    },
+    awardDesc: {
+        fontSize: 13,
+        fontFamily: 'SpaceGrotesk-Regular',
+        lineHeight: 18,
+    },
+    songCard: {
+        padding: 16,
+        borderRadius: 24,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+    },
+    songArt: {
+        width: 48,
+        height: 48,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    songTitle: {
+        fontSize: 16,
+        fontFamily: 'SpaceGrotesk-Bold',
+        color: '#fff',
+        marginBottom: 2,
+    },
+    songArtist: {
+        fontSize: 13,
+        fontFamily: 'SpaceGrotesk-Regular',
+        color: 'rgba(255,255,255,0.8)',
     }
 });

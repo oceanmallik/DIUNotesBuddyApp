@@ -15,7 +15,6 @@ export default function SecretEntry() {
     
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const shakeAnim = useRef(new Animated.Value(0)).current;
 
     const config = secretConfig[id];
@@ -76,20 +75,9 @@ export default function SecretEntry() {
                             }}
                             placeholder="Enter code..."
                             placeholderTextColor={colors.textSecondary}
-                            secureTextEntry={!isPasswordVisible}
                             onSubmitEditing={handleSubmit}
                             autoCapitalize="none"
                         />
-                        <TouchableOpacity 
-                            style={styles.eyeIcon} 
-                            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                        >
-                            <Ionicons 
-                                name={isPasswordVisible ? "eye-off" : "eye"} 
-                                size={24} 
-                                color={colors.textSecondary} 
-                            />
-                        </TouchableOpacity>
                     </View>
                     {error ? (
                         <Text style={[styles.inlineError, { color: colors.destructive }]}>{error}</Text>
@@ -138,18 +126,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 12,
         padding: 16,
-        paddingRight: 50,
         fontSize: 18,
         fontFamily: 'SpaceGrotesk-Bold',
         textAlign: 'center',
         letterSpacing: 2,
-    },
-    eyeIcon: {
-        position: 'absolute',
-        right: 16,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
     },
     inlineError: {
         fontSize: 14,

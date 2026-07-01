@@ -14,7 +14,14 @@ export function useHeaderHeight() {
   return 60 + insets.top;
 }
 
-export default function Header({ title, showBack = false, rightComponent = null }) {
+/**
+ * @param {Object} props
+ * @param {string} props.title
+ * @param {boolean} [props.showBack]
+ * @param {any} [props.rightComponent]
+ * @param {any} [props.leftComponent]
+ */
+export default function Header({ title, showBack = false, rightComponent = null, leftComponent = null }) {
   const { colors, activeTheme } = useAppTheme();
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -28,11 +35,15 @@ export default function Header({ title, showBack = false, rightComponent = null 
       <View style={[styles.bottomBorder, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />
       
       <View style={styles.contentContainer}>
-        {showBack && (
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
+        {showBack ? (
+          <Pressable onPress={() => router.back()} style={styles.leftContainer}>
             <IconArrowLeft color={colors.textPrimary} size={24} />
           </Pressable>
-        )}
+        ) : leftComponent ? (
+          <View style={styles.leftContainer}>
+            {leftComponent}
+          </View>
+        ) : null}
         <Text style={[styles.galaxy, { color: colors.textPrimary }]} numberOfLines={1}>{title}</Text>
         {rightComponent && (
           <View style={styles.rightContainer}>
@@ -67,7 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 16,
   },
-  backButton: {
+  leftContainer: {
     position: 'absolute',
     left: 10,
     top: 0,

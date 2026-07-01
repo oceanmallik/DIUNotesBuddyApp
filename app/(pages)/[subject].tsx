@@ -1,4 +1,4 @@
-import { IconAlertCircle, IconArrowLeft, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconArrowLeft, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen, IconRefresh } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -113,7 +113,7 @@ const SubjectScreen = () => {
                     {isLoading ? (
                         <BentoLoader text="Loading materials..." />
                     ) : error ? (
-                        <TitleCard title="Error" description={error} icon={IconAlertCircle} />
+                        <TitleCard title="Error" description={error} icon={IconAlertCircle} onPress={() => {}} />
                     ) : subjectData ? (
                         <View>
                             <Mountain title={subjectData.title} style={[styles.pageTitle, { color: colors.textPrimary }]} />
@@ -196,7 +196,15 @@ const SubjectScreen = () => {
                 </ScrollView>
             </View>
 
-            <Header title="Knowledge Vault" showBack />
+            <Header 
+                title="Knowledge Vault" 
+                showBack 
+                rightComponent={
+                    <Pressable onPress={() => fetchSubjectData()}>
+                        <IconRefresh color={colors.textPrimary} size={24} />
+                    </Pressable>
+                }
+            />
         </View>
     );
 };

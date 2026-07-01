@@ -1,5 +1,5 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
@@ -179,9 +179,14 @@ const Notes = () => {
 
             <Header 
                 title="Explore the Archives" 
-                rightComponent={
+                leftComponent={
                     <Pressable onPress={() => router.push('/Submit')}>
                         <IconPlus color={colors.textPrimary} size={24} />
+                    </Pressable>
+                }
+                rightComponent={
+                    <Pressable onPress={() => fetchManifest()}>
+                        <IconRefresh color={colors.textPrimary} size={24} />
                     </Pressable>
                 }
             />

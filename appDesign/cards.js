@@ -78,8 +78,10 @@ export function NameCard({ name, username, webURL, cardURL, email, photoURL, con
 
             <Animated.View 
                 style={[
-                    styles.buttonContainer, 
+                    styles.drawerContainer, 
                     { 
+                        backgroundColor: colors.card,
+                        shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
                         zIndex: -1,
                         opacity: expandAnim,
                         maxHeight: expandAnim.interpolate({
@@ -96,7 +98,7 @@ export function NameCard({ name, username, webURL, cardURL, email, photoURL, con
                         }),
                         paddingBottom: expandAnim.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [0, 14]
+                            outputRange: [0, 2]
                         }),
                         transform: [{
                             translateY: expandAnim.interpolate({
@@ -108,13 +110,15 @@ export function NameCard({ name, username, webURL, cardURL, email, photoURL, con
                 ]}
                 pointerEvents={expanded ? 'auto' : 'none'}
             >
-                <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }, pressed && { opacity: 0.8 }]} onPress={() => Linking.openURL(cardURL)}>
+                <Pressable style={({ pressed }) => [styles.drawerButton, pressed && { opacity: 0.5 }]} onPress={() => Linking.openURL(cardURL)}>
                     <Text style={[styles.buttonText, { color: colors.textPrimary }]}>GitHub</Text>
                 </Pressable>
-                <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }, pressed && { opacity: 0.8 }]} onPress={() => Linking.openURL(webURL)}>
+                <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                <Pressable style={({ pressed }) => [styles.drawerButton, pressed && { opacity: 0.5 }]} onPress={() => Linking.openURL(webURL)}>
                     <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button1}</Text>
                 </Pressable>
-                <Pressable style={({ pressed }) => [styles.cleanButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }, pressed && { opacity: 0.8 }]} onPress={() => Linking.openURL(email)}>
+                <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                <Pressable style={({ pressed }) => [styles.drawerButton, pressed && { opacity: 0.5 }]} onPress={() => Linking.openURL(email)}>
                     <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button3}</Text>
                 </Pressable>
             </Animated.View>
@@ -316,25 +320,27 @@ const styles = StyleSheet.create({
         fontFamily: fonts.bold,
         fontSize: 11,
     },
-    buttonContainer: {
+    drawerContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
-        flexWrap: 'wrap',
-        overflow: 'hidden',
-    },
-    cleanButton: {
-        marginHorizontal: 4,
-        paddingVertical: 10,
-        paddingHorizontal: 16,
+        marginHorizontal: 16,
         borderBottomLeftRadius: 16,
         borderBottomRightRadius: 16,
-        borderTopLeftRadius: 0,
-        borderTopRightRadius: 0,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowRadius: 6,
         elevation: 1,
+        overflow: 'hidden',
+    },
+    drawerButton: {
+        flex: 1,
+        paddingVertical: 12,
+        alignItems: 'center',
+    },
+    divider: {
+        width: 1,
+        height: 20,
     },
     buttonText: {
         fontFamily: fonts.bold,

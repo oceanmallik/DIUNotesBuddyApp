@@ -1,5 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh, IconDownload } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
@@ -33,13 +34,29 @@ const Notes = () => {
             setError(null);
             
             const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
-            const response = await fetch(MANIFEST_URL);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            
+            const response = await fetch(MANIFEST_URL, { signal: controller.signal });
+            clearTimeout(timeoutId);
             
             if (!response.ok) throw new Error('Failed to connect to the GitHub repository.');
             
             const data = await response.json();
             setManifest(data);
+            // Save to cache for offline use
+            await AsyncStorage.setItem('@cached_manifest', JSON.stringify(data));
         } catch (err) {
+            try {
+                const cached = await AsyncStorage.getItem('@cached_manifest');
+                if (cached) {
+                    setManifest(JSON.parse(cached));
+                    return; // Successfully loaded from cache, don't set error
+                }
+            } catch (e) {
+                // Ignore cache read error
+            }
             setError(err.message);
         } finally {
             setIsLoading(false);
@@ -174,6 +191,15 @@ const Notes = () => {
                             })}
                         </View>
                     ) : null}
+
+                    <View style={{ marginTop: 24, marginBottom: 16 }}>
+                        <TitleCard
+                            title='Offline Library'
+                            description="Access your saved PDFs anytime."
+                            icon={IconDownload}
+                            onPress={() => router.push('/SavedNotes')}
+                        />
+                    </View>
                 </ScrollView>
             </View>
 

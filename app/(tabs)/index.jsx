@@ -1,6 +1,6 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconBook2, IconMoon, IconSun, IconUser } from '@tabler/icons-react-native'
+import { IconBook2, IconMoon, IconSun, IconUser, IconDownload } from '@tabler/icons-react-native'
 import { router } from 'expo-router'
 import { useRef } from 'react'
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native'
@@ -94,7 +94,7 @@ const app = () => {
 
           <FocusTimer />
 
-          <View style={{ width: '100%', paddingHorizontal: 0, marginBottom: 20 }}>
+          <View style={{ width: '100%', paddingHorizontal: 16, marginBottom: 20 }}>
             <TitleCard
               title='Notes Explorer'
               description="Tap the book icon in the tabs below."

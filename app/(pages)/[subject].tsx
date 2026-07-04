@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IconAlertCircle, IconArrowLeft, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen, IconRefresh } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -62,7 +63,12 @@ const SubjectScreen = () => {
             setIsLoading(true);
 
             const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
-            const response = await fetch(MANIFEST_URL);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            
+            const response = await fetch(MANIFEST_URL, { signal: controller.signal });
+            clearTimeout(timeoutId);
 
             if (!response.ok) throw new Error('Failed to fetch the database.');
 
@@ -86,6 +92,33 @@ const SubjectScreen = () => {
             setSubjectData(foundSubject);
 
         } catch (err: unknown) {
+            try {
+                const cached = await AsyncStorage.getItem('@cached_manifest');
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    let foundSubject: Subject | null = null;
+                    for (const dept of data.departments as Department[]) {
+                        for (const year of dept.years) {
+                            for (const sem of year.semesters) {
+                                const match = sem.subjects.find((sub: Subject) => sub.id === subjectId);
+                                if (match) {
+                                    foundSubject = match;
+                                    break;
+                                }
+                            }
+                            if (foundSubject) break;
+                        }
+                        if (foundSubject) break;
+                    }
+                    if (foundSubject) {
+                        setSubjectData(foundSubject);
+                        return; // Successfully loaded from cache
+                    }
+                }
+            } catch (e) {
+                // Ignore cache read error
+            }
+
             if (err instanceof Error) {
                 setError(err.message);
             } else {

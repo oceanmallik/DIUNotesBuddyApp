@@ -1,21 +1,186 @@
 import notifee, { AndroidImportance } from '@notifee/react-native';
-import Slider from '@react-native-community/slider';
-import { IconClock, IconPlayerPlay, IconPlayerStop } from '@tabler/icons-react-native';
+import { IconClock, IconPlayerPlay, IconPlayerStop, IconBell } from '@tabler/icons-react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '../logic/ThemeProvider';
 import { AppButton } from './button.js';
+import Svg, { Circle, Path, Defs, ClipPath } from 'react-native-svg';
+import * as Haptics from 'expo-haptics';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+const SVG_SIZE = 220;
+const STROKE_WIDTH = 14;
+const RADIUS = (SVG_SIZE - STROKE_WIDTH) / 2;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+function WavySlider({ value, onValueChange, minimumValue, maximumValue, activeColor, inactiveColor }) {
+    const [containerWidth, setContainerWidth] = useState(0);
+    const containerWidthRef = useRef(0);
+    const pan = useRef(new Animated.Value(0)).current;
+    const panOffset = useRef(0);
+    const lastHapticValue = useRef(value);
+    const isDraggingRef = useRef(false);
+
+    // Sync external value changes (like presets) to the slider position
+    useEffect(() => {
+        if (containerWidth > 0 && lastHapticValue.current !== value && !isDraggingRef.current) {
+            const percentage = (value - minimumValue) / (maximumValue - minimumValue);
+            const newX = percentage * containerWidth;
+            Animated.timing(pan, {
+                toValue: newX,
+                duration: 200,
+                useNativeDriver: false,
+            }).start();
+            panOffset.current = newX;
+            lastHapticValue.current = value;
+        }
+    }, [value, containerWidth, minimumValue, maximumValue]);
+
+    const updateValue = (xPos) => {
+        if (containerWidthRef.current === 0) return;
+        const percentage = xPos / containerWidthRef.current;
+        let newValue = Math.round(minimumValue + percentage * (maximumValue - minimumValue));
+        if (newValue !== lastHapticValue.current) {
+            if (Math.floor(newValue / 10) !== Math.floor(lastHapticValue.current / 10)) {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
+            lastHapticValue.current = newValue;
+            if (onValueChange) onValueChange(newValue);
+        }
+    };
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onMoveShouldSetPanResponder: () => true,
+            onPanResponderGrant: (evt, gestureState) => {
+                isDraggingRef.current = true;
+                const touchX = Math.max(0, Math.min(evt.nativeEvent.locationX, containerWidthRef.current));
+                pan.setValue(touchX);
+                panOffset.current = touchX;
+                updateValue(touchX);
+            },
+            onPanResponderMove: (evt, gestureState) => {
+                const newX = Math.max(0, Math.min(panOffset.current + gestureState.dx, containerWidthRef.current));
+                pan.setValue(newX);
+                updateValue(newX);
+            },
+            onPanResponderRelease: (evt, gestureState) => {
+                const newX = Math.max(0, Math.min(panOffset.current + gestureState.dx, containerWidthRef.current));
+                panOffset.current = newX;
+                // Ignore any delayed state updates that arrive right after we let go
+                setTimeout(() => {
+                    isDraggingRef.current = false;
+                }, 150);
+            }
+        })
+    ).current;
+
+    const generateWavyPath = (width, height) => {
+        if (width === 0) return '';
+        const amplitude = 3;
+        const frequency = 0.2; 
+        let path = `M 0 ${height / 2}`;
+        for (let x = 0; x <= width; x += 2) {
+            const y = height / 2 + Math.sin(x * frequency) * amplitude;
+            path += ` L ${x} ${y}`;
+        }
+        return path;
+    };
+
+    return (
+        <View 
+            style={styles.wavySliderContainer} 
+            onLayout={(e) => {
+                const w = e.nativeEvent.layout.width;
+                setContainerWidth(w);
+                containerWidthRef.current = w;
+                const percentage = (value - minimumValue) / (maximumValue - minimumValue);
+                const startX = percentage * w;
+                pan.setValue(startX);
+                panOffset.current = startX;
+            }}
+            {...panResponder.panHandlers}
+        >
+            {containerWidth > 0 && (
+                <View style={styles.wavySliderInner} pointerEvents="none">
+                    {/* Inactive Straight Track Layer (Starts from Thumb) */}
+                    <Animated.View style={{ 
+                        position: 'absolute', 
+                        height: 40, 
+                        left: pan, 
+                        right: 0,
+                        overflow: 'hidden' 
+                    }}>
+                        <Svg width={containerWidth} height={40} style={{ position: 'absolute', left: 0 }}>
+                            <Path 
+                                d={`M 0 20 L ${containerWidth} 20`}
+                                stroke={inactiveColor}
+                                strokeWidth={4}
+                                strokeLinecap="round"
+                            />
+                        </Svg>
+                    </Animated.View>
+                    
+                    {/* Active Wavy Track Layer (Masked by Animated.View) */}
+                    <Animated.View style={{ 
+                        position: 'absolute', 
+                        height: 40, 
+                        width: pan, 
+                        overflow: 'hidden' 
+                    }}>
+                        <Svg width={containerWidth} height={40} style={{ position: 'absolute', left: 0 }}>
+                            <Path 
+                                d={generateWavyPath(containerWidth, 40)}
+                                stroke={activeColor}
+                                strokeWidth={4}
+                                strokeLinecap="round"
+                            />
+                        </Svg>
+                    </Animated.View>
+                    
+                    {/* Thumb Layer */}
+                    <Animated.View 
+                        style={[
+                            styles.wavySliderThumb,
+                            {
+                                backgroundColor: activeColor,
+                                shadowColor: activeColor,
+                                transform: [{ translateX: pan }, { translateX: -10 }] 
+                            }
+                        ]} 
+                    />
+                </View>
+            )}
+        </View>
+    );
+}
 
 export default function FocusTimer() {
     const { colors, activeTheme } = useAppTheme();
     const [isFocusing, setIsFocusing] = useState(false);
-    const [totalTime, setTotalTime] = useState(25 * 60); // Default 25 mins
-    const [timeLeft, setTimeLeft] = useState(25 * 60);
-    const [customMinutes, setCustomMinutes] = useState(25);
+    const [totalTime, setTotalTime] = useState(60 * 60); // Default 60 mins
+    const [timeLeft, setTimeLeft] = useState(60 * 60);
+    const [customMinutes, setCustomMinutes] = useState(60);
+    const [hasNotificationPermission, setHasNotificationPermission] = useState(true);
     const endTimeRef = useRef(null);
     const lastNotifiedMinuteRef = useRef(null);
+
+    useEffect(() => {
+        notifee.getNotificationSettings().then(settings => {
+            setHasNotificationPermission(settings.authorizationStatus >= 1);
+        });
+    }, []);
+
+    const enableNotifications = async () => {
+        const settings = await notifee.requestPermission();
+        setHasNotificationPermission(settings.authorizationStatus >= 1);
+        if (settings.authorizationStatus >= 1) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+    };
 
     // Animated progress width (0 to 100%)
     const progressAnim = useRef(new Animated.Value(0)).current;
@@ -132,6 +297,7 @@ export default function FocusTimer() {
     };
 
     const stopFocus = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         setIsFocusing(false);
         endTimeRef.current = null;
         setTimeLeft(totalTime);
@@ -162,21 +328,37 @@ export default function FocusTimer() {
 
             {isFocusing ? (
                 <View style={styles.activeContainer}>
-                    <Text style={[styles.timerText, { color: colors.textPrimary }]}>{formatTime(timeLeft)}</Text>
-
-                    {/* Progress Bar Background */}
-                    <View style={[styles.progressTrack, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : '#F2F2F7' }]}>
-                        {/* Progress Bar Fill */}
-                        <Animated.View style={[
-                            styles.progressFill,
-                            {
-                                backgroundColor: colors.accent,
-                                width: progressAnim.interpolate({
+                    <View style={styles.svgContainer}>
+                        <Svg width={SVG_SIZE} height={SVG_SIZE}>
+                            <Circle
+                                stroke={activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : '#F2F2F7'}
+                                fill="none"
+                                cx={SVG_SIZE / 2}
+                                cy={SVG_SIZE / 2}
+                                r={RADIUS}
+                                strokeWidth={STROKE_WIDTH}
+                            />
+                            <AnimatedCircle
+                                stroke={colors.accent}
+                                fill="none"
+                                cx={SVG_SIZE / 2}
+                                cy={SVG_SIZE / 2}
+                                r={RADIUS}
+                                strokeWidth={STROKE_WIDTH}
+                                strokeDasharray={CIRCUMFERENCE}
+                                strokeDashoffset={progressAnim.interpolate({
                                     inputRange: [0, 100],
-                                    outputRange: ['0%', '100%']
-                                })
-                            }
-                        ]} />
+                                    outputRange: [CIRCUMFERENCE, 0]
+                                })}
+                                strokeLinecap="round"
+                                rotation="-90"
+                                origin={`${SVG_SIZE / 2}, ${SVG_SIZE / 2}`}
+                            />
+                        </Svg>
+                        <View style={styles.timeTextContainer}>
+                            <Text style={[styles.timerText, { color: colors.textPrimary }]}>{formatTime(timeLeft)}</Text>
+                            <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>REMAINING</Text>
+                        </View>
                     </View>
 
                     <Pressable
@@ -193,43 +375,105 @@ export default function FocusTimer() {
                 </View>
             ) : (
                 <View style={styles.idleContainer}>
-                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>ঘড়ি ধরে পড়ালেখা করতে নিচের টাইমার ব্যবহার করো 📚.</Text>
+                    <View style={styles.topSection}>
+                        <View style={styles.sidePresets}>
+                            {[5, 20, 40].map(preset => {
+                                const isActive = customMinutes === preset;
+                                return (
+                                    <Pressable 
+                                        key={preset}
+                                        style={[
+                                            styles.sidePresetButton, 
+                                            { 
+                                                backgroundColor: isActive 
+                                                    ? colors.accent 
+                                                    : (activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : '#F2F2F7') 
+                                            }
+                                        ]} 
+                                        onPress={() => {
+                                            setCustomMinutes(preset);
+                                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                        }}
+                                    >
+                                        <Text style={[
+                                            styles.sidePresetText, 
+                                            { color: isActive ? '#FFF' : colors.textPrimary }
+                                        ]}>{preset}m</Text>
+                                    </Pressable>
+                                );
+                            })}
+                        </View>
+
+                        <View style={styles.massiveTimeDisplay}>
+                            <Text style={[styles.massiveTimeText, { color: colors.textPrimary }]}>{customMinutes}</Text>
+                            <Text style={[styles.massiveTimeLabel, { color: colors.textSecondary }]}>MINUTES</Text>
+                        </View>
+
+                        <View style={styles.sidePresets}>
+                            {[60, 90, 120].map(preset => {
+                                const isActive = customMinutes === preset;
+                                return (
+                                    <Pressable 
+                                        key={preset}
+                                        style={[
+                                            styles.sidePresetButton, 
+                                            { 
+                                                backgroundColor: isActive 
+                                                    ? colors.accent 
+                                                    : (activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : '#F2F2F7') 
+                                            }
+                                        ]} 
+                                        onPress={() => {
+                                            setCustomMinutes(preset);
+                                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                        }}
+                                    >
+                                        <Text style={[
+                                            styles.sidePresetText, 
+                                            { color: isActive ? '#FFF' : colors.textPrimary }
+                                        ]}>{preset}m</Text>
+                                    </Pressable>
+                                );
+                            })}
+                        </View>
+                    </View>
 
                     <View style={styles.customTimerContainer}>
-                        <View style={styles.sliderHeader}>
-                            <Text style={[styles.sliderLabel, { color: colors.textPrimary }]}>{customMinutes} Minutes</Text>
-                        </View>
-                        <Slider
-                            style={styles.slider}
+                        <WavySlider
                             minimumValue={1}
                             maximumValue={120}
-                            step={1}
                             value={customMinutes}
                             onValueChange={(val) => setCustomMinutes(val)}
-                            minimumTrackTintColor={colors.accent}
-                            maximumTrackTintColor={activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : '#F2F2F7'}
-                            thumbTintColor={colors.accent}
+                            activeColor={colors.accent}
+                            inactiveColor={activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : '#F2F2F7'}
                         />
+
                         <AppButton
-                            title='Start your "লেখাপড়া" timer'
-                            onPress={() => startFocus(customMinutes)}
+                            title='Start Session'
+                            onPress={() => {
+                                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                                startFocus(customMinutes);
+                            }}
                             icon={IconPlayerPlay}
                             style={styles.startButton}
                             variant="primary"
                         />
-                    </View>
 
-                    <Text style={[styles.orText, { color: colors.textSecondary }]}>Or choose a preset:</Text>
-                    <View style={styles.presets}>
-                        <Pressable style={[styles.presetButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : '#F2F2F7' }]} onPress={() => startFocus(25)}>
-                            <Text style={[styles.presetText, { color: colors.textPrimary }]}>25m</Text>
-                        </Pressable>
-                        <Pressable style={[styles.presetButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : '#F2F2F7' }]} onPress={() => startFocus(50)}>
-                            <Text style={[styles.presetText, { color: colors.textPrimary }]}>50m</Text>
-                        </Pressable>
-                        <Pressable style={[styles.presetButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : '#F2F2F7' }]} onPress={() => startFocus(120)}>
-                            <Text style={[styles.presetText, { color: colors.textPrimary }]}>120m</Text>
-                        </Pressable>
+                        {!hasNotificationPermission && (
+                            <Pressable 
+                                onPress={enableNotifications}
+                                style={{ marginTop: 16, alignItems: 'center' }}
+                            >
+                                <Text style={{ 
+                                    fontFamily: 'SpaceGrotesk-Bold', 
+                                    fontSize: 14, 
+                                    color: colors.accent,
+                                    textDecorationLine: 'underline' 
+                                }}>
+                                    enable notification to see the progress
+                                </Text>
+                            </Pressable>
+                        )}
                     </View>
                 </View>
             )}
@@ -239,10 +483,10 @@ export default function FocusTimer() {
 
 const styles = StyleSheet.create({
     container: {
-        marginHorizontal: 16,
-        marginBottom: 20,
+        marginHorizontal: 12,
+        marginBottom: 16,
         borderRadius: 20,
-        padding: 16,
+        padding: 12,
         borderWidth: 1,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
@@ -293,21 +537,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
     },
+    svgContainer: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 30,
+        marginTop: 10,
+    },
+    timeTextContainer: {
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     timerText: {
-        fontSize: 48,
+        fontSize: 44,
         fontFamily: 'SpaceGrotesk-Bold',
-        marginBottom: 20,
+        lineHeight: 50,
     },
-    progressTrack: {
-        width: '100%',
-        height: 8,
-        borderRadius: 4,
-        overflow: 'hidden',
-        marginBottom: 24,
-    },
-    progressFill: {
-        height: '100%',
-        borderRadius: 4,
+    timeLabel: {
+        fontSize: 12,
+        fontFamily: 'SpaceGrotesk-Bold',
+        letterSpacing: 2,
+        marginTop: 4,
     },
     stopButton: {
         flexDirection: 'row',
@@ -321,22 +572,71 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'SpaceGrotesk-Bold',
     },
-    customTimerContainer: {
-        marginBottom: 20,
-    },
-    sliderHeader: {
+    topSection: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 8,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        marginBottom: 10,
+        position: 'relative',
+        minHeight: 110,
     },
-    sliderLabel: {
-        fontSize: 18,
+    massiveTimeDisplay: {
+        alignItems: 'center',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        justifyContent: 'center',
+        zIndex: -1,
+    },
+    massiveTimeText: {
+        fontSize: 64,
+        fontFamily: 'SpaceGrotesk-Bold',
+        lineHeight: 70,
+    },
+    massiveTimeLabel: {
+        fontSize: 14,
+        fontFamily: 'SpaceGrotesk-Bold',
+        letterSpacing: 3,
+    },
+    sidePresets: {
+        gap: 8,
+    },
+    sidePresetButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    sidePresetText: {
+        fontSize: 14,
         fontFamily: 'SpaceGrotesk-Bold',
     },
-    slider: {
+    customTimerContainer: {
+        marginTop: 5,
+    },
+    wavySliderContainer: {
+        width: '100%',
+        height: 50,
+        justifyContent: 'center',
+        marginVertical: 10,
+    },
+    wavySliderInner: {
+        position: 'relative',
         width: '100%',
         height: 40,
-        marginBottom: 16,
+    },
+    wavySliderThumb: {
+        position: 'absolute',
+        top: 10, 
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 8,
+        elevation: 4,
     },
     startButton: {
         flexDirection: 'row',
@@ -345,16 +645,6 @@ const styles = StyleSheet.create({
         gap: 8,
         paddingVertical: 14,
         borderRadius: 16,
-    },
-    startButtonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontFamily: 'SpaceGrotesk-Bold',
-    },
-    orText: {
-        fontSize: 13,
-        fontFamily: 'SpaceGrotesk-Regular',
-        marginBottom: 12,
-        textAlign: 'center',
+        marginTop: 5,
     },
 });

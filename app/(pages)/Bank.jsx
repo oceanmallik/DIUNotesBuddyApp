@@ -19,12 +19,12 @@ export default function Citytouch() {
     return (
         <>
             <DonationHeader
-                title="Support via Citytouch"
+                title="Citytouch Donation"
                 accentColor="#00D4FF"
                 backgroundColor={colors.background}
             />
             <ScrollView style={[styles.scroll, { backgroundColor: colors.background }]} contentContainerStyle={styles.container}>
-                <Planet title="Support Us via Citytouch" style={{ color: colors.textPrimary }} />
+                <Planet title="Citytouch Donation" style={{ color: colors.textPrimary }} />
                 <Tree
                     title="Scan the QR below or copy the account number to support DIU Notes Buddy!"
                     style={{ textAlign: 'center', color: colors.textSecondary }}

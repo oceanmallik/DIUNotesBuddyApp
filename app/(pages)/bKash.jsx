@@ -19,12 +19,12 @@ export default function bKash() {
     return (
         <>
             <DonationHeader
-                title="Support via bKash"
+                title="bkash Donation"
                 accentColor="#E2136E"
                 backgroundColor={colors.background}
             />
             <ScrollView style={[styles.scroll, { backgroundColor: colors.background }]} contentContainerStyle={styles.container}>
-                <Planet title="Support Us via bKash" style={{ color: colors.textPrimary }} />
+                <Planet title="bkash Donation" style={{ color: colors.textPrimary }} />
                 <Tree
                     title="Click the copy button below to copy our bKash number and help us keep this project alive!"
                     style={{ textAlign: 'center', color: colors.textSecondary }}

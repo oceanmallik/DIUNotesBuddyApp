@@ -1,13 +1,14 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 import { IconBookUpload, IconBrandGooglePlay, IconFriends, IconHeart, IconPlayerPlay, IconServer, IconUsersGroup, IconWorld } from '@tabler/icons-react-native'
 import { router } from 'expo-router'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View, Linking } from 'react-native'
 import { AppButton } from '../../appDesign/button.js'
 import { TitleCard, TitleCardLinked } from '../../appDesign/cards.js'
 import Header, { useHeaderHeight } from '../../appDesign/header.js'
 import { Planet, Tree } from '../../appDesign/texts.js'
 import useInterstitialAd from '../../hooks/useInterstitialAd'
 import { useAppTheme } from '../../logic/ThemeProvider'
+import * as StoreReview from 'expo-store-review';
 
 const CARD_WIDTH = 340
 
@@ -94,6 +95,23 @@ const SupportUs = () => {
                             title="Rate Us on Google Play"
                             icon={IconBrandGooglePlay}
                             link="https://play.google.com/store/apps/details?id=com.oceanmallik.diunote"
+                            onPress={async () => {
+                                if (__DEV__) {
+                                    Linking.openURL("market://details?id=com.oceanmallik.diunote").catch(() => {
+                                        Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
+                                    });
+                                } else {
+                                    try {
+                                        if (await StoreReview.hasAction()) {
+                                            await StoreReview.requestReview();
+                                        } else {
+                                            Linking.openURL("market://details?id=com.oceanmallik.diunote");
+                                        }
+                                    } catch (e) {
+                                        Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
+                                    }
+                                }
+                            }}
                         />
                         <TitleCardLinked
                             title="Visit Web Version"

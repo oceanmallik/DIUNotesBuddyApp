@@ -170,7 +170,7 @@ export function TitleCardScroll({ title, description, icon: Icon }) {
     )
 }
 
-export function TitleCardLinked({ title, link, icon: Icon }) {
+export function TitleCardLinked({ title, link, onPress, icon: Icon }) {
     const { colors, activeTheme } = useAppTheme();
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -180,7 +180,7 @@ export function TitleCardLinked({ title, link, icon: Icon }) {
     return (
         <AnimatedPressable
             style={[styles.titleCardLinkedWrapper, { transform: [{ scale: scaleAnim }] }]}
-            onPress={() => router.push(link)}
+            onPress={onPress ? onPress : () => router.push(link)}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
         >

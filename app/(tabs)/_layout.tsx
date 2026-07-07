@@ -71,6 +71,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="downloads"
+        options={{
+          title: 'Download',
+          tabBarIcon: ({ color, focused }) => (
+            <Feather
+              size={22}
+              name="download"
+              color={color}
+              style={focused && styles.iconFocused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="contribute"
         options={{
           title: 'Send',
@@ -84,20 +98,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="support"
-        options={{
-          title: 'Support',
-          tabBarIcon: ({ color, focused }) => (
-            <FontAwesome
-              size={22}
-              name="handshake-o"
-              color={color}
-              style={focused && styles.iconFocused}
-            />
-          ),
-        }}
-      />
+
       <Tabs.Screen
         name="about"
         options={{

@@ -1,14 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IconAlertCircle, IconArrowLeft, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen, IconRefresh } from '@tabler/icons-react-native';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen, IconRefresh, IconDownload, IconCheck } from '@tabler/icons-react-native';
+import { Stack, useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards';
 import { triggerAccordionAnimation } from '../../appDesign/animations';
 import Header, { useHeaderHeight } from '../../appDesign/header';
 import { Mountain, Tree } from '../../appDesign/texts';
 import { useAppTheme } from '../../logic/ThemeProvider';
+import { OfflineManager } from '../../logic/OfflineManager';
 
 interface MaterialFile {
     filename: string;
@@ -40,6 +41,91 @@ interface Department {
     years: any[];
 }
 
+const FileItem = ({ file, subjectTitle, colors, activeTheme, router }: { file: MaterialFile, subjectTitle: string, colors: any, activeTheme: any, router: any }) => {
+    const [isDownloaded, setIsDownloaded] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [downloadProgress, setDownloadProgress] = useState(0);
+
+    useFocusEffect(
+        useCallback(() => {
+            const checkStatus = async () => {
+                const uri = await OfflineManager.getLocalUri(file.url);
+                if (uri) {
+                    setIsDownloaded(true);
+                } else {
+                    setIsDownloaded(false);
+                }
+            };
+            checkStatus();
+        }, [file.url])
+    );
+
+    useEffect(() => {
+        if (isDownloaded) {
+            setDownloadProgress(1);
+        }
+    }, [isDownloaded]);
+
+    const handleDownload = async () => {
+        if (isDownloaded || isDownloading || typeof file.url !== 'string') return;
+        setIsDownloading(true);
+        setDownloadProgress(0);
+        const success = await OfflineManager.downloadNote(
+            file.url, 
+            file.filename,
+            subjectTitle,
+            (progress: number) => setDownloadProgress(progress)
+        );
+        if (success) {
+            setIsDownloaded(true);
+        }
+        setIsDownloading(false);
+    };
+
+    return (
+        <Pressable
+            style={[styles.fileCard, { backgroundColor: colors.background, borderColor: colors.border }]}
+            onPress={() => {
+                router.push({
+                    pathname: '/Viewer' as any,
+                    params: {
+                        url: file.url,
+                        title: file.filename,
+                        subject: subjectTitle
+                    }
+                });
+            }}
+        >
+            <View style={styles.fileLeft}>
+                <IconFileText color={colors.accent} size={24} />
+                <View style={{ flex: 1 }}>
+                    <Tree title={file.filename} style={[styles.filenameText, { color: colors.textPrimary }]} />
+                    {isDownloading && (
+                        <View style={styles.progressContainer}>
+                            <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
+                                <View style={[styles.progressFill, { backgroundColor: colors.accent, width: `${Math.max(5, downloadProgress * 100)}%` }]} />
+                            </View>
+                            <Tree title={`${Math.round(downloadProgress * 100)}%`} style={[styles.progressText, { color: colors.textSecondary }]} />
+                        </View>
+                    )}
+                </View>
+            </View>
+            <View style={styles.fileRight}>
+                {!isDownloaded && !isDownloading && (
+                    <Pressable onPress={handleDownload} style={[styles.downloadButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)' }]}>
+                        <IconDownload color={colors.textSecondary} size={18} />
+                    </Pressable>
+                )}
+                {isDownloaded && !isDownloading && (
+                    <View style={[styles.downloadButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(52, 199, 89, 0.15)' : 'rgba(52, 199, 89, 0.1)' }]}>
+                        <IconCheck color="#34C759" size={18} />
+                    </View>
+                )}
+            </View>
+        </Pressable>
+    );
+};
+
 const SubjectScreen = () => {
     const router = useRouter();
     const params = useLocalSearchParams();
@@ -52,13 +138,7 @@ const SubjectScreen = () => {
     const [error, setError] = useState<string | null>(null);
     const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (subjectId) {
-            fetchSubjectData();
-        }
-    }, [subjectId]);
-
-    const fetchSubjectData = async () => {
+    const fetchSubjectData = useCallback(async () => {
         try {
             setIsLoading(true);
 
@@ -115,7 +195,7 @@ const SubjectScreen = () => {
                         return; // Successfully loaded from cache
                     }
                 }
-            } catch (e) {
+            } catch {
                 // Ignore cache read error
             }
 
@@ -127,7 +207,13 @@ const SubjectScreen = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [subjectId]);
+
+    useEffect(() => {
+        if (subjectId) {
+            fetchSubjectData();
+        }
+    }, [subjectId, fetchSubjectData]);
 
     const toggleTopic = (topicKey: string) => {
         triggerAccordionAnimation();
@@ -191,25 +277,14 @@ const SubjectScreen = () => {
                                                     {isTopicOpen && (
                                                         <View style={[styles.filesContainer, { backgroundColor: activeTheme === 'dark' ? '#121212' : '#F9F9FB' }]}>
                                                             {topicFolder.files.map((file, fileIndex) => (
-                                                                <Pressable
+                                                                <FileItem
                                                                     key={fileIndex}
-                                                                    style={[styles.fileCard, { backgroundColor: colors.background, borderColor: colors.border }]}
-                                                                    onPress={() => {
-                                                                        router.push({
-                                                                            pathname: '/Viewer' as any,
-                                                                            params: {
-                                                                                url: file.url,
-                                                                                title: file.filename
-                                                                            }
-                                                                        });
-                                                                    }}
-                                                                >
-                                                                    <View style={styles.fileLeft}>
-                                                                        <IconFileText color={colors.accent} size={24} />
-                                                                        <Tree title={file.filename} style={[styles.filenameText, { color: colors.textPrimary }]} />
-                                                                    </View>
-                                                                    <IconChevronRight color={colors.textSecondary} size={20} />
-                                                                </Pressable>
+                                                                    file={file}
+                                                                    subjectTitle={subjectData.title}
+                                                                    colors={colors}
+                                                                    activeTheme={activeTheme}
+                                                                    router={router}
+                                                                />
                                                             ))}
                                                         </View>
                                                     )}
@@ -317,6 +392,34 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 12,
         flex: 1
+    },
+    fileRight: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    downloadButton: {
+        padding: 8,
+        borderRadius: 8,
+        marginLeft: 8,
+    },
+    progressContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 4,
+        gap: 8,
+    },
+    progressBar: {
+        flex: 1,
+        height: 4,
+        borderRadius: 2,
+        overflow: 'hidden',
+    },
+    progressFill: {
+        height: '100%',
+        borderRadius: 2,
+    },
+    progressText: {
+        fontSize: 10,
     },
     filenameText: {
         fontSize: 14,

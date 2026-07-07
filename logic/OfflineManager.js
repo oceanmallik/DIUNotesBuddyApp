@@ -21,7 +21,7 @@ export const OfflineManager = {
         }
     },
 
-    downloadNote: async (url, title, subject = 'Saved Note', onProgress = null) => {
+    downloadNote: async (url, title, subject = 'Saved Note', onProgress) => {
         try {
             const saved = await OfflineManager.getSavedNotes();
             if (saved.find(n => n.url === url)) {

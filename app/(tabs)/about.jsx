@@ -1,18 +1,20 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconHeart } from '@tabler/icons-react-native'
+import { IconHeart, IconBrandGooglePlay, IconPlayerPlay, IconWorld } from '@tabler/icons-react-native'
 import { ScrollView, StyleSheet, View, Linking } from 'react-native'
-import { NameCard, TitleCard } from '../../appDesign/cards.js'
+import { NameCard, TitleCard, TitleCardLinked } from '../../appDesign/cards.js'
 import Header, { useHeaderHeight } from '../../appDesign/header.js'
 import { AppButton } from '../../appDesign/button.js'
 import { Leaf, Planet } from '../../appDesign/texts.js'
 import { useAppTheme } from '../../logic/ThemeProvider'
-
+import useInterstitialAd from '../../hooks/useInterstitialAd'
+import * as StoreReview from 'expo-store-review'
 import { useRouter } from 'expo-router'
 
 const AboutUs = () => {
   const router = useRouter();
   const tabBarHeight = useBottomTabBarHeight();
   const { colors } = useAppTheme();
+  const { showAd, loaded } = useInterstitialAd();
   const headerHeight = useHeaderHeight();
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -81,6 +83,72 @@ const AboutUs = () => {
             ID="261-51-004"
           />
           <Leaf title="" linkURL="mailto:oceanmallik@oceanmallik.com" linkText="Mail us to join review squad" />
+
+          {/* Support Content Moved Here */}
+          <TitleCard
+              title="Help Keep Us Running"
+              description="DIU Notes Buddy is free for everyone. Your support keeps our servers online and helps us expand resources."
+              icon={IconHeart}
+          />
+
+
+          <Planet title="Donate & Support" style={{ textAlign: 'center' }} />
+          
+          <View style={styles.actionGrid}>
+              <AppButton
+                  onPress={() => loaded ? showAd() : null}
+                  title={loaded ? "Watch an Ad (Free)" : "Ad Loading..."}
+                  style={styles.fullWidthButton}
+                  icon={IconPlayerPlay}
+              />
+              <View style={styles.buttonRow}>
+                  <AppButton
+                      onPress={() => router.push('/bKash')}
+                      title="bKash"
+                      style={styles.halfButton}
+                      variant="secondary"
+                  />
+                  <AppButton
+                      onPress={() => router.push('/Bank')}
+                      title="Bank"
+                      style={styles.halfButton}
+                      variant="secondary"
+                  />
+              </View>
+          </View>
+
+          <Planet title="Other Ways to Help" style={{ textAlign: 'center' }} />
+          
+          <View style={{ gap: 0, marginBottom: 30 }}>
+              <TitleCardLinked
+                  title="Rate Us on Google Play"
+                  icon={IconBrandGooglePlay}
+                  link="https://play.google.com/store/apps/details?id=com.oceanmallik.diunote"
+                  onPress={async () => {
+                      if (__DEV__) {
+                          Linking.openURL("market://details?id=com.oceanmallik.diunote").catch(() => {
+                              Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
+                          });
+                      } else {
+                          try {
+                              if (await StoreReview.hasAction()) {
+                                  await StoreReview.requestReview();
+                              } else {
+                                  Linking.openURL("market://details?id=com.oceanmallik.diunote");
+                              }
+                          } catch {
+                              Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
+                          }
+                      }
+                  }}
+              />
+              <TitleCardLinked
+                  title="Visit Web Version"
+                  icon={IconWorld}
+                  link="https://diunotesbuddy.live/"
+              />
+          </View>
+
           <Leaf title="View our" linkURL="https://diunotesbuddy.live/privacy/privacy.html" style={{ marginBottom: 30 }} />
         </ScrollView>
       </View>
@@ -107,5 +175,31 @@ const styles = StyleSheet.create({
     padding: 2,
     paddingVertical: 10,
     justifyContent: 'flex-start',
+  },
+
+  actionGrid: {
+    width: '100%',
+    paddingHorizontal: 16,
+    gap: 12,
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  fullWidthButton: {
+    width: '100%',
+    marginHorizontal: 0,
+    marginTop: 0,
+    paddingVertical: 16,
+    borderRadius: 16,
+  },
+  halfButton: {
+    flex: 1,
+    marginHorizontal: 0,
+    marginTop: 0,
+    paddingVertical: 16,
   },
 })

@@ -1,15 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh, IconDownload } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards.js';
-import { AppButton } from '../../appDesign/button.js';
+
 import { triggerAccordionAnimation } from '../../appDesign/animations.js';
 import Header, { useHeaderHeight } from '../../appDesign/header.js';
-import { Mountain, Planet, Tree } from '../../appDesign/texts.js';
+import { Mountain, Tree } from '../../appDesign/texts.js';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
 const Notes = () => {
@@ -54,7 +54,7 @@ const Notes = () => {
                     setManifest(JSON.parse(cached));
                     return; // Successfully loaded from cache, don't set error
                 }
-            } catch (e) {
+            } catch {
                 // Ignore cache read error
             }
             setError(err.message);
@@ -192,14 +192,7 @@ const Notes = () => {
                         </View>
                     ) : null}
 
-                    <View style={{ marginTop: 24, marginBottom: 16 }}>
-                        <TitleCard
-                            title='Offline Library'
-                            description="Access your saved PDFs anytime."
-                            icon={IconDownload}
-                            onPress={() => router.push('/SavedNotes')}
-                        />
-                    </View>
+
                 </ScrollView>
             </View>
 

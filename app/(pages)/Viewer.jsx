@@ -1,4 +1,4 @@
-import { IconArrowLeft, IconDownload, IconCheck } from '@tabler/icons-react-native';
+import { IconArrowLeft } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useRef, useState, useEffect } from 'react';
 import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -7,68 +7,33 @@ import { useAppTheme } from '../../logic/ThemeProvider';
 import { OfflineManager } from '../../logic/OfflineManager';
 
 const PdfViewer = () => {
-    const { url, title, subject } = useLocalSearchParams();
+    const params = useLocalSearchParams();
+    const url = Array.isArray(params.url) ? params.url[0] : params.url;
+    const title = Array.isArray(params.title) ? params.title[0] : params.title;
     const router = useRouter();
-    const { colors, activeTheme } = useAppTheme();
+    const { colors } = useAppTheme();
 
     const [localUri, setLocalUri] = useState(null);
-    const [isDownloading, setIsDownloading] = useState(false);
-    const [downloadProgress, setDownloadProgress] = useState(0);
-    const [isDownloaded, setIsDownloaded] = useState(false);
-    const [showSuccessToast, setShowSuccessToast] = useState(false);
 
     useEffect(() => {
         if (typeof url === 'string') {
             OfflineManager.getLocalUri(url).then(uri => {
                 if (uri) {
                     setLocalUri(uri);
-                    setIsDownloaded(true);
-                    setDownloadProgress(1);
                 }
             });
         }
     }, [url]);
 
-    // Visually satisfying fake download progress
-    useEffect(() => {
-        let interval;
-        if (isDownloading) {
-            setDownloadProgress(0);
-            interval = setInterval(() => {
-                setDownloadProgress(prev => {
-                    if (prev >= 0.92) return prev; 
-                    return prev + 0.04; 
-                });
-            }, 100);
-        } else if (isDownloaded) {
-            setDownloadProgress(1);
-        }
-        return () => clearInterval(interval);
-    }, [isDownloading, isDownloaded]);
-
-    const handleDownload = async () => {
-        if (isDownloaded || isDownloading || typeof url !== 'string') return;
-        setIsDownloading(true);
-        const success = await OfflineManager.downloadNote(
-            url, 
-            typeof title === 'string' ? title : 'Saved Note',
-            typeof subject === 'string' ? subject : 'Uncategorized'
-        );
-        if (success) {
-            setIsDownloaded(true);
-            const uri = await OfflineManager.getLocalUri(url);
-            if (uri) setLocalUri(uri);
-
-            setShowSuccessToast(true);
-            setTimeout(() => setShowSuccessToast(false), 3000);
-        }
-        setIsDownloading(false);
-    };
-
     const pdfSource = { 
         uri: localUri ? localUri : (typeof url === 'string' ? url : ''), 
         cache: true 
     };
+
+    const headerMarginTop = useRef(new Animated.Value(0)).current;
+    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+    const lastPage = useRef(1);
+    const lastTouchY = useRef(0);
 
     if (!url) {
         return (
@@ -86,10 +51,7 @@ const PdfViewer = () => {
         );
     }
 
-    const headerMarginTop = useRef(new Animated.Value(0)).current;
-    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-    const lastPage = useRef(1);
-    const lastTouchY = useRef(0);
+
 
     const hideHeader = () => {
         if (!isHeaderVisible) return;
@@ -141,19 +103,6 @@ const PdfViewer = () => {
                 <Text style={[styles.headerTitle, { color: colors.textPrimary, flex: 1, paddingRight: 8 }]} numberOfLines={1} ellipsizeMode="tail">
                     {typeof title === 'string' ? title : "Reading Note"}
                 </Text>
-                {typeof url === 'string' && (
-                    <Pressable onPress={handleDownload} style={{ padding: 8, marginLeft: 'auto' }}>
-                        {isDownloading ? (
-                            <Text style={{ color: colors.accent, fontFamily: 'SpaceGrotesk-Bold', fontSize: 14 }}>
-                                {Math.round(downloadProgress * 100)}%
-                            </Text>
-                        ) : isDownloaded ? (
-                            <IconCheck color={colors.accent} size={24} />
-                        ) : (
-                            <IconDownload color={colors.textPrimary} size={24} />
-                        )}
-                    </Pressable>
-                )}
             </Animated.View>
             
             <View
@@ -191,20 +140,6 @@ const PdfViewer = () => {
                     )}
                 />
             </View>
-
-            {(isDownloading || showSuccessToast) && (
-                <View style={[styles.downloadToast, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.1 }]}>
-                    <Text style={[styles.toastTitle, { color: showSuccessToast ? '#34C759' : colors.textPrimary }]}>
-                        {showSuccessToast ? "Downloaded to Offline Library!" : "Downloading to Offline Library..."}
-                    </Text>
-                    <View style={[styles.progressBarBg, { backgroundColor: colors.border }]}>
-                        <View style={[styles.progressBarFill, { backgroundColor: showSuccessToast ? '#34C759' : colors.accent, width: `${Math.max(5, downloadProgress * 100)}%` }]} />
-                    </View>
-                    <Text style={[styles.toastPercentage, { color: colors.textSecondary }]}>
-                        {Math.round(downloadProgress * 100)}%
-                    </Text>
-                </View>
-            )}
         </View>
     );
 };

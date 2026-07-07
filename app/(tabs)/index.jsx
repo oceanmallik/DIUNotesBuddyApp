@@ -1,20 +1,18 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconBook2, IconMoon, IconSun, IconUser, IconDownload } from '@tabler/icons-react-native'
+import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle } from '@tabler/icons-react-native'
 import { router } from 'expo-router'
 import { useRef } from 'react'
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { TitleCard } from '../../appDesign/cards.js'
-import FocusTimer from '../../appDesign/focusTimer.js'
 import { Tree } from '../../appDesign/texts.js'
-import { AppButton } from '../../appDesign/button.js'
+import FocusTimer from '../../appDesign/focusTimer.js'
 import { useAuth } from '../../logic/AuthProvider'
 import { useAppTheme } from '../../logic/ThemeProvider'
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const app = () => {
+const App = () => {
   const { user } = useAuth();
   const tabBarHeight = useBottomTabBarHeight();
   const { activeTheme, toggleTheme, colors } = useAppTheme();
@@ -25,7 +23,6 @@ const app = () => {
 
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
   const initial = user?.email?.charAt(0)?.toUpperCase() ?? "?";
-  const name = user?.user_metadata?.full_name || user?.user_metadata?.name;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -94,13 +91,32 @@ const app = () => {
 
           <FocusTimer />
 
-          <View style={{ width: '100%', paddingHorizontal: 16, marginBottom: 20 }}>
-            <TitleCard
-              title='Notes Explorer'
-              description="Tap the book icon in the tabs below."
-              icon={IconBook2}
-              onPress={() => router.push('/notes')}
-            />
+          <View style={{ width: '100%', paddingHorizontal: 16, marginBottom: 20, gap: 12 }}>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <Pressable 
+                onPress={() => router.push('/notes')} 
+                style={[styles.quickButton, { flex: 1, backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
+              >
+                <IconBook2 size={22} color={colors.accent} />
+                <Tree title="Notes" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
+              </Pressable>
+              
+              <Pressable 
+                onPress={() => router.push('/downloads')} 
+                style={[styles.quickButton, { flex: 1, backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
+              >
+                <IconDownload size={22} color={colors.accent} />
+                <Tree title="Downloads" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
+              </Pressable>
+            </View>
+
+            <Pressable 
+              onPress={() => router.push('/about')} 
+              style={[styles.quickButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
+            >
+              <IconInfoCircle size={22} color={colors.accent} />
+              <Tree title="About Us" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
+            </Pressable>
           </View>
         </View>
 
@@ -115,7 +131,7 @@ const app = () => {
           ]}>
             <View style={styles.signinContent}>
               <Text style={[styles.signinTitle, { color: colors.textPrimary }]}>Not signed in</Text>
-              <Text style={[styles.signinSubtitle, { color: colors.textSecondary }]}>Log in to submit notes and unlock more features. Make sure to use @diu.edu.bd email. </Text>
+              <Text style={[styles.signinSubtitle, { color: colors.textSecondary }]}>Log in with your university email to unlock more features.</Text>
             </View>
           </View>
         )}
@@ -124,9 +140,27 @@ const app = () => {
   )
 }
 
-export default app
+export default App
 
 const styles = StyleSheet.create({
+  quickButton: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 10,
+    elevation: 2,
+    gap: 8,
+  },
+  quickButtonText: {
+    fontSize: 13,
+    fontFamily: 'SpaceGrotesk-Bold',
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
     flexDirection: 'column',
@@ -205,8 +239,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   signinContent: {
-    paddingVertical: 35,
-    paddingHorizontal: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
   signinTitle: {

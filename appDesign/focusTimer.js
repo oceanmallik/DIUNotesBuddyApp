@@ -1,5 +1,5 @@
 import notifee, { AndroidImportance } from '@notifee/react-native';
-import { IconClock, IconPlayerPlay, IconPlayerStop, IconBell } from '@tabler/icons-react-native';
+import { IconClock, IconPlayerPlay, IconPlayerStop, IconBell, IconDice } from '@tabler/icons-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '../logic/ThemeProvider';
@@ -106,23 +106,23 @@ function WavySlider({ value, onValueChange, minimumValue, maximumValue, activeCo
         >
             {containerWidth > 0 && (
                 <View style={styles.wavySliderInner} pointerEvents="none">
-                    {/* Inactive Straight Track Layer (Starts from Thumb) */}
-                    <Animated.View style={{ 
+                    {/* Inactive Wavy Track Layer (Full width) */}
+                    <View style={{ 
                         position: 'absolute', 
                         height: 40, 
-                        left: pan, 
-                        right: 0,
-                        overflow: 'hidden' 
+                        left: 0, 
+                        right: 0 
                     }}>
                         <Svg width={containerWidth} height={40} style={{ position: 'absolute', left: 0 }}>
                             <Path 
-                                d={`M 0 20 L ${containerWidth} 20`}
+                                d={generateWavyPath(containerWidth, 40)}
                                 stroke={inactiveColor}
                                 strokeWidth={4}
                                 strokeLinecap="round"
+                                fill="none"
                             />
                         </Svg>
-                    </Animated.View>
+                    </View>
                     
                     {/* Active Wavy Track Layer (Masked by Animated.View) */}
                     <Animated.View style={{ 
@@ -137,6 +137,7 @@ function WavySlider({ value, onValueChange, minimumValue, maximumValue, activeCo
                                 stroke={activeColor}
                                 strokeWidth={4}
                                 strokeLinecap="round"
+                                fill="none"
                             />
                         </Svg>
                     </Animated.View>
@@ -167,6 +168,7 @@ export default function FocusTimer() {
     const [hasNotificationPermission, setHasNotificationPermission] = useState(true);
     const endTimeRef = useRef(null);
     const lastNotifiedMinuteRef = useRef(null);
+    const diceAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         notifee.getNotificationSettings().then(settings => {
@@ -407,6 +409,46 @@ export default function FocusTimer() {
                         <View style={styles.massiveTimeDisplay}>
                             <Text style={[styles.massiveTimeText, { color: colors.textPrimary }]}>{customMinutes}</Text>
                             <Text style={[styles.massiveTimeLabel, { color: colors.textSecondary }]}>MINUTES</Text>
+                            <Pressable 
+                                onPress={() => {
+                                    const randomTime = Math.floor(Math.random() * 120) + 1;
+                                    setCustomMinutes(randomTime);
+                                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+                                    diceAnim.setValue(0);
+                                    Animated.spring(diceAnim, {
+                                        toValue: 1,
+                                        friction: 4,
+                                        tension: 40,
+                                        useNativeDriver: true,
+                                    }).start();
+                                }}
+                                style={({ pressed }) => [
+                                    {
+                                        marginTop: 8,
+                                        paddingVertical: 6,
+                                        paddingHorizontal: 12,
+                                        borderRadius: 20,
+                                        backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : '#F2F2F7',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        opacity: pressed ? 0.8 : 1,
+                                    }
+                                ]}
+                            >
+                                <Animated.View style={{
+                                    transform: [{
+                                        rotate: diceAnim.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: ['0deg', '360deg']
+                                        })
+                                    }]
+                                }}>
+                                    <IconDice size={14} color={colors.accent} />
+                                </Animated.View>
+                                <Text style={{ fontSize: 12, fontFamily: 'SpaceGrotesk-Bold', color: colors.accent }}>Random</Text>
+                            </Pressable>
                         </View>
 
                         <View style={styles.sidePresets}>

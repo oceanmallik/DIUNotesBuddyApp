@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+
 import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -14,7 +14,7 @@ import { useAppTheme } from '../../logic/ThemeProvider';
 
 const Notes = () => {
     const router = useRouter();
-    const tabBarHeight = useBottomTabBarHeight();
+    const tabBarHeight = 100;
     const { colors, activeTheme } = useAppTheme();
     const headerHeight = useHeaderHeight();
 

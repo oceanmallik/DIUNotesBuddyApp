@@ -1,15 +1,36 @@
-import { IconArrowLeft, IconLogout, IconTrash, IconUser } from '@tabler/icons-react-native';
+import { IconArrowLeft, IconLogout, IconTrash, IconUser, IconShieldLock, IconCalendarStats, IconClock, IconAlertTriangle } from '@tabler/icons-react-native';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View, Animated, Modal } from 'react-native';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../logic/AuthProvider';
 import { useAppTheme } from '../../logic/ThemeProvider';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ProfilePage() {
     const { user } = useAuth();
     const { colors, activeTheme } = useAppTheme();
     const [accountType, setAccountType] = useState('Loading...');
+
+    const scaleAnim = React.useRef(new Animated.Value(1)).current;
+    const expandAnim = React.useRef(new Animated.Value(0)).current;
+    const [expanded, setExpanded] = useState(false);
+
+    const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.98, useNativeDriver: true }).start();
+    const handlePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+
+    const toggleExpand = () => {
+        const nextState = !expanded;
+        setExpanded(nextState);
+        Animated.spring(expandAnim, {
+            toValue: nextState ? 1 : 0,
+            useNativeDriver: false,
+            friction: 7,
+            tension: 50,
+        }).start();
+    };
 
     useEffect(() => {
         const checkAccountType = async () => {
@@ -36,7 +57,14 @@ export default function ProfilePage() {
         checkAccountType();
     }, [user]);
 
-    const handleLogout = async () => {
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+
+    const handleLogout = () => setLogoutModalVisible(true);
+    const handleDeleteAccount = () => setDeleteModalVisible(true);
+
+    const confirmLogout = async () => {
+        setLogoutModalVisible(false);
         try {
             await supabase.auth.signOut();
             router.replace('/login');
@@ -45,35 +73,27 @@ export default function ProfilePage() {
         }
     };
 
-    const handleDeleteAccount = () => {
-        Alert.alert(
-            "Delete Account",
-            "Are you sure you want to permanently delete your account?",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            const { error } = await supabase.rpc('delete_user');
-
-                            if (error) throw error;
-
-                            await supabase.auth.signOut();
-                            router.replace('/login');
-                        } catch (err) {
-                            Alert.alert("Error Deleting Account", err.message);
-                        }
-                    },
-                },
-            ]
-        );
+    const confirmDeleteAccount = async () => {
+        setDeleteModalVisible(false);
+        try {
+            const { error } = await supabase.rpc('delete_user');
+            if (error) throw error;
+            await supabase.auth.signOut();
+            router.replace('/login');
+        } catch (err) {
+            Alert.alert("Error Deleting Account", err.message);
+        }
     };
 
     if (!user) {
         return (
             <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <LinearGradient
+                    colors={activeTheme === 'dark' ? [colors.accent + '25', 'transparent'] : [colors.accent + '15', 'transparent']}
+                    style={StyleSheet.absoluteFillObject}
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 0.4 }}
+                />
                 <View style={styles.header}>
                     <Pressable onPress={() => router.back()} style={styles.backButton}>
                         <IconArrowLeft size={24} color={colors.textPrimary} />
@@ -104,6 +124,12 @@ export default function ProfilePage() {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <LinearGradient
+                colors={activeTheme === 'dark' ? [colors.accent + '25', 'transparent'] : [colors.accent + '15', 'transparent']}
+                style={StyleSheet.absoluteFillObject}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 0.4 }}
+            />
             <View style={styles.header}>
                 <Pressable onPress={() => router.back()} style={styles.backButton}>
                     <IconArrowLeft size={24} color={colors.textPrimary} />
@@ -113,10 +139,24 @@ export default function ProfilePage() {
             </View>
 
             <ScrollView contentContainerStyle={styles.content}>
-                <View style={[styles.profileCard, { backgroundColor: colors.card, borderColor: colors.border, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
-                    {avatarUrl ? (
-                        <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
-                    ) : (
+                <View style={{ marginBottom: 24 }}>
+                    <AnimatedPressable 
+                        style={[
+                            styles.profileCard, 
+                            { 
+                                backgroundColor: colors.card, 
+                                borderColor: colors.border, 
+                                shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
+                                transform: [{ scale: scaleAnim }]
+                            }
+                        ]}
+                        onPress={toggleExpand}
+                        onPressIn={handlePressIn}
+                        onPressOut={handlePressOut}
+                    >
+                        {avatarUrl ? (
+                            <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
+                        ) : (
                         <View style={[styles.avatarCircle, { backgroundColor: activeTheme === 'dark' ? '#1A3340' : '#F0F8FF' }]}>
                             <Text style={[styles.avatarText, { color: colors.accent }]}>{initial}</Text>
                         </View>
@@ -135,35 +175,106 @@ export default function ProfilePage() {
                                 </Text>
                             </View>
                         </View>
-                    </View>
+                        </View>
+                    </AnimatedPressable>
+
+                    <Animated.View 
+                        style={[
+                            styles.drawerContainer, 
+                            { 
+                                backgroundColor: colors.card,
+                                shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
+                                zIndex: -1,
+                                opacity: expandAnim,
+                                maxHeight: expandAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [0, 100]
+                                }),
+                                marginTop: expandAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [0, -16]
+                                }),
+                                paddingTop: expandAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [0, 16]
+                                }),
+                                paddingBottom: expandAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [0, 8]
+                                }),
+                                transform: [{
+                                    translateY: expandAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [-20, 0]
+                                    })
+                                }]
+                            }
+                        ]}
+                        pointerEvents={expanded ? 'auto' : 'none'}
+                    >
+                        <Pressable style={({ pressed }) => [styles.drawerButton, pressed && { opacity: 0.5 }]} onPress={handleDeleteAccount}>
+                            <IconTrash size={20} color={colors.destructive} style={{ marginRight: 8 }} />
+                            <Text style={[styles.buttonText, { color: colors.destructive }]}>Delete Account</Text>
+                        </Pressable>
+                    </Animated.View>
                 </View>
 
                 <View style={styles.detailsContainer}>
                     <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Account Details</Text>
                     
-                    <View style={[styles.detailRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                        <View style={styles.detailTextContainer}>
-                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Auth Provider</Text>
-                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{provider.charAt(0).toUpperCase() + provider.slice(1)}</Text>
+                    <View style={[
+                        styles.detailsGroup, 
+                        { backgroundColor: colors.card, borderColor: colors.border, shadowOpacity: activeTheme === 'dark' ? 0.2 : 0.04 }
+                    ]}>
+                        <View style={[styles.detailRowGrouped, { borderBottomColor: colors.border }]}>
+                            <View style={[styles.detailIconWrap, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }]}>
+                                <IconShieldLock size={20} color={colors.accent} />
+                            </View>
+                            <View style={styles.detailTextContainer}>
+                                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Auth Provider</Text>
+                                <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{provider.charAt(0).toUpperCase() + provider.slice(1)}</Text>
+                            </View>
                         </View>
-                    </View>
 
-                    <View style={[styles.detailRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                        <View style={styles.detailTextContainer}>
-                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Member Since</Text>
-                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{createdAt}</Text>
+                        <View style={[styles.detailRowGrouped, { borderBottomColor: colors.border }]}>
+                            <View style={[styles.detailIconWrap, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }]}>
+                                <IconCalendarStats size={20} color={colors.accent} />
+                            </View>
+                            <View style={styles.detailTextContainer}>
+                                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Member Since</Text>
+                                <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{createdAt}</Text>
+                            </View>
                         </View>
-                    </View>
 
-                    <View style={[styles.detailRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                        <View style={styles.detailTextContainer}>
-                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Last Sign In</Text>
-                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{lastSignIn}</Text>
+                        <View style={[styles.detailRowGrouped, { borderBottomWidth: 0 }]}>
+                            <View style={[styles.detailIconWrap, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }]}>
+                                <IconClock size={20} color={colors.accent} />
+                            </View>
+                            <View style={styles.detailTextContainer}>
+                                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Last Sign In</Text>
+                                <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{lastSignIn}</Text>
+                            </View>
                         </View>
                     </View>
                 </View>
 
                 <View style={styles.actionsContainer}>
+                    {provider.toLowerCase() === 'github' && accountType === 'Admin' && (
+                        <Pressable
+                            onPress={() => router.push('/Admin')}
+                            style={({ pressed }) => [
+                                styles.actionButton,
+                                { backgroundColor: colors.card, borderColor: colors.border, marginBottom: 12 },
+                                pressed && { backgroundColor: activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)' }
+                            ]}
+                        >
+                            <View style={[styles.iconWrap, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.1)' : '#F2F2F7' }]}>
+                                <IconShieldLock size={20} color={colors.textPrimary} />
+                            </View>
+                            <Text style={[styles.actionText, { color: colors.textPrimary }]}>Admin Portal</Text>
+                        </Pressable>
+                    )}
+
                     <Pressable
                         onPress={handleLogout}
                         style={({ pressed }) => [
@@ -178,21 +289,50 @@ export default function ProfilePage() {
                         <Text style={[styles.actionText, { color: colors.textPrimary }]}>Log out</Text>
                     </Pressable>
 
-                    <Pressable
-                        onPress={handleDeleteAccount}
-                        style={({ pressed }) => [
-                            styles.actionButton,
-                            { backgroundColor: colors.card, borderColor: colors.border, marginTop: 12 },
-                            pressed && { backgroundColor: activeTheme === 'dark' ? 'rgba(255, 69, 58, 0.2)' : 'rgba(255, 59, 48, 0.1)' }
-                        ]}
-                    >
-                        <View style={[styles.iconWrap, { backgroundColor: activeTheme === 'dark' ? '#4A1C1C' : '#FFEDED' }]}>
-                            <IconTrash size={20} color={colors.destructive} />
-                        </View>
-                        <Text style={[styles.actionText, { color: colors.destructive }]}>Delete Account</Text>
-                    </Pressable>
                 </View>
             </ScrollView>
+
+            {/* Logout Modal */}
+            <Modal transparent={true} visible={logoutModalVisible} animationType="fade" onRequestClose={() => setLogoutModalVisible(false)}>
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.5 : 0.2 }]}>
+                        <View style={[styles.modalIconWrap, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }]}>
+                            <IconLogout size={32} color={colors.accent} />
+                        </View>
+                        <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Log out?</Text>
+                        <Text style={[styles.modalText, { color: colors.textSecondary }]}>Are you sure you want to log out of your account?</Text>
+                        <View style={styles.modalActions}>
+                            <Pressable style={[styles.modalButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} onPress={() => setLogoutModalVisible(false)}>
+                                <Text style={[styles.modalButtonText, { color: colors.textPrimary }]}>Cancel</Text>
+                            </Pressable>
+                            <Pressable style={[styles.modalButton, { backgroundColor: colors.accent }]} onPress={confirmLogout}>
+                                <Text style={styles.modalButtonTextDestructive}>Log out</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Delete Account Modal */}
+            <Modal transparent={true} visible={deleteModalVisible} animationType="fade" onRequestClose={() => setDeleteModalVisible(false)}>
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.5 : 0.2 }]}>
+                        <View style={[styles.modalIconWrap, { backgroundColor: activeTheme === 'dark' ? '#4A1C1C' : '#FFEDED' }]}>
+                            <IconAlertTriangle size={32} color={colors.destructive} />
+                        </View>
+                        <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Delete Account?</Text>
+                        <Text style={[styles.modalText, { color: colors.textSecondary }]}>Are you absolutely sure you want to permanently delete your account? This action cannot be undone.</Text>
+                        <View style={styles.modalActions}>
+                            <Pressable style={[styles.modalButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} onPress={() => setDeleteModalVisible(false)}>
+                                <Text style={[styles.modalButtonText, { color: colors.textPrimary }]}>Cancel</Text>
+                            </Pressable>
+                            <Pressable style={[styles.modalButton, { backgroundColor: colors.destructive }]} onPress={confirmDeleteAccount}>
+                                <Text style={styles.modalButtonTextDestructive}>Delete</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -234,11 +374,92 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 16,
         borderWidth: StyleSheet.hairlineWidth,
-        marginBottom: 24,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 8 },
         shadowRadius: 24,
         elevation: 4,
+    },
+    drawerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 16,
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 6,
+        elevation: 1,
+        overflow: 'hidden',
+    },
+    drawerButton: {
+        flexDirection: 'row',
+        paddingVertical: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+    },
+    buttonText: {
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 14,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
+    },
+    modalContent: {
+        width: '100%',
+        borderRadius: 24,
+        padding: 24,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowRadius: 20,
+        elevation: 10,
+    },
+    modalIconWrap: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontFamily: 'SpaceGrotesk-Bold',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    modalText: {
+        fontSize: 14,
+        textAlign: 'center',
+        lineHeight: 20,
+        marginBottom: 24,
+    },
+    modalActions: {
+        flexDirection: 'row',
+        gap: 12,
+        width: '100%',
+    },
+    modalButton: {
+        flex: 1,
+        paddingVertical: 14,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalButtonText: {
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 15,
+    },
+    modalButtonTextDestructive: {
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 15,
+        color: '#FFFFFF',
     },
     avatarImage: {
         width: 60,
@@ -289,13 +510,28 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         marginLeft: 4,
     },
-    detailRow: {
+    detailsGroup: {
+        borderRadius: 16,
+        borderWidth: StyleSheet.hairlineWidth,
+        overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 12,
+        elevation: 2,
+    },
+    detailRowGrouped: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
-        borderRadius: 16,
-        borderWidth: StyleSheet.hairlineWidth,
-        marginBottom: 10,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+    },
+    detailIconWrap: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 16,
     },
     detailTextContainer: {
         flex: 1,

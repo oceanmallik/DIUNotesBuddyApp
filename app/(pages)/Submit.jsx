@@ -1,4 +1,4 @@
-import { IconAlertCircle, IconCheck, IconChevronDown, IconFileText, IconUpload, IconX } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconCheck, IconChevronDown, IconFileText, IconUpload, IconX, IconSend, IconUserCheck } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import { decode } from 'base64-arraybuffer';
 import * as DocumentPicker from 'expo-document-picker';
@@ -6,13 +6,16 @@ import { File } from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
-import { Mountain, Tree } from '../../appDesign/texts';
+import { Mountain, Tree, Planet } from '../../appDesign/texts';
+import { TitleCard } from '../../appDesign/cards';
 import { AppButton } from '../../appDesign/button';
+import Header, { useHeaderHeight } from '../../appDesign/header.js';
 import { supabase } from '../../lib/supabase';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
 const SubmitForm = () => {
     const router = useRouter();
+    const headerHeight = useHeaderHeight();
     const [isAuthChecking, setIsAuthChecking] = useState(true);
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -230,7 +233,29 @@ const SubmitForm = () => {
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.bg}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 12 }]} showsVerticalScrollIndicator={false}>
+
+                    <TitleCard
+                        title="Your Contribution Matters"
+                        description="Every note you share helps build a stronger, more helpful resource for all DIU students."
+                        icon={IconSend}
+                    />
+                    
+                    <View style={[styles.instructionsContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                        <Planet title="How it works" style={{ fontSize: 18, marginBottom: 15, color: colors.textPrimary }} />
+                        <View style={styles.stepRow}>
+                            <IconUserCheck size={24} color={colors.accent} />
+                            <Tree title="1. Log in using your university @diu.edu.bd account." style={[styles.stepText, { color: colors.textSecondary }]} />
+                        </View>
+                        <View style={styles.stepRow}>
+                            <IconUpload size={24} color={colors.accent} />
+                            <Tree title="2. Fill out the form and attach your clean PDF file." style={[styles.stepText, { color: colors.textSecondary }]} />
+                        </View>
+                        <View style={styles.stepRow}>
+                            <IconSend size={24} color={colors.accent} />
+                            <Tree title="3. Wait for admin approval to see your notes live!" style={[styles.stepText, { color: colors.textSecondary }]} />
+                        </View>
+                    </View>
 
                     <Mountain title="Submit a File" style={[styles.pageTitle, { color: colors.textPrimary }]} />
                     <Tree title="Your submission will be reviewed by an admin before being published." style={[styles.subtitle, { color: colors.textSecondary }]} />
@@ -348,6 +373,8 @@ const SubmitForm = () => {
                     </View>
                 </Pressable>
             </Modal>
+            
+            <Header title="Submit Notes" showBack={true} />
         </View>
     );
 };
@@ -392,6 +419,23 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 10,
         elevation: 2,
+    },
+    instructionsContainer: {
+        padding: 20,
+        borderRadius: 20,
+        borderWidth: 1,
+        marginTop: 10,
+        marginBottom: 20,
+    },
+    stepRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
+        gap: 12,
+    },
+    stepText: {
+        flex: 1,
+        fontSize: 14,
     },
     inputGroup: {
         marginBottom: 20,

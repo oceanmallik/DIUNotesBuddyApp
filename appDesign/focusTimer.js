@@ -399,7 +399,7 @@ export default function FocusTimer() {
                                     >
                                         <Text style={[
                                             styles.sidePresetText, 
-                                            { color: isActive ? '#FFF' : colors.textPrimary }
+                                            { color: isActive ? (activeTheme === 'dark' ? '#000' : '#FFF') : colors.textPrimary }
                                         ]}>{preset}m</Text>
                                     </Pressable>
                                 );
@@ -472,7 +472,7 @@ export default function FocusTimer() {
                                     >
                                         <Text style={[
                                             styles.sidePresetText, 
-                                            { color: isActive ? '#FFF' : colors.textPrimary }
+                                            { color: isActive ? (activeTheme === 'dark' ? '#000' : '#FFF') : colors.textPrimary }
                                         ]}>{preset}m</Text>
                                     </Pressable>
                                 );

@@ -55,6 +55,12 @@ export function AppButton({ link, title, onPress, style, variant = 'primary', ic
         borderColor = 'transparent';
         shadowOpacity = 0;
         elevation = 0;
+    } else if (variant === 'semi') {
+        bgColor = activeTheme === 'dark' ? colors.accent + '20' : colors.accent + '15';
+        textColor = colors.accent;
+        borderColor = activeTheme === 'dark' ? colors.accent + '30' : colors.accent + '25';
+        shadowOpacity = 0;
+        elevation = 0;
     }
 
     return (
@@ -64,7 +70,7 @@ export function AppButton({ link, title, onPress, style, variant = 'primary', ic
                 { 
                     backgroundColor: bgColor,
                     borderColor: borderColor,
-                    borderWidth: variant === 'secondary' ? 1 : 0,
+                    borderWidth: (variant === 'secondary' || variant === 'semi') ? 1 : 0,
                     transform: [{ scale: scaleAnim }],
                     shadowOpacity: shadowOpacity,
                     elevation: elevation,

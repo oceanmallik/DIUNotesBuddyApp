@@ -1,5 +1,5 @@
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import { IconHeart, IconBrandGooglePlay, IconPlayerPlay, IconWorld } from '@tabler/icons-react-native'
+
+import { IconHeart, IconBrandGooglePlay, IconPlayerPlay, IconWorld, IconBuildingBank, IconWallet } from '@tabler/icons-react-native'
 import { ScrollView, StyleSheet, View, Linking } from 'react-native'
 import { NameCard, TitleCard, TitleCardLinked } from '../../appDesign/cards.js'
 import Header, { useHeaderHeight } from '../../appDesign/header.js'
@@ -9,11 +9,12 @@ import { useAppTheme } from '../../logic/ThemeProvider'
 import useInterstitialAd from '../../hooks/useInterstitialAd'
 import * as StoreReview from 'expo-store-review'
 import { useRouter } from 'expo-router'
+import { LinearGradient } from 'expo-linear-gradient'
 
 const AboutUs = () => {
   const router = useRouter();
-  const tabBarHeight = useBottomTabBarHeight();
-  const { colors } = useAppTheme();
+  const tabBarHeight = 100;
+  const { colors, activeTheme } = useAppTheme();
   const { showAd, loaded } = useInterstitialAd();
   const headerHeight = useHeaderHeight();
   return (
@@ -94,59 +95,71 @@ const AboutUs = () => {
 
           <Planet title="Donate & Support" style={{ textAlign: 'center' }} />
           
-          <View style={styles.actionGrid}>
-              <AppButton
-                  onPress={() => loaded ? showAd() : null}
-                  title={loaded ? "Watch an Ad (Free)" : "Ad Loading..."}
-                  style={styles.fullWidthButton}
-                  icon={IconPlayerPlay}
-              />
-              <View style={styles.buttonRow}>
-                  <AppButton
-                      onPress={() => router.push('/bKash')}
-                      title="bKash"
-                      style={styles.halfButton}
-                      variant="secondary"
-                  />
-                  <AppButton
-                      onPress={() => router.push('/Bank')}
-                      title="Bank"
-                      style={styles.halfButton}
-                      variant="secondary"
-                  />
-              </View>
-          </View>
+          <View style={[styles.glowingWrapper, { shadowColor: colors.accent }]}>
+              <LinearGradient
+                  colors={[colors.accent, colors.accent + '30']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.gradientBorder}
+              >
+                  <View style={[styles.innerGlowCard, { backgroundColor: activeTheme === 'dark' ? '#0F1A24' : '#FFFFFF' }]}>
+                      <View style={styles.actionGridInner}>
+                          <AppButton
+                              onPress={() => loaded ? showAd() : null}
+                              title={loaded ? "Watch an Ad (Free)" : "Ad Loading..."}
+                              style={styles.fullWidthButton}
+                              icon={IconPlayerPlay}
+                          />
+                          <View style={styles.buttonRow}>
+                              <AppButton
+                                  onPress={() => router.push('/bKash')}
+                                  title="bKash"
+                                  style={styles.halfButton}
+                                  variant="semi"
+                                  icon={IconWallet}
+                              />
+                              <AppButton
+                                  onPress={() => router.push('/Bank')}
+                                  title="Bank"
+                                  style={styles.halfButton}
+                                  variant="semi"
+                                  icon={IconBuildingBank}
+                              />
+                          </View>
 
-          <Planet title="Other Ways to Help" style={{ textAlign: 'center' }} />
-          
-          <View style={{ gap: 0, marginBottom: 30 }}>
-              <TitleCardLinked
-                  title="Rate Us on Google Play"
-                  icon={IconBrandGooglePlay}
-                  link="https://play.google.com/store/apps/details?id=com.oceanmallik.diunote"
-                  onPress={async () => {
-                      if (__DEV__) {
-                          Linking.openURL("market://details?id=com.oceanmallik.diunote").catch(() => {
-                              Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
-                          });
-                      } else {
-                          try {
-                              if (await StoreReview.hasAction()) {
-                                  await StoreReview.requestReview();
-                              } else {
-                                  Linking.openURL("market://details?id=com.oceanmallik.diunote");
-                              }
-                          } catch {
-                              Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
-                          }
-                      }
-                  }}
-              />
-              <TitleCardLinked
-                  title="Visit Web Version"
-                  icon={IconWorld}
-                  link="https://diunotesbuddy.live/"
-              />
+                          <AppButton
+                              title="Rate Us on Google Play"
+                              icon={IconBrandGooglePlay}
+                              style={styles.fullWidthButton}
+                              variant="secondary"
+                              onPress={async () => {
+                                  if (__DEV__) {
+                                      Linking.openURL("market://details?id=com.oceanmallik.diunote").catch(() => {
+                                          Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
+                                      });
+                                  } else {
+                                      try {
+                                          if (await StoreReview.hasAction()) {
+                                              await StoreReview.requestReview();
+                                          } else {
+                                              Linking.openURL("market://details?id=com.oceanmallik.diunote");
+                                          }
+                                      } catch {
+                                          Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
+                                      }
+                                  }
+                              }}
+                          />
+                          <AppButton
+                              title="Visit Web Version"
+                              icon={IconWorld}
+                              style={styles.fullWidthButton}
+                              variant="secondary"
+                              onPress={() => Linking.openURL("https://diunotesbuddy.live/")}
+                          />
+                      </View>
+                  </View>
+              </LinearGradient>
           </View>
 
           <Leaf title="View our" linkURL="https://diunotesbuddy.live/privacy/privacy.html" style={{ marginBottom: 30 }} />
@@ -177,12 +190,27 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
 
-  actionGrid: {
-    width: '100%',
-    paddingHorizontal: 16,
-    gap: 12,
+  glowingWrapper: {
+    marginHorizontal: 16,
     marginTop: 5,
-    marginBottom: 5,
+    marginBottom: 30,
+    borderRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  gradientBorder: {
+    padding: 2,
+    borderRadius: 20,
+  },
+  innerGlowCard: {
+    borderRadius: 18,
+    padding: 16,
+  },
+  actionGridInner: {
+    width: '100%',
+    gap: 12,
   },
   buttonRow: {
     flexDirection: 'row',

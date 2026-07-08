@@ -1,6 +1,6 @@
 import { IconArrowLeft, IconTrash, IconFileText, IconCircle, IconCircleCheckFilled } from '@tabler/icons-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+
 import React, { useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TitleCard } from '../../appDesign/cards';
@@ -13,7 +13,7 @@ export default function SavedNotes() {
     const { colors, activeTheme } = useAppTheme();
     const router = useRouter();
     const headerHeight = useHeaderHeight();
-    const tabBarHeight = useBottomTabBarHeight();
+    const tabBarHeight = 100;
     const [notes, setNotes] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [isSelectionMode, setIsSelectionMode] = useState(false);

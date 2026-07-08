@@ -1,13 +1,24 @@
-import { HapticTab } from '@/components/haptic-tab';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BlurView } from 'expo-blur';
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { withLayoutContext } from 'expo-router';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Platform, StyleSheet, View } from 'react-native';
+
+const AnimatedTabIcon = ({ IconComponent, name, color, size }: any) => {
+  return (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <IconComponent size={size} name={name} color={color} />
+    </View>
+  );
+};
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../logic/ThemeProvider';
+import { createMaterialTopTabNavigator, MaterialTopTabBar } from '@react-navigation/material-top-tabs';
+
+const { Navigator } = createMaterialTopTabNavigator();
+const MaterialTopTabs = withLayoutContext(Navigator);
 
 export default function TabLayout() {
   const { colors, activeTheme } = useAppTheme();
@@ -20,17 +31,10 @@ export default function TabLayout() {
   });
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.textSecondary,
-        tabBarShowLabel: true,
-        tabBarLabelStyle: styles.label,
-        tabBarItemStyle: styles.item,
-        tabBarStyle: [styles.tabBar, { bottom: bottomOffset }],
-        tabBarBackground: () => (
+    <MaterialTopTabs
+      tabBarPosition="bottom"
+      tabBar={(props) => (
+        <View style={[styles.tabBarContainer, { bottom: bottomOffset }]}>
           <BlurView
             intensity={80}
             tint={colors.blurTint as any}
@@ -44,86 +48,77 @@ export default function TabLayout() {
               }
             ]} />
           </BlurView>
-        ),
+          <MaterialTopTabBar {...props} />
+        </View>
+      )}
+      screenOptions={{
+        swipeEnabled: true,
+        tabBarShowIcon: true,
+        tabBarShowLabel: true,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarIndicatorStyle: { 
+          backgroundColor: colors.accent,
+          opacity: 0.15,
+          height: 52,
+          bottom: 6,
+          marginHorizontal: 6,
+          borderRadius: 26,
+        },
+        tabBarStyle: { backgroundColor: 'transparent', elevation: 0, shadowOpacity: 0 },
+        tabBarLabelStyle: styles.label,
+        tabBarItemStyle: styles.item,
       }}
     >
-      <Tabs.Screen
+      <MaterialTopTabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <Feather size={22} name="home" color={color} style={focused && styles.iconFocused} />
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+            <AnimatedTabIcon focused={focused} IconComponent={Feather} name="home" color={color} size={22} />
           ),
         }}
       />
-      <Tabs.Screen
+      <MaterialTopTabs.Screen
         name="notes"
         options={{
           title: 'Notes',
-          tabBarIcon: ({ color, focused }) => (
-            <Feather
-              size={22}
-              name="book-open"
-              color={color}
-              style={focused && styles.iconFocused}
-            />
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+            <AnimatedTabIcon focused={focused} IconComponent={Feather} name="book-open" color={color} size={22} />
           ),
         }}
       />
-      <Tabs.Screen
+      <MaterialTopTabs.Screen
         name="downloads"
         options={{
           title: 'Download',
-          tabBarIcon: ({ color, focused }) => (
-            <Feather
-              size={22}
-              name="download"
-              color={color}
-              style={focused && styles.iconFocused}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="contribute"
-        options={{
-          title: 'Send',
-          tabBarIcon: ({ color, focused }) => (
-            <FontAwesome
-              size={20}
-              name="paper-plane-o"
-              color={color}
-              style={focused && styles.iconFocused}
-            />
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+            <AnimatedTabIcon focused={focused} IconComponent={Feather} name="download" color={color} size={22} />
           ),
         }}
       />
 
-      <Tabs.Screen
+      <MaterialTopTabs.Screen
         name="about"
         options={{
           title: 'About',
-          tabBarIcon: ({ color, focused }) => (
-            <Entypo size={24} name="github" color={color} style={focused && styles.iconFocused} />
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+            <AnimatedTabIcon focused={focused} IconComponent={Entypo} name="github" color={color} size={24} />
           ),
         }}
       />
-    </Tabs>
+    </MaterialTopTabs>
   );
 }
 
 const styles = StyleSheet.create({
-  tabBar: {
+  tabBarContainer: {
     position: 'absolute',
     left: 16,
     right: 16,
     height: 64,
     borderRadius: 32,
-    borderTopWidth: 0,
     elevation: 0,
-    overflow: 'hidden',
-    paddingTop: 0,
-    paddingBottom: 0,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -141,6 +136,7 @@ const styles = StyleSheet.create({
   item: {
     paddingTop: 6,
     paddingBottom: 6,
+    paddingHorizontal: 0,
     height: 64,
   },
   label: {
@@ -148,8 +144,6 @@ const styles = StyleSheet.create({
     fontFamily: 'SpaceGrotesk-Bold',
     marginTop: 2,
     marginBottom: 0,
-  },
-  iconFocused: {
-    transform: [{ translateY: -2 }],
+    textTransform: 'none',
   },
 });

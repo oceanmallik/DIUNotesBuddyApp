@@ -1,5 +1,5 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
+
 import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle } from '@tabler/icons-react-native'
 import { router } from 'expo-router'
 import { useRef } from 'react'
@@ -14,7 +14,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const App = () => {
   const { user } = useAuth();
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarHeight = 100;
   const { activeTheme, toggleTheme, colors } = useAppTheme();
   const insets = useSafeAreaInsets();
 

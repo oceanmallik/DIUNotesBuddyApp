@@ -99,6 +99,16 @@ export default function TabLayout() {
       />
 
       <MaterialTopTabs.Screen
+        name="plan"
+        options={{
+          title: 'Plan',
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+            <AnimatedTabIcon focused={focused} IconComponent={Feather} name="check-square" color={color} size={22} />
+          ),
+        }}
+      />
+
+      <MaterialTopTabs.Screen
         name="about"
         options={{
           title: 'About',

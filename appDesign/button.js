@@ -61,6 +61,12 @@ export function AppButton({ link, title, onPress, style, variant = 'primary', ic
         borderColor = activeTheme === 'dark' ? colors.accent + '30' : colors.accent + '25';
         shadowOpacity = 0;
         elevation = 0;
+    } else if (variant === 'destructive') {
+        bgColor = activeTheme === 'dark' ? colors.destructive + '20' : colors.destructive + '15';
+        textColor = colors.destructive;
+        borderColor = activeTheme === 'dark' ? colors.destructive + '30' : colors.destructive + '25';
+        shadowOpacity = 0;
+        elevation = 0;
     }
 
     return (

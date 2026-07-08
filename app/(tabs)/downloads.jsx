@@ -1,13 +1,75 @@
-import { IconArrowLeft, IconTrash, IconFileText, IconCircle, IconCircleCheckFilled } from '@tabler/icons-react-native';
+import { IconArrowLeft, IconTrash, IconFileText, IconCheck, IconX } from '@tabler/icons-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 
-import React, { useState } from 'react';
-import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { TitleCard } from '../../appDesign/cards';
-import { Planet } from '../../appDesign/texts';
+import React, { useState, useRef } from 'react';
+import { Animated, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, Modal } from 'react-native';
+import { Mountain, Planet, Tree } from '../../appDesign/texts';
 import Header, { useHeaderHeight } from '../../appDesign/header';
 import { OfflineManager } from '../../logic/OfflineManager';
 import { useAppTheme } from '../../logic/ThemeProvider';
+import { AppButton } from '../../appDesign/button';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, onToggleSelect, onLongPress, onPress, onDelete }) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.96, useNativeDriver: true }).start();
+  const handlePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+
+  const handlePress = () => {
+    if (isSelectionMode) {
+      onToggleSelect();
+    } else {
+      onPress();
+    }
+  };
+
+  return (
+    <View style={{ marginBottom: 16 }}>
+      <AnimatedPressable 
+        style={[
+            styles.profileCard, 
+            { 
+                backgroundColor: colors.card, 
+                borderColor: colors.border, 
+                borderWidth: StyleSheet.hairlineWidth,
+                shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
+                transform: [{ scale: scaleAnim }]
+            }
+        ]}
+        onPress={handlePress}
+        onLongPress={onLongPress}
+        delayLongPress={300}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        <View style={[styles.avatarCircle, { backgroundColor: isSelected ? colors.accent : colors.accent + '15' }]}>
+            {isSelected ? (
+                <IconCheck size={24} color="#FFF" />
+            ) : (
+                <IconFileText size={24} color={colors.accent} />
+            )}
+        </View>
+        
+        <View style={styles.infoContainer}>
+            <Text style={[styles.nameText, { color: colors.textPrimary }]} numberOfLines={2}>{note.title}</Text>
+            <Text style={[styles.emailText, { color: colors.textSecondary }]} numberOfLines={1}>
+                {new Date(note.savedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+            </Text>
+        </View>
+
+        {!isSelectionMode && (
+            <Pressable onPress={() => onDelete(note.url)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', marginLeft: 12 }]}>
+                <IconTrash size={18} color={colors.destructive} />
+            </Pressable>
+        )}
+      </AnimatedPressable>
+    </View>
+  );
+};
+
 
 export default function SavedNotes() {
     const { colors, activeTheme } = useAppTheme();
@@ -16,8 +78,9 @@ export default function SavedNotes() {
     const tabBarHeight = 100;
     const [notes, setNotes] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    const [isSelectionMode, setIsSelectionMode] = useState(false);
     const [selectedNotes, setSelectedNotes] = useState([]);
+    const [deleteConfirmTarget, setDeleteConfirmTarget] = useState(null);
+    const isSelectionMode = selectedNotes.length > 0;
 
     const loadNotes = async () => {
         setRefreshing(true);
@@ -33,16 +96,6 @@ export default function SavedNotes() {
         }, [])
     );
 
-    const handleDelete = async (url) => {
-        await OfflineManager.deleteNote(url);
-        loadNotes();
-    };
-
-    const toggleSelectionMode = () => {
-        setIsSelectionMode(!isSelectionMode);
-        setSelectedNotes([]);
-    };
-
     const toggleNoteSelection = (url) => {
         if (selectedNotes.includes(url)) {
             setSelectedNotes(selectedNotes.filter(u => u !== url));
@@ -51,110 +104,121 @@ export default function SavedNotes() {
         }
     };
 
-    const handleDeleteSelected = async () => {
-        for (const url of selectedNotes) {
-            await OfflineManager.deleteNote(url);
+    const confirmDelete = async () => {
+        if (deleteConfirmTarget === 'bulk') {
+            for (const url of selectedNotes) {
+                await OfflineManager.deleteNote(url);
+            }
+            setSelectedNotes([]);
+        } else if (deleteConfirmTarget) {
+            await OfflineManager.deleteNote(deleteConfirmTarget);
         }
-        setIsSelectionMode(false);
-        setSelectedNotes([]);
+        setDeleteConfirmTarget(null);
         loadNotes();
     };
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <Header 
-                title={isSelectionMode ? `${selectedNotes.length} Selected` : "Offline Library"} 
-                leftComponent={
-                    isSelectionMode ? (
-                        <Pressable onPress={toggleSelectionMode} style={{ padding: 4, marginRight: 16 }}>
-                            <IconArrowLeft color={colors.textPrimary} size={24} />
-                        </Pressable>
-                    ) : null
-                }
-                rightComponent={
-                    isSelectionMode ? (
-                        <Pressable 
-                            style={{ padding: 4, opacity: selectedNotes.length > 0 ? 1 : 0.5 }}
-                            disabled={selectedNotes.length === 0}
-                            onPress={handleDeleteSelected}
-                        >
-                            <IconTrash color="#FF3B30" size={24} />
-                        </Pressable>
-                    ) : notes.length > 0 ? (
-                        <Pressable onPress={toggleSelectionMode} style={{ padding: 4 }}>
-                            <Text style={{ color: colors.accent, fontFamily: 'SpaceGrotesk-Bold', fontSize: 16 }}>
-                                Select
-                            </Text>
-                        </Pressable>
-                    ) : null
-                }
-            />
+            <Header title="Offline Library" />
             <ScrollView 
-                contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 16, paddingBottom: tabBarHeight + 20 }]}
+                contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 16, paddingBottom: tabBarHeight + 20, paddingHorizontal: 16 }]}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={loadNotes} tintColor={colors.accent} />
                 }
             >
                 {notes.length === 0 ? (
                     <View style={styles.emptyContainer}>
-                        <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                            You haven&apos;t saved any offline notes yet.
+                        <IconFileText size={64} color={colors.textSecondary} opacity={0.5} />
+                        <Mountain title="No offline notes" style={{ marginTop: 16, color: colors.textPrimary }} />
+                        <Text style={[styles.emptyText, { color: colors.textSecondary, marginTop: 8 }]}>
+                            You haven't saved any offline notes yet.
                         </Text>
                     </View>
                 ) : (
-                    Object.entries(notes.reduce((acc, note) => {
-                        const subject = note.subject && note.subject !== 'Uncategorized' ? note.subject : 'Other Notes';
-                        if (!acc[subject]) acc[subject] = [];
-                        acc[subject].push(note);
-                        return acc;
-                    }, {})).map(([subject, subjectNotes]) => (
-                        <View key={subject} style={{ marginBottom: 24 }}>
-                            <Planet title={subject} style={{ marginLeft: 16, marginBottom: 8, fontSize: 18 }} />
-                            {subjectNotes.map((note) => {
-                                const isSelected = selectedNotes.includes(note.url);
-                                return (
-                                    <View key={note.id} style={styles.noteRow}>
-                                        {isSelectionMode && (
-                                            <Pressable 
-                                                onPress={() => toggleNoteSelection(note.url)}
-                                                style={styles.checkboxContainer}
-                                            >
-                                                {isSelected ? (
-                                                    <IconCircleCheckFilled color={colors.accent} size={26} />
-                                                ) : (
-                                                    <IconCircle color={colors.border} size={26} strokeWidth={1.5} />
-                                                )}
-                                            </Pressable>
-                                        )}
-                                        <View style={styles.cardContainer}>
-                                            <TitleCard
-                                                title={note.title}
-                                                description={new Date(note.savedAt).toLocaleDateString()}
-                                                icon={IconFileText}
-                                                onPress={() => {
-                                                    if (isSelectionMode) {
-                                                        toggleNoteSelection(note.url);
-                                                    } else {
-                                                        router.push(`/Viewer?url=${encodeURIComponent(note.url)}&title=${encodeURIComponent(note.title)}&subject=${encodeURIComponent(note.subject || 'Saved Note')}`)
-                                                    }
-                                                }}
-                                            />
-                                        </View>
-                                        {!isSelectionMode && (
-                                            <Pressable 
-                                                onPress={() => handleDelete(note.url)} 
-                                                style={[styles.deleteButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,59,48,0.1)' : 'rgba(255,59,48,0.05)' }]}
-                                            >
-                                                <IconTrash color="#FF3B30" size={20} />
-                                            </Pressable>
-                                        )}
+                    <>
+                        {Object.entries(notes.reduce((acc, note) => {
+                            const subject = note.subject && note.subject !== 'Uncategorized' ? note.subject : 'Other Notes';
+                            if (!acc[subject]) acc[subject] = [];
+                            acc[subject].push(note);
+                            return acc;
+                        }, {})).map(([subject, subjectNotes]) => (
+                            <View key={subject} style={{ marginBottom: 16 }}>
+                                <Planet title={subject} style={{ marginLeft: 4, marginBottom: 12, fontSize: 18, color: colors.textPrimary }} />
+                                {subjectNotes.map((note) => (
+                                    <DownloadCard
+                                        key={note.id}
+                                        note={note}
+                                        colors={colors}
+                                        activeTheme={activeTheme}
+                                        isSelectionMode={isSelectionMode}
+                                        isSelected={selectedNotes.includes(note.url)}
+                                        onToggleSelect={() => toggleNoteSelection(note.url)}
+                                        onLongPress={() => {
+                                            if (!selectedNotes.includes(note.url)) setSelectedNotes([...selectedNotes, note.url]);
+                                        }}
+                                        onPress={() => router.push(`/Viewer?url=${encodeURIComponent(note.url)}&title=${encodeURIComponent(note.title)}&subject=${encodeURIComponent(note.subject || 'Saved Note')}`)}
+                                        onDelete={() => setDeleteConfirmTarget(note.url)}
+                                    />
+                                ))}
+                            </View>
+                        ))}
+                        
+                        {isSelectionMode && (
+                            <View style={[styles.selectionBarList, { marginTop: 16 }]}>
+                                <Text style={{ color: colors.textPrimary, fontFamily: 'SpaceGrotesk-Bold', fontSize: 16, textAlign: 'center', marginBottom: 12 }}>
+                                    {selectedNotes.length} Notes Selected
+                                </Text>
+                                
+                                <View style={{ flexDirection: 'row', gap: 12 }}>
+                                    <View style={{ flex: 1 }}>
+                                        <AppButton title="Delete" icon={IconTrash} variant="destructive" onPress={() => setDeleteConfirmTarget('bulk')} style={{ width: '100%' }} />
                                     </View>
-                                );
-                            })}
-                        </View>
-                    ))
+                                </View>
+                                <View style={{ height: 12 }} />
+                                <AppButton title="Cancel Selection" icon={IconX} variant="secondary" onPress={() => setSelectedNotes([])} style={{ width: '100%' }} />
+                            </View>
+                        )}
+                    </>
                 )}
             </ScrollView>
+
+            <Modal visible={deleteConfirmTarget !== null} transparent={true} animationType="fade" onRequestClose={() => setDeleteConfirmTarget(null)}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.glowingWrapper}>
+                        <LinearGradient
+                            colors={[colors.destructive, colors.destructive + '30']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.gradientBorder}
+                        >
+                            <View style={[styles.innerGlowCard, { backgroundColor: activeTheme === 'dark' ? '#0F1A24' : '#FFFFFF' }]}>
+                                <View style={[styles.modalIconWrap, { backgroundColor: colors.destructive + '20', alignSelf: 'center' }]}>
+                                    <IconTrash size={32} color={colors.destructive} />
+                                </View>
+                                <Mountain title="Delete Note?" style={[styles.modalTitleConfirm, { color: colors.textPrimary }]} />
+                                <Text style={[styles.modalTextConfirm, { color: colors.textSecondary }]}>
+                                    {deleteConfirmTarget === 'bulk' ? `Are you sure you want to delete these ${selectedNotes.length} notes?` : 'Are you sure you want to delete this note?'}
+                                </Text>
+                                <View style={styles.actionGridInner}>
+                                    <AppButton 
+                                        title="Yes, Delete it" 
+                                        icon={IconTrash} 
+                                        onPress={confirmDelete} 
+                                        style={[styles.fullWidthButton, { backgroundColor: colors.destructive }]} 
+                                    />
+                                    <AppButton 
+                                        title="Cancel" 
+                                        icon={IconX} 
+                                        variant="secondary" 
+                                        onPress={() => setDeleteConfirmTarget(null)} 
+                                        style={styles.fullWidthButton} 
+                                    />
+                                </View>
+                            </View>
+                        </LinearGradient>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -177,24 +241,98 @@ const styles = StyleSheet.create({
         fontFamily: 'SpaceGrotesk-Regular',
         lineHeight: 24,
     },
-    noteRow: {
+    
+    // Card Styles
+    profileCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingRight: 16,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowRadius: 24,
+        elevation: 4,
     },
-    cardContainer: {
+    avatarCircle: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+    infoContainer: {
         flex: 1,
     },
-    deleteButton: {
-        padding: 12,
-        borderRadius: 12,
-        marginLeft: 8,
+    nameText: {
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 16,
+        marginBottom: 2,
+    },
+    emailText: {
+        fontFamily: 'SpaceGrotesk-Regular',
+        fontSize: 13,
+    },
+    actionBtn: {
+        padding: 6,
+        borderRadius: 8,
+    },
+    
+    // Selection Bar styles
+    selectionBarList: {
+        paddingVertical: 16,
+        width: '100%',
+    },
+    
+    // Modal styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 24,
     },
-    checkboxContainer: {
-        paddingVertical: 16,
-        paddingLeft: 16,
+    glowingWrapper: {
+        width: '100%',
+        borderRadius: 24,
+        padding: 2,
+    },
+    gradientBorder: {
+        borderRadius: 24,
+        padding: 1,
+    },
+    innerGlowCard: {
+        borderRadius: 23,
+        padding: 24,
+        alignItems: 'center',
+    },
+    modalIconWrap: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        alignItems: 'center',
         justifyContent: 'center',
+        marginBottom: 16,
+    },
+    modalTitleConfirm: {
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 22,
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    modalTextConfirm: {
+        fontFamily: 'SpaceGrotesk-Regular',
+        fontSize: 15,
+        textAlign: 'center',
+        marginBottom: 24,
+        lineHeight: 22,
+    },
+    actionGridInner: {
+        width: '100%',
+        gap: 12,
+    },
+    fullWidthButton: {
+        width: '100%',
     },
 });

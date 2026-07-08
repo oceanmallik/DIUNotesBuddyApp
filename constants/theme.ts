@@ -4,7 +4,7 @@ export const Colors = {
     card: '#FFFFFF',
     textPrimary: '#3A3432',
     textSecondary: '#948B87',
-    accent: '#D96C4A',
+    accent: '#6B5B95', // Muted Purple
     destructive: '#E54B4B',
     border: '#E5DDD0',
     menuBackground: 'rgba(244, 239, 230, 0.3)',
@@ -13,8 +13,8 @@ export const Colors = {
     icon: '#948B87',
   },
   dark: {
-    background: '#041116',
-    card: '#0B2027',
+    background: '#02090C', // A slightly deeper version of the original teal-black
+    card: '#07181D', // Adjusted card color to match
     textPrimary: '#C7E2E4',
     textSecondary: '#8CAFB3',
     accent: '#14F1D9',

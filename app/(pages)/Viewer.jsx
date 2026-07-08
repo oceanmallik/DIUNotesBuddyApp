@@ -14,6 +14,7 @@ const PdfViewer = () => {
     const { colors } = useAppTheme();
 
     const [localUri, setLocalUri] = useState(null);
+    const [isCheckingLocal, setIsCheckingLocal] = useState(true);
 
     useEffect(() => {
         if (typeof url === 'string') {
@@ -21,7 +22,12 @@ const PdfViewer = () => {
                 if (uri) {
                     setLocalUri(uri);
                 }
+                setIsCheckingLocal(false);
+            }).catch(() => {
+                setIsCheckingLocal(false);
             });
+        } else {
+            setIsCheckingLocal(false);
         }
     }, [url]);
 
@@ -112,8 +118,13 @@ const PdfViewer = () => {
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
             >
-                <Pdf
-                    trustAllCerts={false}
+                {isCheckingLocal ? (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <ActivityIndicator color={colors.accent} size="large" />
+                    </View>
+                ) : (
+                    <Pdf
+                        trustAllCerts={false}
                     source={pdfSource}
                     onLoadComplete={(numberOfPages) => {
                         console.log(`Document loaded successfully with ${numberOfPages} pages.`);
@@ -139,6 +150,7 @@ const PdfViewer = () => {
                         <ActivityIndicator color={colors.accent} size="large" />
                     )}
                 />
+                )}
             </View>
         </View>
     );

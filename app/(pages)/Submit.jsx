@@ -1,10 +1,10 @@
-import { IconAlertCircle, IconCheck, IconChevronDown, IconFileText, IconUpload, IconX, IconSend, IconUserCheck } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconCheck, IconChevronDown, IconFileText, IconUpload, IconX, IconSend, IconUserCheck, IconInfoCircle } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import { decode } from 'base64-arraybuffer';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
-import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, Animated, Easing } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { Mountain, Tree, Planet } from '../../appDesign/texts';
 import { TitleCard } from '../../appDesign/cards';
@@ -12,6 +12,7 @@ import { AppButton } from '../../appDesign/button';
 import Header, { useHeaderHeight } from '../../appDesign/header.js';
 import { supabase } from '../../lib/supabase';
 import { useAppTheme } from '../../logic/ThemeProvider';
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SubmitForm = () => {
     const router = useRouter();
@@ -30,6 +31,7 @@ const SubmitForm = () => {
     const [topic, setTopic] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [infoModalVisible, setInfoModalVisible] = useState(false);
     const [modalData, setModalData] = useState([]);
     const [modalTitle, setModalTitle] = useState('');
     const [onSelectCallback, setOnSelectCallback] = useState(() => { });
@@ -159,11 +161,19 @@ const SubmitForm = () => {
         });
     };
 
+    const formatSubject = (sub) => {
+        if (!sub) return null;
+        if (sub.id.toLowerCase() === sub.title.toLowerCase()) {
+            return sub.title;
+        }
+        return `${sub.id.toUpperCase()}: ${sub.title}`;
+    };
+
     const openSubjPicker = () => {
         if (!selectedSem) return Alert.alert("Hold on", "Please select a semester first.");
         if (!selectedSem.subjects || selectedSem.subjects.length === 0) return Alert.alert("Empty", "No subjects found for this semester.");
 
-        const options = selectedSem.subjects.map(sub => ({ label: `${sub.id.toUpperCase()}: ${sub.title}`, data: sub }));
+        const options = selectedSem.subjects.map(sub => ({ label: formatSubject(sub), data: sub }));
         openModal("Select Subject", options, (selected) => {
             setSelectedSubj(selected.data);
         });
@@ -179,54 +189,62 @@ const SubmitForm = () => {
         setModalVisible(true);
     };
 
-    const DropdownButton = ({ label, value, onPress, disabled }) => (
-        <View style={styles.inputGroup}>
-            <Tree title={label} style={[styles.label, { color: colors.textSecondary }]} />
-            <Pressable
-                style={[
-                    styles.dropdownBtn, 
-                    { backgroundColor: colors.background, borderColor: colors.border },
-                    disabled && { backgroundColor: activeTheme === 'dark' ? '#0A0A0A' : '#F2F2F7', borderColor: colors.border }
-                ]}
-                onPress={onPress}
-            >
-                <Text style={[
-                    styles.dropdownText, 
-                    { color: colors.textPrimary },
-                    !value && { color: colors.textSecondary }
-                ]}>
-                    {value || `Select ${label}...`}
-                </Text>
-                <IconChevronDown color={disabled ? colors.textSecondary : colors.textPrimary} size={20} />
-            </Pressable>
-        </View>
-    );
+    const DropdownButton = ({ label, value, onPress, disabled }) => {
+        const scaleAnim = useRef(new Animated.Value(1)).current;
+        const handlePressIn = () => { if (!disabled) Animated.spring(scaleAnim, { toValue: 0.97, useNativeDriver: true }).start(); };
+        const handlePressOut = () => { if (!disabled) Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start(); };
+
+        return (
+            <View style={styles.inputGroup}>
+                <Tree title={label} style={[styles.label, { color: colors.textSecondary }]} />
+                <AnimatedPressable
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                    onPress={disabled ? null : onPress}
+                    style={[
+                        styles.dropdownBtn, 
+                        { backgroundColor: colors.card, borderColor: colors.border, transform: [{ scale: scaleAnim }] },
+                        disabled && { opacity: 0.5, backgroundColor: 'transparent' }
+                    ]}
+                >
+                    <Text style={[
+                        styles.dropdownText, 
+                        { color: colors.textPrimary },
+                        !value && { color: colors.textSecondary }
+                    ]}>
+                        {value || `Select ${label}...`}
+                    </Text>
+                    <IconChevronDown color={disabled ? colors.textSecondary : colors.textPrimary} size={20} />
+                </AnimatedPressable>
+            </View>
+        );
+    };
 
     const SelectionRow = ({ label, options, selectedValue, onSelect }) => (
         <View style={styles.inputGroup}>
             <Tree title={label} style={[styles.label, { color: colors.textSecondary }]} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipContainer}>
+            <View style={[styles.segmentedContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 {options.map((opt) => (
                     <Pressable
                         key={opt}
-                        style={[
-                            styles.chip, 
-                            { backgroundColor: colors.background, borderColor: colors.border },
-                            selectedValue === opt && { backgroundColor: colors.accent, borderColor: colors.accent }
+                        style={({ pressed }) => [
+                            styles.segmentBtn,
+                            selectedValue === opt && { backgroundColor: colors.accent, shadowColor: colors.accent, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 4 },
+                            pressed && { opacity: 0.7 }
                         ]}
                         onPress={() => onSelect(opt)}
                     >
                         <Tree 
-                            title={opt} 
+                            title={opt.charAt(0).toUpperCase() + opt.slice(1)} 
                             style={[
-                                styles.chipText, 
+                                styles.segmentText, 
                                 { color: colors.textPrimary },
-                                selectedValue === opt && { color: '#FFFFFF' }
+                                selectedValue === opt && { color: '#FFFFFF', fontFamily: 'SpaceGrotesk-Bold' }
                             ]} 
                         />
                     </Pressable>
                 ))}
-            </ScrollView>
+            </View>
         </View>
     );
 
@@ -235,30 +253,8 @@ const SubmitForm = () => {
             <View style={styles.bg}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 12 }]} showsVerticalScrollIndicator={false}>
 
-                    <TitleCard
-                        title="Your Contribution Matters"
-                        description="Every note you share helps build a stronger, more helpful resource for all DIU students."
-                        icon={IconSend}
-                    />
-                    
-                    <View style={[styles.instructionsContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                        <Planet title="How it works" style={{ fontSize: 18, marginBottom: 15, color: colors.textPrimary }} />
-                        <View style={styles.stepRow}>
-                            <IconUserCheck size={24} color={colors.accent} />
-                            <Tree title="1. Log in using your university @diu.edu.bd account." style={[styles.stepText, { color: colors.textSecondary }]} />
-                        </View>
-                        <View style={styles.stepRow}>
-                            <IconUpload size={24} color={colors.accent} />
-                            <Tree title="2. Fill out the form and attach your clean PDF file." style={[styles.stepText, { color: colors.textSecondary }]} />
-                        </View>
-                        <View style={styles.stepRow}>
-                            <IconSend size={24} color={colors.accent} />
-                            <Tree title="3. Wait for admin approval to see your notes live!" style={[styles.stepText, { color: colors.textSecondary }]} />
-                        </View>
-                    </View>
-
-                    <Mountain title="Submit a File" style={[styles.pageTitle, { color: colors.textPrimary }]} />
-                    <Tree title="Your submission will be reviewed by an admin before being published." style={[styles.subtitle, { color: colors.textSecondary }]} />
+                    <Mountain title="Contribute Notes" style={[styles.pageTitle, { color: colors.textPrimary }]} />
+                    <Tree title="Share your best materials and help your fellow students succeed. Every contribution makes our community stronger!" style={[styles.subtitle, { color: colors.textSecondary }]} />
 
                     {isAuthChecking ? (
                         <BentoLoader text="Verifying session..." />
@@ -278,43 +274,47 @@ const SubmitForm = () => {
                             <Tree title="Your file is now pending approval." style={{ textAlign: 'center', marginTop: 5, color: colors.textSecondary }} />
                         </View>
                     ) : (
-                        <View style={[styles.formCard, { backgroundColor: colors.card, borderColor: colors.border, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
+                        <View style={styles.formContainer}>
 
                             <DropdownButton label="Department" value={selectedDept?.title} onPress={openDeptPicker} />
                             <DropdownButton label="Academic Year" value={selectedYear?.label} onPress={openYearPicker} disabled={!selectedDept} />
                             <DropdownButton label="Semester" value={selectedSem?.label} onPress={openSemPicker} disabled={!selectedYear} />
-                            <DropdownButton label="Subject" value={selectedSubj ? `${selectedSubj.id.toUpperCase()}: ${selectedSubj.title}` : null} onPress={openSubjPicker} disabled={!selectedSem} />
+                            <DropdownButton label="Subject" value={formatSubject(selectedSubj)} onPress={openSubjPicker} disabled={!selectedSem} />
 
                             <SelectionRow label="Material Category" options={categories} selectedValue={category} onSelect={setCategory} />
 
                             <View style={styles.inputGroup}>
                                 <Tree title="Specific Topic" style={[styles.label, { color: colors.textSecondary }]} />
-                                <View style={[styles.fakeDropdown, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                                <View style={[styles.fakeDropdown, { backgroundColor: colors.card, borderColor: colors.border }]}>
                                     <TextInput
                                         style={[styles.textInput, { color: colors.textPrimary }]}
                                         value={topic}
                                         onChangeText={setTopic}
                                         placeholder="e.g., Binary Logic"
                                         placeholderTextColor={colors.textSecondary}
+                                        selectionColor={colors.accent}
                                     />
                                 </View>
                             </View>
                             <View style={styles.inputGroup}>
                                 <Tree title="Select PDF File" style={[styles.label, { color: colors.textSecondary }]} />
                                 <Pressable 
-                                    style={[
+                                    style={({ pressed }) => [
                                         styles.fileBox, 
-                                        { backgroundColor: activeTheme === 'dark' ? '#1E1E1E' : '#FAFAFA', borderColor: colors.border },
-                                        selectedFile && { borderColor: colors.accent, backgroundColor: activeTheme === 'dark' ? '#001A22' : '#E6F9FF' }
+                                        { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)', borderColor: colors.border },
+                                        selectedFile && { borderColor: colors.accent, backgroundColor: activeTheme === 'dark' ? 'rgba(0, 230, 118, 0.05)' : 'rgba(0, 230, 118, 0.05)', borderStyle: 'solid' },
+                                        pressed && { opacity: 0.8 }
                                     ]} 
                                     onPress={pickDocument}
                                 >
                                     {selectedFile ? (
                                         <View style={styles.fileBoxInner}>
-                                            <IconFileText color={colors.accent} size={32} />
+                                            <View style={[styles.fileIconWrapper, { backgroundColor: colors.accent }]}>
+                                                <IconFileText color="#FFF" size={28} />
+                                            </View>
                                             <View style={styles.fileTextContainer}>
                                                 <Tree title={selectedFile.name} style={[styles.fileName, { color: colors.textPrimary }]} numberOfLines={1} />
-                                                <Tree title={`${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`} style={[styles.fileSize, { color: colors.textSecondary }]} />
+                                                <Tree title={`${(selectedFile.size / 1024 / 1024).toFixed(2)} MB • Tap to change`} style={[styles.fileSize, { color: colors.accent }]} />
                                             </View>
                                             <Pressable onPress={() => setSelectedFile(null)} style={styles.clearFileBtn}>
                                                 <IconX color="#FF4444" size={20} />
@@ -322,28 +322,32 @@ const SubmitForm = () => {
                                         </View>
                                     ) : (
                                         <View style={styles.fileBoxInnerCenter}>
-                                            <IconUpload color={colors.textSecondary} size={32} />
-                                            <Mountain title="Tap to browse files" style={[styles.browseText, { color: colors.textSecondary }]} />
+                                            <View style={[styles.uploadIconCircle, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                                                <IconUpload color={colors.accent} size={32} />
+                                            </View>
+                                            <Mountain title="Tap to upload PDF" style={[styles.browseText, { color: colors.textPrimary }]} />
+                                            <Tree title="Maximum file size 15MB" style={{ color: colors.textSecondary, fontSize: 13, marginTop: 4 }} />
                                         </View>
                                     )}
                                 </Pressable>
                             </View>
 
-                            <Pressable
-                                style={[
+                            <AnimatedPressable
+                                style={({ pressed }) => [
                                     styles.submitButton, 
-                                    { backgroundColor: colors.accent },
-                                    (!selectedSubj || !topic || !selectedFile) && { backgroundColor: activeTheme === 'dark' ? '#333' : '#E0E0E0' }
+                                    { backgroundColor: colors.accent, shadowColor: colors.accent, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 8 },
+                                    (!selectedSubj || !topic || !selectedFile) && { backgroundColor: activeTheme === 'dark' ? '#333' : '#E0E0E0', shadowOpacity: 0, elevation: 0 },
+                                    pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] }
                                 ]}
                                 onPress={handleSubmit}
                                 disabled={isLoading || !selectedSubj || !topic || !selectedFile}
                             >
                                 {isLoading ? (
-                                    <ActivityIndicator color="#FFFFFF" />
+                                    <Tree title="Uploading..." style={styles.submitButtonText} />
                                 ) : (
                                     <Mountain title="Submit Note" style={styles.submitButtonText} />
                                 )}
-                            </Pressable>
+                            </AnimatedPressable>
 
                         </View>
                     )}
@@ -374,7 +378,43 @@ const SubmitForm = () => {
                 </Pressable>
             </Modal>
             
-            <Header title="Submit Notes" showBack={true} />
+            <Modal visible={infoModalVisible} transparent={true} animationType="fade" onRequestClose={() => setInfoModalVisible(false)}>
+                <Pressable style={styles.modalOverlayCenter} onPress={() => setInfoModalVisible(false)}>
+                    <Pressable style={[styles.infoModalBox, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={(e) => e.stopPropagation()}>
+                        <View style={styles.infoModalHeader}>
+                            <Mountain title="How it works" style={[styles.infoModalTitle, { color: colors.textPrimary }]} />
+                            <Pressable onPress={() => setInfoModalVisible(false)} style={styles.modalCloseBtn}>
+                                <IconX color={colors.textSecondary} size={24} />
+                            </Pressable>
+                        </View>
+                        
+                        <View style={styles.stepRow}>
+                            <IconUserCheck size={24} color={colors.accent} />
+                            <Tree title="1. Log in using your university @diu.edu.bd account." style={[styles.stepText, { color: colors.textSecondary }]} />
+                        </View>
+                        <View style={styles.stepRow}>
+                            <IconUpload size={24} color={colors.accent} />
+                            <Tree title="2. Fill out the form and attach your clean PDF file." style={[styles.stepText, { color: colors.textSecondary }]} />
+                        </View>
+                        <View style={styles.stepRow}>
+                            <IconSend size={24} color={colors.accent} />
+                            <Tree title="3. Wait for admin approval to see your notes live!" style={[styles.stepText, { color: colors.textSecondary }]} />
+                        </View>
+                        
+                        <AppButton title="Got it" onPress={() => setInfoModalVisible(false)} style={{ marginTop: 20, width: '100%', borderRadius: 12 }} />
+                    </Pressable>
+                </Pressable>
+            </Modal>
+
+            <Header 
+                title="Submit Notes" 
+                showBack={true} 
+                rightComponent={
+                    <Pressable onPress={() => setInfoModalVisible(true)} style={({ pressed }) => [styles.infoBtn, pressed && { opacity: 0.6 }]}>
+                        <IconInfoCircle color={colors.textPrimary} size={24} />
+                    </Pressable>
+                }
+            />
         </View>
     );
 };
@@ -401,6 +441,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 10,
     },
+    infoBtn: {
+        padding: 4,
+    },
     subtitle: {
         fontSize: 14,
         textAlign: 'center',
@@ -411,14 +454,8 @@ const styles = StyleSheet.create({
         marginTop: 60,
         alignItems: 'center',
     },
-    formCard: {
-        borderRadius: 20,
-        padding: 20,
-        borderWidth: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 10,
-        elevation: 2,
+    formContainer: {
+        marginTop: 10,
     },
     instructionsContainer: {
         padding: 20,
@@ -452,7 +489,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         borderWidth: 1,
         paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingVertical: 14,
     },
     dropdownText: {
         fontSize: 16,
@@ -466,29 +503,51 @@ const styles = StyleSheet.create({
     textInput: {
         fontSize: 16,
     },
-    chipContainer: {
-        gap: 10,
-        paddingRight: 20,
-    },
-    chip: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20,
+    segmentedContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        borderRadius: 16,
         borderWidth: 1,
+        padding: 6,
+        gap: 6,
     },
-    chipText: {
+    segmentBtn: {
+        flexBasis: '47%',
+        flexGrow: 1,
+        paddingVertical: 12,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    segmentText: {
         fontSize: 14,
     },
     fileBox: {
         borderStyle: 'dashed',
         borderWidth: 2,
-        borderRadius: 16,
-        padding: 20,
+        borderRadius: 24,
+        padding: 24,
     },
     fileBoxInnerCenter: {
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10,
+        gap: 8,
+    },
+    uploadIconCircle: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 8,
+        borderWidth: 1,
+    },
+    fileIconWrapper: {
+        width: 52,
+        height: 52,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     fileBoxInner: {
         flexDirection: 'row',
@@ -499,11 +558,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     fileName: {
-        fontSize: 14,
+        fontSize: 15,
+        fontFamily: 'SpaceGrotesk-Bold',
     },
     fileSize: {
         fontSize: 12,
-        marginTop: 2,
+        marginTop: 4,
     },
     browseText: {
         fontSize: 16,
@@ -514,14 +574,16 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     submitButton: {
-        paddingVertical: 14,
+        paddingVertical: 16,
         borderRadius: 16,
         alignItems: 'center',
-        marginTop: 10,
+        justifyContent: 'center',
+        marginTop: 20,
     },
     submitButtonText: {
         color: '#FFFFFF',
         fontSize: 18,
+        textAlign: 'center',
     },
     successBox: {
         alignItems: 'center',
@@ -535,6 +597,33 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.6)',
         justifyContent: 'flex-end',
+    },
+    modalOverlayCenter: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    infoModalBox: {
+        width: '100%',
+        borderRadius: 24,
+        padding: 24,
+        borderWidth: 1,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.25,
+        shadowRadius: 20,
+    },
+    infoModalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    infoModalTitle: {
+        fontSize: 22,
     },
     modalContent: {
         borderTopLeftRadius: 24,

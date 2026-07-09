@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh, IconSend } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState, useRef } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, RefreshControl, Animated, Text } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, RefreshControl, Animated, Text, Easing } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards.js';
 
@@ -27,13 +27,55 @@ const Notes = () => {
     const [expandedYear, setExpandedYear] = useState(null);
     const [expandedSemester, setExpandedSemester] = useState(null);
 
-    const submitScaleAnim = useRef(new Animated.Value(1)).current;
-    const handleSubmitPressIn = () => Animated.spring(submitScaleAnim, { toValue: 0.94, useNativeDriver: true }).start();
-    const handleSubmitPressOut = () => Animated.spring(submitScaleAnim, { toValue: 1, useNativeDriver: true }).start();
+    const floatY = useRef(new Animated.Value(0)).current;
+    const tilt = useRef(new Animated.Value(0)).current;
+    const driftX = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handlePlanePressIn = () => Animated.spring(scaleAnim, { toValue: 0.8, useNativeDriver: true }).start();
+    const handlePlanePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
 
     useEffect(() => {
+        const createLoop = (animValue, duration) => {
+            return Animated.loop(
+                Animated.sequence([
+                    Animated.timing(animValue, {
+                        toValue: 1,
+                        duration: duration,
+                        useNativeDriver: true,
+                        easing: Easing.inOut(Easing.sin),
+                    }),
+                    Animated.timing(animValue, {
+                        toValue: 0,
+                        duration: duration,
+                        useNativeDriver: true,
+                        easing: Easing.inOut(Easing.sin),
+                    })
+                ])
+            );
+        };
+
+        createLoop(floatY, 1400).start();
+        createLoop(tilt, 2100).start();
+        createLoop(driftX, 2900).start();
+
         fetchManifest();
     }, []);
+
+    const planeTranslateY = floatY.interpolate({
+        inputRange: [0, 1],
+        outputRange: [3, -3]
+    });
+    
+    const planeRotate = tilt.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['-6deg', '4deg']
+    });
+
+    const planeTranslateX = driftX.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-2, 2]
+    });
 
     const fetchManifest = async (isRefresh = false) => {
         try {
@@ -217,23 +259,19 @@ const Notes = () => {
 
             <Header 
                 title="Explore the Archives" 
+                rightComponent={
+                    <Pressable 
+                        onPress={() => router.push('/Submit')}
+                        onPressIn={handlePlanePressIn}
+                        onPressOut={handlePlanePressOut}
+                        style={({ pressed }) => [{ padding: 4 }, pressed && { opacity: 0.8 }]}
+                    >
+                        <Animated.View style={{ transform: [{ translateY: planeTranslateY }, { translateX: planeTranslateX }, { rotate: planeRotate }, { scale: scaleAnim }] }}>
+                            <IconSend color={colors.textPrimary} size={24} />
+                        </Animated.View>
+                    </Pressable>
+                }
             />
-
-            <AnimatedPressable 
-                onPress={() => router.push('/Submit')}
-                onPressIn={handleSubmitPressIn}
-                onPressOut={handleSubmitPressOut}
-                style={[
-                    styles.fab, 
-                    { 
-                        backgroundColor: colors.card,
-                        bottom: tabBarHeight + 20,
-                        transform: [{ scale: submitScaleAnim }]
-                    }
-                ]}
-            >
-                <IconPlus color={colors.textPrimary} size={24} />
-            </AnimatedPressable>
         </View>
     );
 };
@@ -341,23 +379,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         gap: 10,
         borderRadius: 12,
-    },
-    fab: {
-        position: 'absolute',
-        right: 20,
-        width: 56,
-        height: 56,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 28,
-        zIndex: 100,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 5,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: 'rgba(150,150,150,0.2)'
     },
     subjectIconBullet: {
         width: 6,

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh, IconSend } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh, IconSend, IconSearch } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState, useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, RefreshControl, Animated, Text, Easing } from 'react-native';
@@ -31,9 +31,13 @@ const Notes = () => {
     const tilt = useRef(new Animated.Value(0)).current;
     const driftX = useRef(new Animated.Value(0)).current;
     const scaleAnim = useRef(new Animated.Value(1)).current;
+    const scaleAnimLeft = useRef(new Animated.Value(1)).current;
 
     const handlePlanePressIn = () => Animated.spring(scaleAnim, { toValue: 0.8, useNativeDriver: true }).start();
     const handlePlanePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+
+    const handleSearchPressIn = () => Animated.spring(scaleAnimLeft, { toValue: 0.8, useNativeDriver: true }).start();
+    const handleSearchPressOut = () => Animated.spring(scaleAnimLeft, { toValue: 1, useNativeDriver: true }).start();
 
     useEffect(() => {
         const createLoop = (animValue, duration) => {
@@ -259,6 +263,18 @@ const Notes = () => {
 
             <Header 
                 title="Explore the Archives" 
+                leftComponent={
+                    <Pressable 
+                        onPress={() => router.push('/(pages)/Search')}
+                        onPressIn={handleSearchPressIn}
+                        onPressOut={handleSearchPressOut}
+                        style={({ pressed }) => [{ padding: 4 }, pressed && { opacity: 0.8 }]}
+                    >
+                        <Animated.View style={{ transform: [{ translateY: planeTranslateY }, { translateX: planeTranslateX }, { rotate: planeRotate }, { scale: scaleAnimLeft }] }}>
+                            <IconSearch color={colors.textPrimary} size={24} />
+                        </Animated.View>
+                    </Pressable>
+                }
                 rightComponent={
                     <Pressable 
                         onPress={() => router.push('/Submit')}

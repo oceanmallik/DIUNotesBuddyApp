@@ -6,11 +6,22 @@ import { withLayoutContext } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
 
-const AnimatedTabIcon = ({ IconComponent, name, color, size }: any) => {
+const AnimatedTabIcon = ({ IconComponent, name, color, size, focused }: any) => {
+  const scaleAnim = useRef(new Animated.Value(focused ? 1.15 : 1)).current;
+
+  useEffect(() => {
+    Animated.spring(scaleAnim, {
+      toValue: focused ? 1.15 : 1,
+      useNativeDriver: true,
+      friction: 5,
+      tension: 100
+    }).start();
+  }, [focused]);
+
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <Animated.View style={{ transform: [{ scale: scaleAnim }], alignItems: 'center', justifyContent: 'center' }}>
       <IconComponent size={size} name={name} color={color} />
-    </View>
+    </Animated.View>
   );
 };
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -54,19 +65,18 @@ export default function TabLayout() {
       screenOptions={{
         swipeEnabled: true,
         tabBarShowIcon: true,
-        tabBarShowLabel: true,
-        tabBarActiveTintColor: colors.accent,
+        tabBarShowLabel: false, // Hidden for a compact pill look
+        tabBarActiveTintColor: activeTheme === 'dark' ? '#FFF' : colors.accent,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarIndicatorStyle: { 
           backgroundColor: colors.accent,
-          opacity: 0.15,
-          height: 52,
+          opacity: 0.25,
+          height: 44,
           bottom: 6,
-          marginHorizontal: 6,
-          borderRadius: 26,
+          marginHorizontal: 8,
+          borderRadius: 22,
         },
         tabBarStyle: { backgroundColor: 'transparent', elevation: 0, shadowOpacity: 0 },
-        tabBarLabelStyle: styles.label,
         tabBarItemStyle: styles.item,
       }}
     >
@@ -124,36 +134,30 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBarContainer: {
     position: 'absolute',
-    left: 16,
-    right: 16,
-    height: 64,
-    borderRadius: 32,
+    left: 20,
+    right: 20,
+    height: 56,
+    borderRadius: 28,
     elevation: 0,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
   },
   blur: {
-    borderRadius: 32,
+    borderRadius: 28,
     overflow: 'hidden',
   },
   overlay: {
     flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 32,
+    borderRadius: 28,
   },
   item: {
     paddingTop: 6,
     paddingBottom: 6,
     paddingHorizontal: 0,
-    height: 64,
-  },
-  label: {
-    fontSize: 10,
-    fontFamily: 'SpaceGrotesk-Bold',
-    marginTop: 2,
-    marginBottom: 0,
-    textTransform: 'none',
+    height: 56,
+    justifyContent: 'center',
   },
 });

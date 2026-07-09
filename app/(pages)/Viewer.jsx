@@ -8,7 +8,9 @@ import { OfflineManager } from '../../logic/OfflineManager';
 
 const PdfViewer = () => {
     const params = useLocalSearchParams();
-    const url = Array.isArray(params.url) ? params.url[0] : params.url;
+    const rawUrl = Array.isArray(params.url) ? params.url[0] : params.url;
+    // expo-router decodes the URL, turning %20 into spaces. Re-encode to fix PDF fetching & OfflineManager matching.
+    const url = typeof rawUrl === 'string' ? encodeURI(rawUrl) : rawUrl;
     const title = Array.isArray(params.title) ? params.title[0] : params.title;
     const router = useRouter();
     const { colors } = useAppTheme();

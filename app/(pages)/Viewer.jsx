@@ -33,7 +33,7 @@ const PdfViewer = () => {
 
     const pdfSource = { 
         uri: localUri ? localUri : (typeof url === 'string' ? url : ''), 
-        cache: true 
+        cache: localUri ? false : true 
     };
 
     const headerMarginTop = useRef(new Animated.Value(0)).current;

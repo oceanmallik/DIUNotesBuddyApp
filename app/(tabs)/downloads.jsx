@@ -1,9 +1,10 @@
 import { IconArrowLeft, IconTrash, IconFileText, IconCheck, IconX } from '@tabler/icons-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 
-import React, { useState, useRef } from 'react';
-import { Animated, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, Modal } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View, Modal, Easing, RefreshControl } from 'react-native';
 import { Mountain, Planet, Tree } from '../../appDesign/texts';
+import { IconRefresh } from '@tabler/icons-react-native';
 import Header, { useHeaderHeight } from '../../appDesign/header';
 import { OfflineManager } from '../../logic/OfflineManager';
 import { useAppTheme } from '../../logic/ThemeProvider';
@@ -81,13 +82,24 @@ export default function SavedNotes() {
     const [selectedNotes, setSelectedNotes] = useState([]);
     const [deleteConfirmTarget, setDeleteConfirmTarget] = useState(null);
     const isSelectionMode = selectedNotes.length > 0;
+    
+    const loadNotes = async (isManual = false) => {
+        if (isManual) {
+            setRefreshing(true);
+            await new Promise(resolve => setTimeout(resolve, 800));
+        } else {
+            setRefreshing(true);
+        }
 
-    const loadNotes = async () => {
-        setRefreshing(true);
         const data = await OfflineManager.getSavedNotes();
         data.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
         setNotes(data);
-        setRefreshing(false);
+
+        if (isManual) {
+            setRefreshing(false);
+        } else {
+            setRefreshing(false);
+        }
     };
 
     useFocusEffect(
@@ -123,7 +135,14 @@ export default function SavedNotes() {
             <ScrollView 
                 contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 16, paddingBottom: tabBarHeight + 20, paddingHorizontal: 16 }]}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={loadNotes} tintColor={colors.accent} />
+                    <RefreshControl 
+                        refreshing={refreshing} 
+                        onRefresh={() => loadNotes(true)} 
+                        tintColor={colors.accent}
+                        colors={[colors.accent]}
+                        progressBackgroundColor={colors.card}
+                        progressViewOffset={headerHeight}
+                    />
                 }
             >
                 {notes.length === 0 ? (

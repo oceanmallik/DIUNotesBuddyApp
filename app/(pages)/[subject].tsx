@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen, IconRefresh, IconDownload, IconCheck } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import React, { useEffect, useState, useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards';
 import { triggerAccordionAnimation } from '../../appDesign/animations';
@@ -135,12 +135,14 @@ const SubjectScreen = () => {
 
     const [subjectData, setSubjectData] = useState<Subject | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
 
-    const fetchSubjectData = useCallback(async () => {
+    const fetchSubjectData = useCallback(async (isRefresh = false) => {
         try {
-            setIsLoading(true);
+            if (isRefresh) setRefreshing(true);
+            else setIsLoading(true);
 
             const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
             
@@ -205,7 +207,8 @@ const SubjectScreen = () => {
                 setError("An unknown error occurred.");
             }
         } finally {
-            setIsLoading(false);
+            if (isRefresh) setRefreshing(false);
+            else setIsLoading(false);
         }
     }, [subjectId]);
 
@@ -227,9 +230,22 @@ const SubjectScreen = () => {
             <Stack.Screen options={{ headerShown: false }} />
 
             <View style={styles.bg}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 12 }]}>
+                <ScrollView 
+                    style={styles.scrollView} 
+                    contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 12 }]}
+                    refreshControl={
+                        <RefreshControl 
+                            refreshing={refreshing} 
+                            onRefresh={() => fetchSubjectData(true)} 
+                            tintColor={colors.accent}
+                            colors={[colors.accent]}
+                            progressBackgroundColor={colors.card}
+                            progressViewOffset={headerHeight}
+                        />
+                    }
+                >
 
-                    {isLoading ? (
+                    {isLoading && !refreshing ? (
                         <BentoLoader text="Loading materials..." />
                     ) : error ? (
                         <TitleCard title="Error" description={error} icon={IconAlertCircle} onPress={() => {}} />
@@ -307,11 +323,6 @@ const SubjectScreen = () => {
             <Header 
                 title="Knowledge Vault" 
                 showBack 
-                rightComponent={
-                    <Pressable onPress={() => fetchSubjectData()}>
-                        <IconRefresh color={colors.textPrimary} size={24} />
-                    </Pressable>
-                }
             />
         </View>
     );

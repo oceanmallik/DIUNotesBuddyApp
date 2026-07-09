@@ -2,8 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { Pressable, ScrollView, StyleSheet, View, RefreshControl, Animated, Text } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards.js';
 
@@ -11,6 +11,8 @@ import { triggerAccordionAnimation } from '../../appDesign/animations.js';
 import Header, { useHeaderHeight } from '../../appDesign/header.js';
 import { Mountain, Tree } from '../../appDesign/texts.js';
 import { useAppTheme } from '../../logic/ThemeProvider';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const Notes = () => {
     const router = useRouter();
@@ -20,17 +22,23 @@ const Notes = () => {
 
     const [manifest, setManifest] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const [expandedYear, setExpandedYear] = useState(null);
     const [expandedSemester, setExpandedSemester] = useState(null);
+
+    const submitScaleAnim = useRef(new Animated.Value(1)).current;
+    const handleSubmitPressIn = () => Animated.spring(submitScaleAnim, { toValue: 0.94, useNativeDriver: true }).start();
+    const handleSubmitPressOut = () => Animated.spring(submitScaleAnim, { toValue: 1, useNativeDriver: true }).start();
 
     useEffect(() => {
         fetchManifest();
     }, []);
 
-    const fetchManifest = async () => {
+    const fetchManifest = async (isRefresh = false) => {
         try {
-            setIsLoading(true);
+            if (isRefresh) setRefreshing(true);
+            else setIsLoading(true);
             setError(null);
             
             const MANIFEST_URL = `https://raw.githubusercontent.com/oceanmallik/DIUNotesBuddyDATABASE/main/manifest.json?t=${new Date().getTime()}`;
@@ -59,7 +67,8 @@ const Notes = () => {
             }
             setError(err.message);
         } finally {
-            setIsLoading(false);
+            if (isRefresh) setRefreshing(false);
+            else setIsLoading(false);
         }
     };
 
@@ -79,12 +88,22 @@ const Notes = () => {
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={[styles.bg, { backgroundColor: colors.background }]}>
-                <ScrollView
-                    style={styles.scrollView}
-                    contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 12, paddingBottom: tabBarHeight + 20 }]}
-                    showsVerticalScrollIndicator={false}>
-
-                    {isLoading ? (
+                <ScrollView 
+                    style={styles.scrollView} 
+                    contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 12, paddingBottom: tabBarHeight + 20 }]} 
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl 
+                            refreshing={refreshing} 
+                            onRefresh={() => fetchManifest(true)} 
+                            tintColor={colors.accent}
+                            colors={[colors.accent]}
+                            progressBackgroundColor={colors.card}
+                            progressViewOffset={headerHeight}
+                        />
+                    }
+                >
+                    {isLoading && !refreshing ? (
                         <BentoLoader text="Fetching latest notes..." />
                     ) : error ? (
                         <TitleCard title="Connection Error" description={error} icon={IconAlertCircle} />
@@ -198,17 +217,23 @@ const Notes = () => {
 
             <Header 
                 title="Explore the Archives" 
-                leftComponent={
-                    <Pressable onPress={() => router.push('/Submit')}>
-                        <IconPlus color={colors.textPrimary} size={24} />
-                    </Pressable>
-                }
-                rightComponent={
-                    <Pressable onPress={() => fetchManifest()}>
-                        <IconRefresh color={colors.textPrimary} size={24} />
-                    </Pressable>
-                }
             />
+
+            <AnimatedPressable 
+                onPress={() => router.push('/Submit')}
+                onPressIn={handleSubmitPressIn}
+                onPressOut={handleSubmitPressOut}
+                style={[
+                    styles.fab, 
+                    { 
+                        backgroundColor: colors.card,
+                        bottom: tabBarHeight + 20,
+                        transform: [{ scale: submitScaleAnim }]
+                    }
+                ]}
+            >
+                <IconPlus color={colors.textPrimary} size={24} />
+            </AnimatedPressable>
         </View>
     );
 };
@@ -316,6 +341,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         gap: 10,
         borderRadius: 12,
+    },
+    fab: {
+        position: 'absolute',
+        right: 20,
+        width: 56,
+        height: 56,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 28,
+        zIndex: 100,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 5,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: 'rgba(150,150,150,0.2)'
     },
     subjectIconBullet: {
         width: 6,

@@ -54,9 +54,24 @@ const PlanCard = ({ item, colors, activeTheme, handleDelete, openEditModal, chan
     return colors.accent;
   };
   const statusColor = getStatusColor(item.status);
-  const allStatuses = ['All', 'To Do', 'In Process', 'Done']; // we don't need 'All' for otherStatuses
-  const otherStatuses = ['To Do', 'In Process', 'Done'].filter(s => s !== item.status);
-  
+  const drawerStatuses = ['To Do', 'In Process', 'Done'];
+  const statusIndex = drawerStatuses.indexOf(item.status);
+  const sliderAnim = useRef(new Animated.Value(statusIndex)).current;
+
+  useEffect(() => {
+    Animated.spring(sliderAnim, {
+      toValue: drawerStatuses.indexOf(item.status),
+      useNativeDriver: false,
+      friction: 8,
+      tension: 50,
+    }).start();
+  }, [item.status]);
+
+  const sliderLeft = sliderAnim.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: ['0%', '33.33%', '66.66%']
+  });
+
   const IconComponent = availableIcons.find(i => i.id === (item.icon || 'list'))?.component || IconListCheck;
 
   return (
@@ -89,7 +104,7 @@ const PlanCard = ({ item, colors, activeTheme, handleDelete, openEditModal, chan
         <View style={styles.infoContainer}>
             <Text style={[styles.nameText, { color: colors.textPrimary }]} numberOfLines={2}>{item.title}</Text>
             {item.details ? (
-                <Text style={[styles.emailText, { color: colors.textSecondary }]} numberOfLines={1}>{item.details}</Text>
+                <Text style={[styles.emailText, { color: colors.textSecondary }]}>{item.details}</Text>
             ) : null}
             
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
@@ -147,16 +162,34 @@ const PlanCard = ({ item, colors, activeTheme, handleDelete, openEditModal, chan
         ]}
         pointerEvents={expanded ? 'auto' : 'none'}
       >
-        <View style={styles.drawerActions}>
-            {otherStatuses.map(status => (
-                <Pressable 
-                    key={status}
-                    style={[styles.drawerButton, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} 
-                    onPress={() => changeStatusImmediate(item.id, status)}
-                >
-                    <Text style={[styles.drawerButtonText, { color: colors.textPrimary }]}>Mark as {status}</Text>
-                </Pressable>
-            ))}
+        <View style={[styles.segmentedControlContainer, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+            <Animated.View style={[
+                styles.segmentedSlider, 
+                { 
+                    left: sliderLeft,
+                    backgroundColor: colors.accent 
+                }
+            ]} />
+            
+            {drawerStatuses.map((status) => {
+                const isCurrent = status === item.status;
+                return (
+                    <Pressable 
+                        key={status}
+                        style={styles.segmentedButton} 
+                        onPress={() => {
+                            if (!isCurrent) {
+                                changeStatusImmediate(item.id, status);
+                            }
+                        }}
+                    >
+                        <Text style={[
+                            styles.segmentedButtonText, 
+                            { color: isCurrent ? '#FFFFFF' : colors.textPrimary }
+                        ]}>{status}</Text>
+                    </Pressable>
+                );
+            })}
         </View>
       </Animated.View>
     </View>
@@ -705,21 +738,35 @@ const styles = StyleSheet.create({
     elevation: 1,
     overflow: 'hidden',
   },
-  drawerActions: {
+  segmentedControlContainer: {
     flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    width: '100%',
-  },
-  drawerButton: {
+    height: 44,
+    borderRadius: 22,
+    position: 'relative',
     flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginHorizontal: 16,
+    marginVertical: 12,
+    padding: 2,
   },
-  drawerButtonText: {
+  segmentedSlider: {
+    position: 'absolute',
+    top: 2,
+    bottom: 2,
+    width: '33.33%',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  segmentedButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  segmentedButtonText: {
     fontFamily: 'SpaceGrotesk-Bold',
     fontSize: 13,
   },

@@ -121,6 +121,42 @@ export default function ProfilePage() {
         : 'Unknown';
     
     const provider = user?.app_metadata?.provider || 'Email';
+    const prov = provider.toLowerCase();
+    const isGoogle = prov === 'google' || user?.email?.endsWith('@diu.edu.bd');
+    const isGithub = prov === 'github';
+
+    const renderAvatarInner = () => {
+        if (avatarUrl) {
+            return <Image source={{ uri: avatarUrl }} style={[styles.avatarImage, { marginRight: 0 }]} />;
+        }
+        return (
+            <View style={[styles.avatarCircle, { backgroundColor: activeTheme === 'dark' ? '#1A3340' : '#F0F8FF', marginRight: 0 }]}>
+                <Text style={[styles.avatarText, { color: colors.accent }]}>{initial}</Text>
+            </View>
+        );
+    };
+
+    const renderAvatar = () => {
+        if (isGoogle) {
+            return (
+                <View style={{ width: 65, height: 65, borderRadius: 32.5, overflow: 'hidden', marginRight: 16, alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ position: 'absolute', top: 0, left: 0, width: 33, height: 33, backgroundColor: '#EA4335' }} />
+                    <View style={{ position: 'absolute', top: 0, right: 0, width: 33, height: 33, backgroundColor: '#4285F4' }} />
+                    <View style={{ position: 'absolute', bottom: 0, left: 0, width: 33, height: 33, backgroundColor: '#FBBC05' }} />
+                    <View style={{ position: 'absolute', bottom: 0, right: 0, width: 33, height: 33, backgroundColor: '#34A853' }} />
+                    {renderAvatarInner()}
+                </View>
+            );
+        }
+        
+        const githubRing = isGithub ? { borderWidth: 2, borderColor: activeTheme === 'dark' ? '#FFFFFF' : '#24292E' } : {};
+        
+        return (
+            <View style={[githubRing, { borderRadius: 32, marginRight: 16, padding: isGithub ? 2 : 0 }]}>
+                {renderAvatarInner()}
+            </View>
+        );
+    };
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -154,13 +190,7 @@ export default function ProfilePage() {
                         onPressIn={handlePressIn}
                         onPressOut={handlePressOut}
                     >
-                        {avatarUrl ? (
-                            <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
-                        ) : (
-                        <View style={[styles.avatarCircle, { backgroundColor: activeTheme === 'dark' ? '#1A3340' : '#F0F8FF' }]}>
-                            <Text style={[styles.avatarText, { color: colors.accent }]}>{initial}</Text>
-                        </View>
-                    )}
+                        {renderAvatar()}
                     
                     <View style={styles.infoContainer}>
                         {name && (

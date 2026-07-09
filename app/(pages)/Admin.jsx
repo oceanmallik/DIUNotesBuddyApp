@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { Mountain, Tree } from '../../appDesign/texts';
+import Header, { useHeaderHeight } from '../../appDesign/header';
 import { supabase } from '../../lib/supabase';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
@@ -21,6 +22,7 @@ const AdminDashboard = () => {
     const [existingTopics, setExistingTopics] = useState([]);
 
     const { colors, activeTheme } = useAppTheme();
+    const headerHeight = useHeaderHeight();
 
     useEffect(() => {
         checkAccessAndFetch();
@@ -208,7 +210,10 @@ const AdminDashboard = () => {
     if (isLoading) {
         return (
             <View style={[styles.container, { backgroundColor: colors.background }]}>
-                <BentoLoader text="Verifying admin credentials..." />
+                <View style={styles.centerBox}>
+                    <BentoLoader text="Verifying admin credentials..." />
+                </View>
+                <Header title="Admin Portal" showBack={true} />
             </View>
         );
     }
@@ -221,6 +226,7 @@ const AdminDashboard = () => {
                     <Mountain title="Access Restricted" style={{ color: '#FF4444', fontSize: 24, marginTop: 15 }} />
                     <Tree title="Only authorized administrators using a GitHub login can view this page." style={{ textAlign: 'center', marginTop: 10, paddingHorizontal: 40, color: colors.textSecondary }} />
                 </View>
+                <Header title="Admin Portal" showBack={true} />
             </View>
         );
     }
@@ -230,7 +236,7 @@ const AdminDashboard = () => {
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.bg}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 16 }]}>
 
                     <View style={styles.headerRow}>
                         <Mountain title="Pending Notes" style={[styles.pageTitle, { color: colors.textPrimary }]} />
@@ -299,6 +305,7 @@ const AdminDashboard = () => {
                     )}
                 </ScrollView>
             </View>
+            <Header title="Admin Portal" showBack={true} />
 
             {/* Admin Topic Selection Modal */}
             <Modal visible={publishModalVisible} transparent={true} animationType="fade" onRequestClose={() => setPublishModalVisible(false)}>

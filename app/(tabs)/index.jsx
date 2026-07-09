@@ -24,6 +24,51 @@ const App = () => {
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
   const initial = user?.email?.charAt(0)?.toUpperCase() ?? "?";
 
+  const provider = user?.app_metadata?.provider || 'Email';
+  const prov = provider.toLowerCase();
+  const isGoogle = prov === 'google' || user?.email?.endsWith('@diu.edu.bd');
+  const isGithub = prov === 'github';
+
+  const renderAvatarInner = () => {
+    if (avatarUrl) {
+      return <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />;
+    }
+    return (
+      <View style={[styles.avatarCircle, { backgroundColor: activeTheme === 'dark' ? '#1A3340' : '#F0F8FF' }]}>
+        <Text style={[styles.avatarText, { color: colors.accent }]}>{initial}</Text>
+      </View>
+    );
+  };
+
+  const renderAvatar = () => {
+    if (!user) {
+      return (
+        <View style={[styles.avatarCircle, { backgroundColor: activeTheme === 'dark' ? '#1A3340' : '#F0F8FF' }]}>
+          <IconUser size={20} color={colors.accent} />
+        </View>
+      );
+    }
+    if (isGoogle) {
+      return (
+        <View style={{ width: 41, height: 41, borderRadius: 20.5, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ position: 'absolute', top: 0, left: 0, width: 21, height: 21, backgroundColor: '#EA4335' }} />
+          <View style={{ position: 'absolute', top: 0, right: 0, width: 21, height: 21, backgroundColor: '#4285F4' }} />
+          <View style={{ position: 'absolute', bottom: 0, left: 0, width: 21, height: 21, backgroundColor: '#FBBC05' }} />
+          <View style={{ position: 'absolute', bottom: 0, right: 0, width: 21, height: 21, backgroundColor: '#34A853' }} />
+          {renderAvatarInner()}
+        </View>
+      );
+    }
+    
+    const githubRing = isGithub ? { borderWidth: 2, borderColor: activeTheme === 'dark' ? '#FFFFFF' : '#24292E' } : {};
+    
+    return (
+      <View style={[githubRing, { borderRadius: 18, padding: isGithub ? 2 : 0 }]}>
+        {renderAvatarInner()}
+      </View>
+    );
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.bg, { paddingBottom: tabBarHeight + 25 }]}>
@@ -71,21 +116,11 @@ const App = () => {
                 styles.avatarButton, 
                 { 
                   transform: [{ scale: avatarScale }],
-                  backgroundColor: activeTheme === 'dark' ? '#1A3340' : '#F0F8FF'
+                  backgroundColor: 'transparent' // Background handled in inner views now
                 }
               ]}
             >
-              {user ? (
-                avatarUrl ? (
-                  <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
-                ) : (
-                  <View style={styles.avatarCircle}>
-                    <Text style={[styles.avatarText, { color: colors.accent }]}>{initial}</Text>
-                  </View>
-                )
-              ) : (
-                <IconUser size={20} color={colors.accent} />
-              )}
+              {renderAvatar()}
             </AnimatedPressable>
           </View>
 
@@ -208,21 +243,21 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   avatarButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   avatarCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },

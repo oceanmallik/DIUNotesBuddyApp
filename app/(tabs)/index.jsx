@@ -1,14 +1,16 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 
-import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle } from '@tabler/icons-react-native'
-import { router } from 'expo-router'
-import { useRef } from 'react'
+import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle, IconHeart } from '@tabler/icons-react-native'
+import { router, useFocusEffect } from 'expo-router'
+import React, { useRef, useState, useCallback } from 'react'
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Tree } from '../../appDesign/texts.js'
 import FocusTimer from '../../appDesign/focusTimer.js'
 import { useAuth } from '../../logic/AuthProvider'
 import { useAppTheme } from '../../logic/ThemeProvider'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { OfflineManager } from '../../logic/OfflineManager'
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -21,6 +23,26 @@ const App = () => {
   const avatarScale = useRef(new Animated.Value(1)).current;
   const themeScale = useRef(new Animated.Value(1)).current;
   const themeSpin = useRef(new Animated.Value(0)).current;
+
+  const [stats, setStats] = useState({ total: 0, unread: 0, readNotes: 0 });
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadStats = async () => {
+        try {
+          const notesRaw = await OfflineManager.getSavedNotes();
+          const total = notesRaw.length;
+          const readNotes = notesRaw.filter(n => n.read).length;
+          const unread = total - readNotes;
+
+          setStats({ total, unread, readNotes });
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      loadStats();
+    }, [])
+  );
 
   const handleToggleTheme = () => {
     toggleTheme();
@@ -143,6 +165,21 @@ const App = () => {
             </AnimatedPressable>
           </View>
 
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginBottom: 20, gap: 12 }}>
+            <View style={[styles.statBox, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
+                <Text style={[styles.statNum, { color: colors.accent }]}>{stats.total}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Downloads</Text>
+            </View>
+            <View style={[styles.statBox, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
+                <Text style={[styles.statNum, { color: colors.destructive }]}>{stats.unread}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Unread</Text>
+            </View>
+            <View style={[styles.statBox, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
+                <Text style={[styles.statNum, { color: '#00E676' }]}>{stats.readNotes}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Read</Text>
+            </View>
+          </View>
+
           <FocusTimer />
 
           <View style={{ width: '100%', paddingHorizontal: 16, marginBottom: 20, gap: 12 }}>
@@ -159,36 +196,22 @@ const App = () => {
                 onPress={() => router.push('/downloads')} 
                 style={[styles.quickButton, { flex: 1, backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
               >
-                <IconDownload size={22} color={colors.accent} />
+                <IconDownload size={22} color="#00E676" />
                 <Tree title="Downloads" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
               </Pressable>
             </View>
 
             <Pressable 
-              onPress={() => router.push('/about')} 
+              onPress={() => router.push('/Support')} 
               style={[styles.quickButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
             >
-              <IconInfoCircle size={22} color={colors.accent} />
-              <Tree title="About Us" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
+              <IconHeart size={22} color="#FFA000" />
+              <Tree title="Support App" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
             </Pressable>
           </View>
         </View>
 
-        {/* Logged-out prompt banner */}
-        {!user && (
-          <View style={[
-            styles.signinBanner,
-            { 
-              backgroundColor: colors.card,
-              shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05
-            }
-          ]}>
-            <View style={styles.signinContent}>
-              <Text style={[styles.signinTitle, { color: colors.textPrimary }]}>Not signed in</Text>
-              <Text style={[styles.signinSubtitle, { color: colors.textSecondary }]}>Log in with your university email to unlock more features.</Text>
-            </View>
-          </View>
-        )}
+
       </View>
     </View>
   )
@@ -213,6 +236,27 @@ const styles = StyleSheet.create({
   quickButtonText: {
     fontSize: 13,
     fontFamily: 'SpaceGrotesk-Bold',
+    textAlign: 'center',
+  },
+  statBox: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  statNum: {
+    fontFamily: 'SpaceGrotesk-Bold',
+    fontSize: 22,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontFamily: 'SpaceGrotesk-Regular',
+    fontSize: 11,
     textAlign: 'center',
   },
   container: {

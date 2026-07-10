@@ -88,6 +88,10 @@ export default function SavedNotes() {
     const router = useRouter();
     const headerHeight = useHeaderHeight();
     const tabBarHeight = 100;
+
+    const [activeTab, setActiveTab] = useState('All');
+    const tabs = ['All', 'Read', 'Unread'];
+
     const [notes, setNotes] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [selectedNotes, setSelectedNotes] = useState([]);
@@ -151,11 +155,45 @@ export default function SavedNotes() {
         loadNotes();
     };
 
+    const filteredNotes = notes.filter(note => {
+        if (activeTab === 'Read') return note.read;
+        if (activeTab === 'Unread') return !note.read;
+        return true;
+    });
+
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <Header title="Offline Library" />
+            
+            <View style={[styles.tabsWrapper, { paddingTop: headerHeight + 12 }]}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContainer}>
+                {tabs.map(tab => {
+                  const isActive = activeTab === tab;
+                  const tabColor = tab === 'Read' ? '#00E676' : tab === 'Unread' ? colors.destructive : colors.accent;
+                  return (
+                    <Pressable
+                      key={tab}
+                      style={[
+                        styles.tabButton,
+                        { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
+                        isActive && { backgroundColor: tabColor }
+                      ]}
+                      onPress={() => setActiveTab(tab)}
+                    >
+                      <Text style={[
+                        styles.tabText,
+                        { color: isActive ? '#FFFFFF' : tabColor }
+                      ]}>
+                        {tab}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
             <ScrollView 
-                contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 16, paddingBottom: tabBarHeight + 20, paddingHorizontal: 16 }]}
+                contentContainerStyle={[styles.scrollContent, { paddingTop: 12, paddingBottom: tabBarHeight + 20, paddingHorizontal: 16 }]}
                 refreshControl={
                     <RefreshControl 
                         refreshing={refreshing} 
@@ -178,7 +216,7 @@ export default function SavedNotes() {
                 ) : (
                     <>
 
-                        {Object.entries(notes.reduce((acc, note) => {
+                        {Object.entries(filteredNotes.reduce((acc, note) => {
                             const subject = note.subject && note.subject !== 'Uncategorized' ? note.subject : 'Other Notes';
                             if (!acc[subject]) acc[subject] = [];
                             acc[subject].push(note);
@@ -299,6 +337,28 @@ const styles = StyleSheet.create({
         lineHeight: 24,
     },
     
+    tabsWrapper: {
+        width: '100%',
+        paddingBottom: 10,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: 'rgba(150,150,150,0.2)',
+    },
+    tabsContainer: {
+        paddingHorizontal: 16,
+        gap: 8,
+    },
+    tabButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    tabText: {
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 14,
+    },
+
     // Card Styles
     profileCard: {
         flexDirection: 'row',

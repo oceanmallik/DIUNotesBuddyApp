@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh, IconSend, IconSearch } from '@tabler/icons-react-native';
+import { IconAlertCircle, IconChevronDown, IconChevronRight, IconChevronsRight, IconFolder, IconFolderOpen, IconSchool, IconPlus, IconRefresh, IconSend, IconSearch } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState, useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, RefreshControl, Animated, Text, Easing } from 'react-native';
@@ -233,8 +233,8 @@ const Notes = () => {
                                                                                                     ]}
                                                                                                     onPress={() => router.push(`/(pages)/${sub.id}`)}
                                                                                                 >
-                                                                                                    <View style={[styles.subjectIconBullet, { backgroundColor: colors.accent }]} />
-                                                                                                    <Tree title={sub.title} style={styles.subjectTitle} />
+                                                                                                    <IconChevronsRight color={colors.accent} size={16} />
+                                                                                                    <Text style={[styles.subjectTitle, { color: colors.textPrimary }]}>{sub.title}</Text>
                                                                                                 </Pressable>
                                                                                             ))
                                                                                         ) : (
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 16,
+        paddingVertical: 18,
         paddingHorizontal: 16,
     },
     headerLeft: {
@@ -349,8 +349,8 @@ const styles = StyleSheet.create({
     },
     titleText: {
         fontSize: 16,
-        marginTop: 0,
-        marginBottom: 0,
+        marginVertical: 0,
+        marginHorizontal: 0,
         flexShrink: 1,
     },
     nestedContainer: {
@@ -363,11 +363,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 14,
+        paddingVertical: 16,
         paddingHorizontal: 20,
     },
     yearTitle: {
         fontSize: 15,
+        marginVertical: 0,
+        marginHorizontal: 0,
     },
     semestersContainer: {
         // dynamic bg
@@ -375,13 +377,15 @@ const styles = StyleSheet.create({
     semesterRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
+        paddingVertical: 14,
         paddingHorizontal: 32,
         gap: 10,
         borderBottomWidth: StyleSheet.hairlineWidth,
     },
     semesterTitle: {
         fontSize: 14,
+        marginVertical: 0,
+        marginHorizontal: 0,
     },
     subjectsContainer: {
         paddingVertical: 8,
@@ -391,15 +395,10 @@ const styles = StyleSheet.create({
     subjectRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 10,
+        paddingVertical: 12,
         paddingHorizontal: 12,
         gap: 10,
         borderRadius: 12,
-    },
-    subjectIconBullet: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
     },
     subjectTitle: {
         fontSize: 14,

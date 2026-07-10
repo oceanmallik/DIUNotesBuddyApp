@@ -22,6 +22,7 @@ function WavySlider({ value, onValueChange, minimumValue, maximumValue, activeCo
     const panOffset = useRef(0);
     const lastHapticValue = useRef(value);
     const isDraggingRef = useRef(false);
+    const isDraggingAnim = useRef(new Animated.Value(0)).current;
 
     // Sync external value changes (like presets) to the slider position
     useEffect(() => {
@@ -57,6 +58,7 @@ function WavySlider({ value, onValueChange, minimumValue, maximumValue, activeCo
             onMoveShouldSetPanResponder: () => true,
             onPanResponderGrant: (evt, gestureState) => {
                 isDraggingRef.current = true;
+                Animated.timing(isDraggingAnim, { toValue: 1, duration: 200, useNativeDriver: false }).start();
                 const touchX = Math.max(0, Math.min(evt.nativeEvent.locationX, containerWidthRef.current));
                 pan.setValue(touchX);
                 panOffset.current = touchX;
@@ -73,6 +75,7 @@ function WavySlider({ value, onValueChange, minimumValue, maximumValue, activeCo
                 // Ignore any delayed state updates that arrive right after we let go
                 setTimeout(() => {
                     isDraggingRef.current = false;
+                    Animated.timing(isDraggingAnim, { toValue: 0, duration: 200, useNativeDriver: false }).start();
                 }, 150);
             }
         })
@@ -106,30 +109,23 @@ function WavySlider({ value, onValueChange, minimumValue, maximumValue, activeCo
         >
             {containerWidth > 0 && (
                 <View style={styles.wavySliderInner} pointerEvents="none">
-                    {/* Inactive Wavy Track Layer (Full width) */}
-                    <View style={{ 
+                    {/* Inactive Track Layer */}
+                    <Animated.View style={{ 
                         position: 'absolute', 
-                        height: 40, 
-                        left: 0, 
-                        right: 0 
-                    }}>
-                        <Svg width={containerWidth} height={40} style={{ position: 'absolute', left: 0 }}>
-                            <Path 
-                                d={generateWavyPath(containerWidth, 40)}
-                                stroke={inactiveColor}
-                                strokeWidth={4}
-                                strokeLinecap="round"
-                                fill="none"
-                            />
-                        </Svg>
-                    </View>
+                        height: 4, 
+                        top: 18,
+                        left: pan, 
+                        right: 0,
+                        backgroundColor: inactiveColor,
+                        borderRadius: 2
+                    }} />
                     
-                    {/* Active Wavy Track Layer (Masked by Animated.View) */}
+                    {/* Active Track Layer */}
                     <Animated.View style={{ 
                         position: 'absolute', 
                         height: 40, 
-                        width: pan, 
-                        overflow: 'hidden' 
+                        width: pan,
+                        overflow: 'hidden'
                     }}>
                         <Svg width={containerWidth} height={40} style={{ position: 'absolute', left: 0 }}>
                             <Path 

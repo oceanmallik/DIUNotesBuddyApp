@@ -1,10 +1,12 @@
-import { IconArrowLeft } from '@tabler/icons-react-native';
+import { IconArrowLeft, IconX } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useRef, useState, useEffect } from 'react';
 import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import Pdf from 'react-native-pdf';
 import { useAppTheme } from '../../logic/ThemeProvider';
 import { OfflineManager } from '../../logic/OfflineManager';
+import ConfettiCannon from 'react-native-confetti-cannon';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PdfViewer = () => {
     const params = useLocalSearchParams();
@@ -17,6 +19,74 @@ const PdfViewer = () => {
 
     const [localUri, setLocalUri] = useState(null);
     const [isCheckingLocal, setIsCheckingLocal] = useState(true);
+    const [hasError, setHasError] = useState(false);
+    const [retryKey, setRetryKey] = useState(0);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [resumePage, setResumePage] = useState(null);
+    const [showResumePopup, setShowResumePopup] = useState(false);
+    const pdfRef = useRef(null);
+
+    const hideResumeTimeout = useRef(null);
+    useEffect(() => {
+        if (showResumePopup) {
+            if (hideResumeTimeout.current) clearTimeout(hideResumeTimeout.current);
+            hideResumeTimeout.current = setTimeout(() => {
+                setShowResumePopup(false);
+            }, 10000);
+        }
+        return () => {
+            if (hideResumeTimeout.current) clearTimeout(hideResumeTimeout.current);
+        };
+    }, [showResumePopup]);
+    
+    const pageIndicatorOpacity = useRef(new Animated.Value(0)).current;
+    const hideIndicatorTimeout = useRef(null);
+
+    const showPageIndicator = () => {
+        Animated.timing(pageIndicatorOpacity, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
+
+        if (hideIndicatorTimeout.current) clearTimeout(hideIndicatorTimeout.current);
+        hideIndicatorTimeout.current = setTimeout(() => {
+            Animated.timing(pageIndicatorOpacity, {
+                toValue: 0,
+                duration: 400,
+                useNativeDriver: true,
+            }).start();
+        }, 1500);
+    };
+
+    const getStorageKey = () => `@pdf_page_${url}`;
+
+    useEffect(() => {
+        const checkSavedPage = async () => {
+            if (!url) return;
+            try {
+                const saved = await AsyncStorage.getItem(getStorageKey());
+                if (saved !== null) {
+                    const page = parseInt(saved, 10);
+                    if (page > 1) {
+                        setResumePage(page);
+                        setShowResumePopup(true);
+                    }
+                }
+            } catch (e) {}
+        };
+        checkSavedPage();
+    }, [url]);
+
+    const saveCurrentPage = async (page) => {
+        if (!url) return;
+        try {
+            await AsyncStorage.setItem(getStorageKey(), page.toString());
+        } catch (e) {}
+    };
 
     useEffect(() => {
         if (typeof url === 'string') {
@@ -35,7 +105,7 @@ const PdfViewer = () => {
 
     const pdfSource = { 
         uri: localUri ? localUri : (typeof url === 'string' ? url : ''), 
-        cache: localUri ? false : true 
+        cache: false 
     };
 
     const headerMarginTop = useRef(new Animated.Value(0)).current;
@@ -124,21 +194,47 @@ const PdfViewer = () => {
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <ActivityIndicator color={colors.accent} size="large" />
                     </View>
+                ) : hasError ? (
+                    <View style={styles.errorContainer}>
+                        <Text style={[styles.errorText, { marginBottom: 16 }]}>Failed to load document.</Text>
+                        <Pressable 
+                            style={[styles.retryButton, { backgroundColor: colors.accent }]}
+                            onPress={() => {
+                                setHasError(false);
+                                setRetryKey(prev => prev + 1);
+                            }}
+                        >
+                            <Text style={styles.retryButtonText}>Retry</Text>
+                        </Pressable>
+                    </View>
                 ) : (
                     <Pdf
+                        ref={pdfRef}
+                        key={retryKey}
                         trustAllCerts={false}
+                        showsVerticalScrollIndicator={true}
                     source={pdfSource}
                     onLoadComplete={(numberOfPages) => {
                         console.log(`Document loaded successfully with ${numberOfPages} pages.`);
+                        setTotalPages(numberOfPages);
                     }}
                     onPageChanged={(page, numberOfPages) => {
                         console.log(`Current page: ${page}/${numberOfPages}`);
+                        setCurrentPage(page);
+                        showPageIndicator();
+                        saveCurrentPage(page);
+
                         if (page > lastPage.current) {
                             hideHeader();
                         } else if (page < lastPage.current) {
                             showHeader();
                         }
                         lastPage.current = page;
+
+                        if (page === numberOfPages && numberOfPages > 1 && !showConfetti) {
+                            setShowConfetti(true);
+                            setTimeout(() => setShowConfetti(false), 5000);
+                        }
                     }}
                     onPageSingleTap={(page, x, y) => {
                         if (isHeaderVisible) hideHeader();
@@ -146,6 +242,7 @@ const PdfViewer = () => {
                     }}
                     onError={(error) => {
                         console.log("PDF Rendering Error:", error);
+                        setHasError(true);
                     }}
                     style={styles.pdf}
                     renderActivityIndicator={() => (
@@ -153,7 +250,31 @@ const PdfViewer = () => {
                     )}
                 />
                 )}
+                {totalPages > 0 && !isCheckingLocal && !hasError && (
+                    <Animated.View style={[styles.pageIndicatorContainer, { opacity: pageIndicatorOpacity }]} pointerEvents="none">
+                        <Text style={styles.pageIndicatorText}>{currentPage} / {totalPages}</Text>
+                    </Animated.View>
+                )}
+                {showResumePopup && (
+                    <View style={styles.resumePopup}>
+                        <Text style={styles.resumeText}>Jump to {resumePage}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Pressable style={[styles.resumeActionBtn, { backgroundColor: colors.accent }]} onPress={() => {
+                                pdfRef.current?.setPage(resumePage);
+                                setShowResumePopup(false);
+                            }}>
+                                <Text style={styles.resumeActionText}>Jump</Text>
+                            </Pressable>
+                            <Pressable onPress={() => setShowResumePopup(false)} style={styles.resumeCloseBtn}>
+                                <IconX color="#FFFFFF" size={20} />
+                            </Pressable>
+                        </View>
+                    </View>
+                )}
             </View>
+            {showConfetti && (
+                <ConfettiCannon count={200} origin={{x: -10, y: 0}} autoStart={true} fadeOut={true} />
+            )}
         </View>
     );
 };
@@ -189,6 +310,17 @@ const styles = StyleSheet.create({
     errorText: {
         color: '#FF5252',
         fontSize: 16,
+        fontFamily: 'SpaceGrotesk-Regular',
+    },
+    retryButton: {
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 8,
+    },
+    retryButtonText: {
+        color: '#FFFFFF',
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 16,
     },
     pdfContainer: {
         flex: 1,
@@ -199,6 +331,60 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         backgroundColor: 'transparent',
+    },
+    pageIndicatorContainer: {
+        position: 'absolute',
+        right: 32,
+        top: '50%',
+        marginTop: -20,
+        backgroundColor: 'rgba(0,0,0,0.65)',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+    },
+    pageIndicatorText: {
+        color: '#FFFFFF',
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 14,
+    },
+    resumePopup: {
+        position: 'absolute',
+        bottom: 40,
+        alignSelf: 'center',
+        backgroundColor: 'rgba(0,0,0,0.85)',
+        paddingHorizontal: 20,
+        paddingVertical: 14,
+        borderRadius: 30,
+        width: '85%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
+        shadowRadius: 20,
+        elevation: 10,
+    },
+    resumeText: {
+        color: '#FFFFFF',
+        fontFamily: 'SpaceGrotesk-Regular',
+        fontSize: 14,
+        flex: 1,
+    },
+    resumeActionBtn: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        marginLeft: 12,
+    },
+    resumeActionText: {
+        color: '#000000',
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 13,
+    },
+    resumeCloseBtn: {
+        marginLeft: 12,
+        padding: 4,
     },
     downloadToast: {
         position: 'absolute',

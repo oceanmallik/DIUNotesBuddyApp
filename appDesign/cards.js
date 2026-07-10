@@ -111,15 +111,15 @@ export function NameCard({ name, username, webURL, cardURL, email, photoURL, con
                 pointerEvents={expanded ? 'auto' : 'none'}
             >
                 <Pressable style={({ pressed }) => [styles.drawerButton, pressed && { opacity: 0.5 }]} onPress={() => Linking.openURL(cardURL)}>
-                    <Text style={[styles.buttonText, { color: colors.textPrimary }]}>GitHub</Text>
+                    <Text style={[styles.buttonText, { color: colors.accent }]}>GitHub</Text>
                 </Pressable>
                 <View style={[styles.divider, { backgroundColor: colors.border }]} />
                 <Pressable style={({ pressed }) => [styles.drawerButton, pressed && { opacity: 0.5 }]} onPress={() => Linking.openURL(webURL)}>
-                    <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button1}</Text>
+                    <Text style={[styles.buttonText, { color: '#FFA000' }]}>{button1}</Text>
                 </Pressable>
                 <View style={[styles.divider, { backgroundColor: colors.border }]} />
                 <Pressable style={({ pressed }) => [styles.drawerButton, pressed && { opacity: 0.5 }]} onPress={() => Linking.openURL(email)}>
-                    <Text style={[styles.buttonText, { color: colors.textPrimary }]}>{button3}</Text>
+                    <Text style={[styles.buttonText, { color: '#00E676' }]}>{button3}</Text>
                 </Pressable>
             </Animated.View>
         </View>
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     },
     drawerButton: {
         flex: 1,
-        paddingVertical: 12,
+        paddingVertical: 8,
         alignItems: 'center',
     },
     divider: {
@@ -344,6 +344,6 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontFamily: fonts.bold,
-        fontSize: 13,
+        fontSize: 11,
     },
 });

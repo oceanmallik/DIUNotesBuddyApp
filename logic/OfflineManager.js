@@ -59,7 +59,8 @@ export const OfflineManager = {
                 filename,
                 title: title || 'Untitled Note',
                 subject: subject,
-                savedAt: new Date().toISOString()
+                savedAt: new Date().toISOString(),
+                read: false
             };
 
             await AsyncStorage.setItem(OFFLINE_NOTES_KEY, JSON.stringify([...saved, newNote]));
@@ -83,6 +84,20 @@ export const OfflineManager = {
             return true;
         } catch (error) {
             console.error('Delete failed:', error);
+            return false;
+        }
+    },
+
+    toggleReadStatus: async (urls, isRead) => {
+        try {
+            const saved = await OfflineManager.getSavedNotes();
+            const newSaved = saved.map(note => 
+                urls.includes(note.url) ? { ...note, read: isRead } : note
+            );
+            await AsyncStorage.setItem(OFFLINE_NOTES_KEY, JSON.stringify(newSaved));
+            return true;
+        } catch (error) {
+            console.error('Toggle read status failed:', error);
             return false;
         }
     },

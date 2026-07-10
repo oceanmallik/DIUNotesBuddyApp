@@ -1,4 +1,4 @@
-import { IconArrowLeft, IconTrash, IconFileText, IconCheck, IconX } from '@tabler/icons-react-native';
+import { IconArrowLeft, IconTrash, IconFileText, IconCheck, IconX, IconEye, IconEyeOff } from '@tabler/icons-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -13,7 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, onToggleSelect, onLongPress, onPress, onDelete }) => {
+const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, onToggleSelect, onLongPress, onPress, onDelete, onToggleRead }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.96, useNativeDriver: true }).start();
@@ -46,25 +46,36 @@ const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, 
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
       >
-        <View style={[styles.avatarCircle, { backgroundColor: isSelected ? colors.accent : colors.accent + '15' }]}>
+        <View style={[styles.avatarCircle, { backgroundColor: isSelected ? colors.accent : (note.read ? '#00E67620' : colors.destructive + '20') }]}>
             {isSelected ? (
                 <IconCheck size={24} color="#FFF" />
             ) : (
-                <IconFileText size={24} color={colors.accent} />
+                <IconFileText size={24} color={note.read ? '#00E676' : colors.destructive} />
             )}
         </View>
         
         <View style={styles.infoContainer}>
-            <Text style={[styles.nameText, { color: colors.textPrimary }]} numberOfLines={2}>{note.title}</Text>
-            <Text style={[styles.emailText, { color: colors.textSecondary }]} numberOfLines={1}>
-                {new Date(note.savedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+            <Text style={[styles.nameText, { color: colors.textPrimary }]} numberOfLines={2}>
+                {note.title}
             </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                <View style={[styles.typeBadge, { backgroundColor: note.read ? '#00E67615' : colors.destructive + '15' }]}>
+                    <Text style={[styles.typeText, { color: note.read ? '#00E676' : colors.destructive }]}>
+                        {note.read ? 'READ' : 'UNREAD'}
+                    </Text>
+                </View>
+            </View>
         </View>
 
         {!isSelectionMode && (
-            <Pressable onPress={() => onDelete(note.url)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', marginLeft: 12 }]}>
-                <IconTrash size={18} color={colors.destructive} />
-            </Pressable>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Pressable onPress={() => onToggleRead(note.url, !note.read)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', marginLeft: 12 }]}>
+                    {note.read ? <IconEyeOff size={18} color="#00E676" /> : <IconEye size={18} color={colors.destructive} />}
+                </Pressable>
+                <Pressable onPress={() => onDelete(note.url)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', marginLeft: 8 }]}>
+                    <IconTrash size={18} color={colors.destructive} />
+                </Pressable>
+            </View>
         )}
       </AnimatedPressable>
     </View>
@@ -116,6 +127,17 @@ export default function SavedNotes() {
         }
     };
 
+    const markSelectedAsRead = async (isRead) => {
+        await OfflineManager.toggleReadStatus(selectedNotes, isRead);
+        setSelectedNotes([]);
+        loadNotes();
+    };
+
+    const toggleRead = async (url, isRead) => {
+        await OfflineManager.toggleReadStatus([url], isRead);
+        loadNotes();
+    };
+
     const confirmDelete = async () => {
         if (deleteConfirmTarget === 'bulk') {
             for (const url of selectedNotes) {
@@ -155,6 +177,7 @@ export default function SavedNotes() {
                     </View>
                 ) : (
                     <>
+
                         {Object.entries(notes.reduce((acc, note) => {
                             const subject = note.subject && note.subject !== 'Uncategorized' ? note.subject : 'Other Notes';
                             if (!acc[subject]) acc[subject] = [];
@@ -177,6 +200,7 @@ export default function SavedNotes() {
                                         }}
                                         onPress={() => router.push(`/Viewer?url=${encodeURIComponent(note.url)}&title=${encodeURIComponent(note.title)}&subject=${encodeURIComponent(note.subject || 'Saved Note')}`)}
                                         onDelete={() => setDeleteConfirmTarget(note.url)}
+                                        onToggleRead={toggleRead}
                                     />
                                 ))}
                             </View>
@@ -190,12 +214,26 @@ export default function SavedNotes() {
                                 
                                 <View style={{ flexDirection: 'row', gap: 12 }}>
                                     <View style={{ flex: 1 }}>
+                                        <AppButton title="Mark Read" icon={IconEye} variant="primary" onPress={() => markSelectedAsRead(true)} style={{ width: '100%', backgroundColor: colors.accent }} />
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                        <AppButton title="Mark Unread" icon={IconEyeOff} variant="secondary" onPress={() => markSelectedAsRead(false)} style={{ width: '100%' }} />
+                                    </View>
+                                </View>
+                                <View style={{ height: 12 }} />
+                                <View style={{ flexDirection: 'row', gap: 12 }}>
+                                    <View style={{ flex: 1 }}>
                                         <AppButton title="Delete" icon={IconTrash} variant="destructive" onPress={() => setDeleteConfirmTarget('bulk')} style={{ width: '100%' }} />
                                     </View>
                                 </View>
                                 <View style={{ height: 12 }} />
                                 <AppButton title="Cancel Selection" icon={IconX} variant="secondary" onPress={() => setSelectedNotes([])} style={{ width: '100%' }} />
                             </View>
+                        )}
+                        {!isSelectionMode && notes.length > 0 && (
+                            <Text style={{ color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Regular', fontSize: 13, marginTop: 24, textAlign: 'center', opacity: 0.6 }}>
+                                Tip: Long press on a note to select multiple for bulk actions
+                            </Text>
                         )}
                     </>
                 )}
@@ -289,9 +327,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 2,
     },
-    emailText: {
-        fontFamily: 'SpaceGrotesk-Regular',
-        fontSize: 13,
+    typeBadge: {
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
+        alignSelf: 'flex-start',
+    },
+    typeText: {
+        fontFamily: 'SpaceGrotesk-Bold',
+        fontSize: 11,
     },
     actionBtn: {
         padding: 6,

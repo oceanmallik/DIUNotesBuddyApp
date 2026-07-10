@@ -1,11 +1,10 @@
 import { IconArrowLeft, IconX } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useRef, useState, useEffect } from 'react';
-import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View, Dimensions } from 'react-native';
 import Pdf from 'react-native-pdf';
 import { useAppTheme } from '../../logic/ThemeProvider';
 import { OfflineManager } from '../../logic/OfflineManager';
-import ConfettiCannon from 'react-native-confetti-cannon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PdfViewer = () => {
@@ -24,9 +23,9 @@ const PdfViewer = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
-    const [showConfetti, setShowConfetti] = useState(false);
     const [resumePage, setResumePage] = useState(null);
     const [showResumePopup, setShowResumePopup] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(false);
     const pdfRef = useRef(null);
 
     const hideResumeTimeout = useRef(null);
@@ -213,27 +212,31 @@ const PdfViewer = () => {
                         key={retryKey}
                         trustAllCerts={false}
                         showsVerticalScrollIndicator={true}
+                        spacing={10}
                     source={pdfSource}
                     onLoadComplete={(numberOfPages) => {
                         console.log(`Document loaded successfully with ${numberOfPages} pages.`);
                         setTotalPages(numberOfPages);
                     }}
                     onPageChanged={(page, numberOfPages) => {
-                        console.log(`Current page: ${page}/${numberOfPages}`);
-                        setCurrentPage(page);
+                        // Spoof the last page to bypass the scroll-center calculation bug on wide PDFs
+                        const displayPage = (page === numberOfPages - 1 && numberOfPages > 3) ? numberOfPages : page;
+                        console.log(`Current page: ${displayPage}/${numberOfPages}`);
+                        setCurrentPage(displayPage);
                         showPageIndicator();
-                        saveCurrentPage(page);
+                        saveCurrentPage(displayPage);
 
-                        if (page > lastPage.current) {
+                        if (displayPage > lastPage.current) {
                             hideHeader();
-                        } else if (page < lastPage.current) {
+                        } else if (displayPage < lastPage.current) {
                             showHeader();
                         }
-                        lastPage.current = page;
+                        lastPage.current = displayPage;
+                        lastPage.current = displayPage;
 
-                        if (page === numberOfPages && numberOfPages > 1 && !showConfetti) {
-                            setShowConfetti(true);
-                            setTimeout(() => setShowConfetti(false), 5000);
+                        if (displayPage === numberOfPages && numberOfPages > 1 && !isCompleted) {
+                            setIsCompleted(true);
+                            OfflineManager.toggleReadStatus([url], true).catch(console.error);
                         }
                     }}
                     onPageSingleTap={(page, x, y) => {
@@ -250,6 +253,7 @@ const PdfViewer = () => {
                     )}
                 />
                 )}
+
                 {totalPages > 0 && !isCheckingLocal && !hasError && (
                     <Animated.View style={[styles.pageIndicatorContainer, { opacity: pageIndicatorOpacity }]} pointerEvents="none">
                         <Text style={styles.pageIndicatorText}>{currentPage} / {totalPages}</Text>
@@ -272,9 +276,6 @@ const PdfViewer = () => {
                     </View>
                 )}
             </View>
-            {showConfetti && (
-                <ConfettiCannon count={200} origin={{x: -10, y: 0}} autoStart={true} fadeOut={true} />
-            )}
         </View>
     );
 };

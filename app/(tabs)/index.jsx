@@ -20,6 +20,23 @@ const App = () => {
 
   const avatarScale = useRef(new Animated.Value(1)).current;
   const themeScale = useRef(new Animated.Value(1)).current;
+  const themeSpin = useRef(new Animated.Value(0)).current;
+
+  const handleToggleTheme = () => {
+    toggleTheme();
+    themeSpin.setValue(0);
+    Animated.spring(themeSpin, {
+      toValue: 1,
+      friction: 6,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const spin = themeSpin.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['-180deg', '0deg']
+  });
 
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
   const initial = user?.email?.charAt(0)?.toUpperCase() ?? "?";
@@ -95,16 +112,18 @@ const App = () => {
 
             {/* Theme Toggle */}
             <AnimatedPressable
-              onPress={toggleTheme}
+              onPress={handleToggleTheme}
               onPressIn={() => Animated.spring(themeScale, { toValue: 0.8, useNativeDriver: true }).start()}
               onPressOut={() => Animated.spring(themeScale, { toValue: 1, useNativeDriver: true }).start()}
               style={[styles.themeButton, { transform: [{ scale: themeScale }] }]}
             >
-              {activeTheme === 'dark' ? (
-                <IconSun size={22} color={colors.accent} strokeWidth={2} />
-              ) : (
-                <IconMoon size={22} color={colors.accent} strokeWidth={2} />
-              )}
+              <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                {activeTheme === 'dark' ? (
+                  <IconSun size={22} color={colors.accent} strokeWidth={2} />
+                ) : (
+                  <IconMoon size={22} color={colors.accent} strokeWidth={2} />
+                )}
+              </Animated.View>
             </AnimatedPressable>
 
             {/* Account control */}

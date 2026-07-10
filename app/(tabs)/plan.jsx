@@ -75,7 +75,7 @@ const PlanCard = ({ item, colors, activeTheme, handleDelete, openEditModal, chan
   const IconComponent = availableIcons.find(i => i.id === (item.icon || 'list'))?.component || IconListCheck;
 
   return (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{ marginBottom: 10 }}>
       <AnimatedPressable 
         style={[
             styles.profileCard, 
@@ -167,7 +167,7 @@ const PlanCard = ({ item, colors, activeTheme, handleDelete, openEditModal, chan
                 styles.segmentedSlider, 
                 { 
                     left: sliderLeft,
-                    backgroundColor: colors.accent 
+                    backgroundColor: statusColor 
                 }
             ]} />
             
@@ -185,7 +185,7 @@ const PlanCard = ({ item, colors, activeTheme, handleDelete, openEditModal, chan
                     >
                         <Text style={[
                             styles.segmentedButtonText, 
-                            { color: isCurrent ? '#FFFFFF' : colors.textPrimary }
+                            { color: isCurrent ? '#FFFFFF' : getStatusColor(status) }
                         ]}>{status}</Text>
                     </Pressable>
                 );
@@ -354,20 +354,20 @@ export default function Plan() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContainer}>
             {tabs.map(tab => {
               const isActive = activeTab === tab;
+              const tabColor = tab === 'Done' ? '#00E676' : tab === 'In Process' ? '#FFA000' : colors.accent;
               return (
                 <Pressable
                   key={tab}
                   style={[
                     styles.tabButton,
                     { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
-                    isActive && { backgroundColor: colors.accent }
+                    isActive && { backgroundColor: tabColor }
                   ]}
                   onPress={() => setActiveTab(tab)}
                 >
                   <Text style={[
                     styles.tabText,
-                    { color: colors.textPrimary },
-                    isActive && { color: '#FFFFFF' }
+                    { color: isActive ? '#FFFFFF' : tabColor }
                   ]}>
                     {tab}
                   </Text>
@@ -681,7 +681,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
@@ -702,13 +702,13 @@ const styles = StyleSheet.create({
   },
   nameText: {
     fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 18,
-    marginBottom: 4,
+    fontSize: 16,
+    marginBottom: 2,
   },
   emailText: {
     fontFamily: 'SpaceGrotesk-Regular',
-    fontSize: 14,
-    marginBottom: 4,
+    fontSize: 13,
+    marginBottom: 2,
   },
   typeBadge: {
     paddingHorizontal: 10,
@@ -718,7 +718,7 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 12,
+    fontSize: 11,
   },
   actionBtn: {
     padding: 6,
@@ -740,12 +740,12 @@ const styles = StyleSheet.create({
   },
   segmentedControlContainer: {
     flexDirection: 'row',
-    height: 44,
-    borderRadius: 22,
+    height: 36,
+    borderRadius: 18,
     position: 'relative',
     flex: 1,
     marginHorizontal: 16,
-    marginVertical: 12,
+    marginVertical: 8,
     padding: 2,
   },
   segmentedSlider: {
@@ -753,7 +753,7 @@ const styles = StyleSheet.create({
     top: 2,
     bottom: 2,
     width: '33.33%',
-    borderRadius: 20,
+    borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
   },
   segmentedButtonText: {
     fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 13,
+    fontSize: 11,
   },
   selectionBarList: {
     paddingVertical: 16,

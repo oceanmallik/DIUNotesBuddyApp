@@ -46,37 +46,48 @@ const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, 
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
       >
-        <View style={[styles.avatarCircle, { backgroundColor: isSelected ? colors.accent : (note.read ? '#00E67620' : colors.destructive + '20') }]}>
-            {isSelected ? (
-                <IconCheck size={24} color="#FFF" />
-            ) : (
-                <IconFileText size={24} color={note.read ? '#00E676' : colors.destructive} />
-            )}
-        </View>
+        <Text style={[styles.nameText, { color: colors.textPrimary, marginBottom: 12 }]} numberOfLines={2}>
+            {note.title}
+        </Text>
         
-        <View style={styles.infoContainer}>
-            <Text style={[styles.nameText, { color: colors.textPrimary }]} numberOfLines={2}>
-                {note.title}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                <View style={[styles.typeBadge, { backgroundColor: note.read ? '#00E67615' : colors.destructive + '15' }]}>
-                    <Text style={[styles.typeText, { color: note.read ? '#00E676' : colors.destructive }]}>
-                        {note.read ? 'READ' : 'UNREAD'}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={[
+                    styles.typeBadge, 
+                    { 
+                        backgroundColor: isSelected ? colors.accent : (note.read ? '#00E67615' : colors.destructive + '15'),
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        borderRadius: 16,
+                        paddingVertical: 6,
+                        paddingHorizontal: 10,
+                    }
+                ]}>
+                    {isSelected ? (
+                        <IconCheck size={14} color="#FFF" style={{ marginRight: 4 }} />
+                    ) : (
+                        <IconFileText size={14} color={note.read ? '#00E676' : colors.destructive} style={{ marginRight: 4 }} />
+                    )}
+                    <Text style={[
+                        styles.typeText, 
+                        { color: isSelected ? '#FFF' : (note.read ? '#00E676' : colors.destructive) }
+                    ]}>
+                        {isSelected ? 'SELECTED' : (note.read ? 'READ' : 'UNREAD')}
                     </Text>
                 </View>
             </View>
-        </View>
 
-        {!isSelectionMode && (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Pressable onPress={() => onToggleRead(note.url, !note.read)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', marginLeft: 12 }]}>
-                    {note.read ? <IconEyeOff size={18} color="#00E676" /> : <IconEye size={18} color={colors.destructive} />}
-                </Pressable>
-                <Pressable onPress={() => onDelete(note.url)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', marginLeft: 8 }]}>
-                    <IconTrash size={18} color={colors.destructive} />
-                </Pressable>
-            </View>
-        )}
+            {!isSelectionMode && (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Pressable onPress={() => onToggleRead(note.url, !note.read)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                        {note.read ? <IconEyeOff size={18} color="#00E676" /> : <IconEye size={18} color={colors.destructive} />}
+                    </Pressable>
+                    <Pressable onPress={() => onDelete(note.url)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', marginLeft: 8 }]}>
+                        <IconTrash size={18} color={colors.destructive} />
+                    </Pressable>
+                </View>
+            )}
+        </View>
       </AnimatedPressable>
     </View>
   );
@@ -361,10 +372,10 @@ const styles = StyleSheet.create({
 
     // Card Styles
     profileCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 10,
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        paddingHorizontal: 16,
+        paddingVertical: 16,
         borderRadius: 16,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 8 },

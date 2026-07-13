@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IconAlertCircle, IconChevronDown, IconChevronRight, IconFileText, IconFolder, IconFolderOpen, IconRefresh, IconDownload, IconCheck } from '@tabler/icons-react-native';
 import { Stack, useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import React, { useEffect, useState, useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Pressable, ScrollView, StyleSheet, View, RefreshControl, Animated } from 'react-native';
 import { BentoLoader } from '../../appDesign/loader';
 import { TitleCard } from '../../appDesign/cards';
 import { triggerAccordionAnimation } from '../../appDesign/animations';
@@ -126,6 +126,137 @@ const FileItem = ({ file, subjectTitle, colors, activeTheme, router }: { file: M
     );
 };
 
+const TopicAccordion = ({ 
+    topicFolder, 
+    categoryName, 
+    expandedTopic, 
+    toggleTopic, 
+    subjectTitle, 
+    colors, 
+    activeTheme, 
+    router 
+}: {
+    topicFolder: TopicFolder,
+    categoryName: string,
+    expandedTopic: string | null,
+    toggleTopic: (key: string) => void,
+    subjectTitle: string,
+    colors: any,
+    activeTheme: any,
+    router: any
+}) => {
+    const topicKey = `${categoryName}-${topicFolder.topic}`;
+    const isTopicOpen = expandedTopic === topicKey;
+    
+    const rotation = useRef(new Animated.Value(isTopicOpen ? 1 : 0)).current;
+    const expandAnim = useRef(new Animated.Value(isTopicOpen ? 1 : 0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.98, useNativeDriver: true }).start();
+    const handlePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+
+    const contentHeight = topicFolder.files.length * 85 + 40;
+
+    useEffect(() => {
+        Animated.timing(expandAnim, {
+            toValue: isTopicOpen ? 1 : 0,
+            duration: 150,
+            useNativeDriver: false,
+        }).start();
+
+        Animated.timing(rotation, {
+            toValue: isTopicOpen ? 1 : 0,
+            duration: 150,
+            useNativeDriver: true,
+        }).start();
+    }, [isTopicOpen]);
+
+    const rotate = rotation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '90deg']
+    });
+
+    return (
+        <View style={{ marginBottom: 16 }}>
+            <Animated.View style={[
+                styles.topicWrapper, 
+                { 
+                    backgroundColor: colors.card,
+                    shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
+                    transform: [{ scale: scaleAnim }],
+                    zIndex: 1,
+                    marginHorizontal: -8
+                }
+            ]}>
+                <Pressable
+                    style={styles.topicHeader}
+                    onPress={() => toggleTopic(topicKey)}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                >
+                    <View style={styles.topicHeaderLeft}>
+                        {isTopicOpen ? <IconFolderOpen color={colors.accent} size={22} /> : <IconFolder color={colors.textSecondary} size={22} />}
+                        <Tree title={topicFolder.topic} style={[styles.topicTitle, { color: isTopicOpen ? colors.accent : colors.textPrimary }]} />
+                    </View>
+                    <Animated.View style={{ transform: [{ rotate }] }}>
+                        <IconChevronRight color={isTopicOpen ? colors.accent : colors.textSecondary} size={20} />
+                    </Animated.View>
+                </Pressable>
+            </Animated.View>
+
+            <Animated.View style={[
+                styles.filesContainer, 
+                { 
+                    backgroundColor: colors.card,
+                    borderBottomLeftRadius: 20,
+                    borderBottomRightRadius: 20,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowRadius: 10,
+                    elevation: 2,
+                    zIndex: -1,
+                    opacity: expandAnim,
+                    maxHeight: expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, contentHeight]
+                    }),
+                    marginTop: expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, -20]
+                    }),
+                    paddingTop: expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 32]
+                    }),
+                    paddingBottom: expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 12]
+                    }),
+                    transform: [{
+                        translateY: expandAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [-20, 0]
+                        })
+                    }]
+                }
+            ]}
+            pointerEvents={isTopicOpen ? 'auto' : 'none'}
+            >
+                {topicFolder.files.map((file, fileIndex) => (
+                    <FileItem
+                        key={fileIndex}
+                        file={file}
+                        subjectTitle={subjectTitle}
+                        colors={colors}
+                        activeTheme={activeTheme}
+                        router={router}
+                    />
+                ))}
+            </Animated.View>
+        </View>
+    );
+};
+
 const SubjectScreen = () => {
     const router = useRouter();
     const params = useLocalSearchParams();
@@ -219,7 +350,6 @@ const SubjectScreen = () => {
     }, [subjectId, fetchSubjectData]);
 
     const toggleTopic = (topicKey: string) => {
-        triggerAccordionAnimation();
         setExpandedTopic(expandedTopic === topicKey ? null : topicKey);
     };
 
@@ -251,7 +381,6 @@ const SubjectScreen = () => {
                         <TitleCard title="Error" description={error} icon={IconAlertCircle} onPress={() => {}} />
                     ) : subjectData ? (
                         <View>
-                            <Mountain title={subjectData.title} style={[styles.pageTitle, { color: colors.textPrimary }]} />
 
                             {Object.entries(subjectData.materials).map(([categoryName, topicsArray]) => {
                                 if (!topicsArray || topicsArray.length === 0) return null;
@@ -260,53 +389,19 @@ const SubjectScreen = () => {
                                     <View key={categoryName} style={styles.categoryBlock}>
                                         <Mountain title={`${capitalize(categoryName)}`} style={[styles.categoryTitle, { color: colors.textSecondary }]} />
 
-                                        {topicsArray.map((topicFolder, index) => {
-                                            const topicKey = `${categoryName}-${topicFolder.topic}`;
-                                            const isTopicOpen = expandedTopic === topicKey;
-
-                                            return (
-                                                <View key={index} style={[
-                                                    styles.topicWrapper, 
-                                                    { 
-                                                        backgroundColor: colors.card,
-                                                        shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05
-                                                    }
-                                                ]}>
-                                                    <Pressable
-                                                        style={[
-                                                            styles.topicHeader, 
-                                                            isTopicOpen && { 
-                                                                backgroundColor: colors.background, 
-                                                                borderBottomWidth: StyleSheet.hairlineWidth, 
-                                                                borderBottomColor: colors.border 
-                                                            }
-                                                        ]}
-                                                        onPress={() => toggleTopic(topicKey)}
-                                                    >
-                                                        <View style={styles.topicHeaderLeft}>
-                                                            {isTopicOpen ? <IconFolderOpen color={colors.accent} size={22} /> : <IconFolder color={colors.textSecondary} size={22} />}
-                                                            <Tree title={topicFolder.topic} style={[styles.topicTitle, { color: isTopicOpen ? colors.accent : colors.textPrimary }]} />
-                                                        </View>
-                                                        {isTopicOpen ? <IconChevronDown color={colors.accent} size={20} /> : <IconChevronRight color={colors.textSecondary} size={20} />}
-                                                    </Pressable>
-
-                                                    {isTopicOpen && (
-                                                        <View style={[styles.filesContainer, { backgroundColor: activeTheme === 'dark' ? '#121212' : '#F9F9FB' }]}>
-                                                            {topicFolder.files.map((file, fileIndex) => (
-                                                                <FileItem
-                                                                    key={fileIndex}
-                                                                    file={file}
-                                                                    subjectTitle={subjectData.title}
-                                                                    colors={colors}
-                                                                    activeTheme={activeTheme}
-                                                                    router={router}
-                                                                />
-                                                            ))}
-                                                        </View>
-                                                    )}
-                                                </View>
-                                            );
-                                        })}
+                                        {topicsArray.map((topicFolder, index) => (
+                                            <TopicAccordion
+                                                key={index}
+                                                topicFolder={topicFolder}
+                                                categoryName={categoryName}
+                                                expandedTopic={expandedTopic}
+                                                toggleTopic={toggleTopic}
+                                                subjectTitle={subjectData.title}
+                                                colors={colors}
+                                                activeTheme={activeTheme}
+                                                router={router}
+                                            />
+                                        ))}
                                     </View>
                                 );
                             })}
@@ -321,7 +416,7 @@ const SubjectScreen = () => {
             </View>
 
             <Header 
-                title="Knowledge Vault" 
+                title={subjectData?.title || "Loading..."} 
                 showBack 
             />
         </View>
@@ -363,7 +458,6 @@ const styles = StyleSheet.create({
         paddingLeft: 4
     },
     topicWrapper: {
-        marginBottom: 16,
         borderRadius: 20,
         overflow: 'hidden',
         shadowColor: '#000',

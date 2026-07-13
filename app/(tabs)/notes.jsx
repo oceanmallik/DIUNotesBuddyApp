@@ -14,6 +14,209 @@ import { useAppTheme } from '../../logic/ThemeProvider';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+const SemesterAccordion = ({ sem, deptId, yearId, expandedSemester, toggleSemester, colors, router }) => {
+    const uniqueSemId = `${deptId}-${yearId}-${sem.id}`;
+    const isSemOpen = expandedSemester === uniqueSemId;
+
+    const rotation = useRef(new Animated.Value(isSemOpen ? 1 : 0)).current;
+    const expandAnim = useRef(new Animated.Value(isSemOpen ? 1 : 0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.98, useNativeDriver: true }).start();
+    const handlePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+
+    const contentHeight = (sem.subjects?.length || 0) * 55 + 40;
+
+    useEffect(() => {
+        Animated.timing(expandAnim, {
+            toValue: isSemOpen ? 1 : 0,
+            duration: 150,
+            useNativeDriver: false,
+        }).start();
+
+        Animated.timing(rotation, {
+            toValue: isSemOpen ? 1 : 0,
+            duration: 150,
+            useNativeDriver: true,
+        }).start();
+    }, [isSemOpen]);
+
+    const rotate = rotation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '90deg']
+    });
+
+    return (
+        <View style={{ overflow: 'hidden' }}>
+            <Animated.View style={{ transform: [{ scale: scaleAnim }], zIndex: 1, backgroundColor: colors.background }}>
+                <Pressable 
+                    style={[
+                        styles.semesterRow, 
+                        { borderBottomColor: colors.border },
+                        isSemOpen && { backgroundColor: colors.background }
+                    ]} 
+                    onPress={() => toggleSemester(uniqueSemId)}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                >
+                    <Animated.View style={{ transform: [{ rotate }] }}>
+                        <IconChevronRight color={isSemOpen ? "#AF52DE" : colors.textSecondary} size={16} />
+                    </Animated.View>
+                    <Tree title={sem.label} style={styles.semesterTitle} />
+                </Pressable>
+            </Animated.View>
+
+            <Animated.View style={[
+                styles.subjectsContainer, 
+                { 
+                    backgroundColor: colors.background,
+                    zIndex: -1,
+                    opacity: expandAnim,
+                    maxHeight: isSemOpen ? undefined : expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, contentHeight]
+                    }),
+                    marginTop: expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, -20]
+                    }),
+                    paddingTop: expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 20]
+                    }),
+                    transform: [{
+                        translateY: expandAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [-20, 0]
+                        })
+                    }]
+                }
+            ]}
+            pointerEvents={isSemOpen ? 'auto' : 'none'}
+            >
+                {sem.subjects && sem.subjects.length > 0 ? (
+                    sem.subjects.map((sub) => (
+                        <Pressable 
+                            key={sub.id} 
+                            style={({ pressed }) => [
+                                styles.subjectRow, 
+                                pressed && { backgroundColor: colors.border }
+                            ]}
+                            onPress={() => router.push(`/(pages)/${sub.id}`)}
+                        >
+                            <IconChevronsRight color={colors.accent} size={16} />
+                            <Text style={[styles.subjectTitle, { color: colors.textPrimary }]}>{sub.title}</Text>
+                        </Pressable>
+                    ))
+                ) : (
+                    <Tree title="No subjects added yet." style={styles.emptyText} />
+                )}
+            </Animated.View>
+        </View>
+    );
+};
+
+const YearAccordion = ({ year, deptId, expandedYear, toggleYear, expandedSemester, toggleSemester, colors, activeTheme, router }) => {
+    const uniqueYearId = `${deptId}-${year.id}`;
+    const isYearOpen = expandedYear === uniqueYearId;
+    
+    const rotation = useRef(new Animated.Value(isYearOpen ? 1 : 0)).current;
+    const expandAnim = useRef(new Animated.Value(isYearOpen ? 1 : 0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.98, useNativeDriver: true }).start();
+    const handlePressOut = () => Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+
+    const isAnySemOpen = expandedSemester?.startsWith(`${deptId}-${year.id}`);
+    const openSemId = expandedSemester?.split('-')[2];
+    const openSem = isAnySemOpen ? year.semesters.find(s => s.id === openSemId) : null;
+    const baseHeight = year.semesters.length * 55;
+    const openSemHeight = openSem ? ((openSem.subjects?.length || 0) * 55 + 40) : 0;
+    const contentHeight = baseHeight + openSemHeight + 40; 
+
+    useEffect(() => {
+        Animated.timing(expandAnim, {
+            toValue: isYearOpen ? 1 : 0,
+            duration: 150,
+            useNativeDriver: false,
+        }).start();
+
+        Animated.timing(rotation, {
+            toValue: isYearOpen ? 1 : 0,
+            duration: 150,
+            useNativeDriver: true,
+        }).start();
+    }, [isYearOpen, contentHeight]);
+
+    const rotate = rotation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '90deg']
+    });
+
+    return (
+        <View style={[styles.yearBlock, { borderBottomColor: colors.border, overflow: 'hidden' }]}>
+            <Animated.View style={{ transform: [{ scale: scaleAnim }], zIndex: 1, backgroundColor: colors.background }}>
+                <Pressable 
+                    style={[styles.yearHeader, { backgroundColor: colors.card }]} 
+                    onPress={() => toggleYear(uniqueYearId)}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                >
+                    <View style={styles.headerLeft}>
+                        {isYearOpen ? <IconFolderOpen color="#34C759" size={20} /> : <IconFolder color={colors.textSecondary} size={20} />}
+                        <Tree title={year.label} style={styles.yearTitle} />
+                    </View>
+                    <Animated.View style={{ transform: [{ rotate }] }}>
+                        <IconChevronRight color={colors.textSecondary} size={18} />
+                    </Animated.View>
+                </Pressable>
+            </Animated.View>
+
+            <Animated.View style={[
+                styles.semestersContainer, 
+                { 
+                    backgroundColor: colors.background,
+                    zIndex: -1,
+                    opacity: expandAnim,
+                    maxHeight: isYearOpen ? undefined : expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, contentHeight]
+                    }),
+                    marginTop: expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, -20]
+                    }),
+                    paddingTop: expandAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 20]
+                    }),
+                    transform: [{
+                        translateY: expandAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [-20, 0]
+                        })
+                    }]
+                }
+            ]}
+            pointerEvents={isYearOpen ? 'auto' : 'none'}
+            >
+                {year.semesters.map((sem) => (
+                    <SemesterAccordion 
+                        key={sem.id}
+                        sem={sem}
+                        deptId={deptId}
+                        yearId={year.id}
+                        expandedSemester={expandedSemester}
+                        toggleSemester={toggleSemester}
+                        colors={colors}
+                        router={router}
+                    />
+                ))}
+            </Animated.View>
+        </View>
+    );
+};
+
 const Notes = () => {
     const router = useRouter();
     const tabBarHeight = 100;
@@ -182,74 +385,20 @@ const Notes = () => {
 
                                         <View style={[styles.nestedContainer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
                                                 {/* LEVEL 2: YEARS */}
-                                                {dept.years.map((year) => {
-                                                    const uniqueYearId = `${dept.id}-${year.id}`;
-                                                    const isYearOpen = expandedYear === uniqueYearId;
-
-                                                    return (
-                                                        <View key={year.id} style={[styles.yearBlock, { borderBottomColor: colors.border }]}>
-                                                            <Pressable 
-                                                                style={[styles.yearHeader, { backgroundColor: colors.card }]} 
-                                                                onPress={() => toggleYear(uniqueYearId)}
-                                                            >
-                                                                <View style={styles.headerLeft}>
-                                                                    {isYearOpen ? <IconFolderOpen color="#34C759" size={20} /> : <IconFolder color={colors.textSecondary} size={20} />}
-                                                                    <Tree title={year.label} style={styles.yearTitle} />
-                                                                </View>
-                                                                {isYearOpen ? <IconChevronDown color={colors.textSecondary} size={18} /> : <IconChevronRight color={colors.textSecondary} size={18} />}
-                                                            </Pressable>
-
-                                                            {/* LEVEL 3: SEMESTERS */}
-                                                            {isYearOpen && (
-                                                                <View style={[styles.semestersContainer, { backgroundColor: colors.background }]}>
-                                                                    {year.semesters.map((sem) => {
-                                                                        const uniqueSemId = `${dept.id}-${year.id}-${sem.id}`;
-                                                                        const isSemOpen = expandedSemester === uniqueSemId;
-
-                                                                        return (
-                                                                            <View key={sem.id}>
-                                                                                <Pressable 
-                                                                                    style={[
-                                                                                        styles.semesterRow, 
-                                                                                        { borderBottomColor: colors.border },
-                                                                                        isSemOpen && { backgroundColor: colors.background }
-                                                                                    ]} 
-                                                                                    onPress={() => toggleSemester(uniqueSemId)}
-                                                                                >
-                                                                                    {isSemOpen ? <IconChevronDown color="#AF52DE" size={16} /> : <IconChevronRight color={colors.textSecondary} size={16} />}
-                                                                                    <Tree title={sem.label} style={styles.semesterTitle} />
-                                                                                </Pressable>
-
-                                                                                {/* LEVEL 4: SUBJECTS */}
-                                                                                {isSemOpen && (
-                                                                                    <View style={[styles.subjectsContainer, { backgroundColor: colors.background }]}>
-                                                                                        {sem.subjects && sem.subjects.length > 0 ? (
-                                                                                            sem.subjects.map((sub) => (
-                                                                                                <Pressable 
-                                                                                                    key={sub.id} 
-                                                                                                    style={({ pressed }) => [
-                                                                                                        styles.subjectRow, 
-                                                                                                        pressed && { backgroundColor: colors.border }
-                                                                                                    ]}
-                                                                                                    onPress={() => router.push(`/(pages)/${sub.id}`)}
-                                                                                                >
-                                                                                                    <IconChevronsRight color={colors.accent} size={16} />
-                                                                                                    <Text style={[styles.subjectTitle, { color: colors.textPrimary }]}>{sub.title}</Text>
-                                                                                                </Pressable>
-                                                                                            ))
-                                                                                        ) : (
-                                                                                            <Tree title="No subjects added yet." style={styles.emptyText} />
-                                                                                        )}
-                                                                                    </View>
-                                                                                )}
-                                                                            </View>
-                                                                        );
-                                                                    })}
-                                                                </View>
-                                                            )}
-                                                        </View>
-                                                    );
-                                                })}
+                                                {dept.years.map((year) => (
+                                                    <YearAccordion 
+                                                        key={year.id}
+                                                        year={year}
+                                                        deptId={dept.id}
+                                                        expandedYear={expandedYear}
+                                                        toggleYear={toggleYear}
+                                                        expandedSemester={expandedSemester}
+                                                        toggleSemester={toggleSemester}
+                                                        colors={colors}
+                                                        activeTheme={activeTheme}
+                                                        router={router}
+                                                    />
+                                                ))}
                                             </View>
                                     </View>
                                 );

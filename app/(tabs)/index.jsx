@@ -2,8 +2,9 @@ import appLogo from "@/assets/images/android-icon-foreground.png"
 
 import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle, IconHeart } from '@tabler/icons-react-native'
 import { router, useFocusEffect } from 'expo-router'
-import React, { useRef, useState, useCallback } from 'react'
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
+import { Animated, Image, Pressable, StyleSheet, Text, View, Modal, Platform } from 'react-native'
+import SpInAppUpdates, { IAUUpdateKind } from 'sp-react-native-in-app-updates'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Tree } from '../../appDesign/texts.js'
 import FocusTimer from '../../appDesign/focusTimer.js'
@@ -25,6 +26,39 @@ const App = () => {
   const themeSpin = useRef(new Animated.Value(0)).current;
 
   const [stats, setStats] = useState({ total: 0, unread: 0, readNotes: 0 });
+
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [updateOptions, setUpdateOptions] = useState(null);
+
+  useEffect(() => {
+    try {
+      const inAppUpdates = new SpInAppUpdates(false);
+      inAppUpdates.checkNeedsUpdate().then((result) => {
+        if (result.shouldUpdate) {
+          setUpdateAvailable(true);
+          if (Platform.OS === 'android') {
+            setUpdateOptions({
+              updateType: IAUUpdateKind.FLEXIBLE,
+            });
+          }
+        }
+      }).catch(err => console.log('Error checking updates:', err));
+    } catch (err) {
+      console.log('Update check error:', err);
+    }
+  }, []);
+
+  const handleUpdate = () => {
+    try {
+      const inAppUpdates = new SpInAppUpdates(false);
+      if (updateOptions) {
+        inAppUpdates.startUpdate(updateOptions);
+      }
+    } catch (e) {
+      console.log('Update start error:', e);
+    }
+    setUpdateAvailable(false);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -211,6 +245,39 @@ const App = () => {
           </View>
         </View>
 
+        <Modal
+          visible={updateAvailable}
+          transparent={true}
+          animationType="fade"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+              <View style={[styles.iconWrapper, { backgroundColor: colors.background }]}>
+                <IconDownload size={32} color={colors.accent} />
+              </View>
+              <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Update Available!</Text>
+              <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
+                A new version of DIU Notes is available. Update now to get the latest features and improvements.
+              </Text>
+              
+              <View style={styles.modalActions}>
+                <Pressable
+                  style={[styles.modalButton, styles.modalButtonSecondary, { backgroundColor: colors.background }]}
+                  onPress={() => setUpdateAvailable(false)}
+                >
+                  <Text style={[styles.modalButtonText, { color: colors.textSecondary }]}>Later</Text>
+                </Pressable>
+                
+                <Pressable
+                  style={[styles.modalButton, { backgroundColor: colors.accent }]}
+                  onPress={handleUpdate}
+                >
+                  <Text style={[styles.modalButtonText, { color: '#FFF' }]}>Update Now</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
       </View>
     </View>
@@ -362,6 +429,65 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: '#FFFFFF',
+    fontSize: 15,
+    fontFamily: 'SpaceGrotesk-Bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    width: '100%',
+    borderRadius: 24,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  iconWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontFamily: 'SpaceGrotesk-Bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    fontFamily: 'SpaceGrotesk-Regular',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButtonSecondary: {
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+  },
+  modalButtonText: {
     fontSize: 15,
     fontFamily: 'SpaceGrotesk-Bold',
   },

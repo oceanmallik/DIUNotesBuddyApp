@@ -387,21 +387,23 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     filesContainer: {
-        padding: 12, 
-        gap: 12
+        paddingVertical: 12,
+        paddingHorizontal: 8,
+        gap: 8
     },
     fileCard: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 12,
+        paddingVertical: 12,
+        paddingHorizontal: 8,
         borderRadius: 16,
         borderWidth: StyleSheet.hairlineWidth,
     },
     fileLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: 10,
         flex: 1
     },
     fileRight: {

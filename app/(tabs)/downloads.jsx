@@ -1,8 +1,10 @@
-import { IconArrowLeft, IconTrash, IconFileText, IconCheck, IconX, IconEye, IconEyeOff } from '@tabler/icons-react-native';
+import { IconArrowLeft, IconTrash, IconFileText, IconCheck, IconX, IconEye, IconEyeOff, IconFileExport, IconPlayerPlay } from '@tabler/icons-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View, Modal, Easing, RefreshControl } from 'react-native';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View, Modal, Easing, RefreshControl, Platform, Alert } from 'react-native';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Mountain, Planet, Tree } from '../../appDesign/texts';
 import { IconRefresh } from '@tabler/icons-react-native';
 import Header, { useHeaderHeight } from '../../appDesign/header';
@@ -10,10 +12,11 @@ import { OfflineManager } from '../../logic/OfflineManager';
 import { useAppTheme } from '../../logic/ThemeProvider';
 import { AppButton } from '../../appDesign/button';
 import { LinearGradient } from 'expo-linear-gradient';
+import useRewardedAd from '../../hooks/useRewardedAd';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, onToggleSelect, onLongPress, onPress, onDelete, onToggleRead }) => {
+const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, onToggleSelect, onLongPress, onPress, onDelete, onToggleRead, onExport }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => Animated.spring(scaleAnim, { toValue: 0.96, useNativeDriver: true }).start();
@@ -37,7 +40,8 @@ const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, 
                 borderColor: colors.border, 
                 borderWidth: StyleSheet.hairlineWidth,
                 shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05,
-                transform: [{ scale: scaleAnim }]
+                transform: [{ scale: scaleAnim }],
+                opacity: (note.read && !isSelected) ? 0.65 : 1
             }
         ]}
         onPress={handlePress}
@@ -46,44 +50,78 @@ const DownloadCard = ({ note, colors, activeTheme, isSelectionMode, isSelected, 
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
       >
-        <Text style={[styles.nameText, { color: colors.textPrimary, marginBottom: 12 }]} numberOfLines={2}>
-            {note.title}
-        </Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Text style={[styles.nameText, { color: note.read ? colors.textSecondary : colors.textPrimary, marginBottom: 12, flex: 1, paddingRight: 8 }]} numberOfLines={2}>
+                {note.title}
+            </Text>
+            
+            {!isSelectionMode && (
+                <Pressable onPress={() => onDelete(note.url)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                    <IconTrash size={18} color={colors.destructive} />
+                </Pressable>
+            )}
+        </View>
         
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={[
-                    styles.typeBadge, 
-                    { 
-                        backgroundColor: isSelected ? colors.accent : (note.read ? '#00E67615' : colors.destructive + '15'),
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        borderRadius: 16,
-                        paddingVertical: 6,
-                        paddingHorizontal: 10,
-                    }
-                ]}>
-                    {isSelected ? (
-                        <IconCheck size={14} color="#FFF" style={{ marginRight: 4 }} />
-                    ) : (
-                        <IconFileText size={14} color={note.read ? '#00E676' : colors.destructive} style={{ marginRight: 4 }} />
-                    )}
-                    <Text style={[
-                        styles.typeText, 
-                        { color: isSelected ? '#FFF' : (note.read ? '#00E676' : colors.destructive) }
+                <Pressable onPress={() => { if (!isSelectionMode) onToggleRead(note.url, !note.read); }}>
+                    <View style={[
+                        styles.typeBadge, 
+                        { 
+                            backgroundColor: isSelected ? colors.accent : (note.read ? '#00E67615' : colors.destructive + '15'),
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            borderRadius: 16,
+                            paddingVertical: 6,
+                            paddingHorizontal: 10,
+                        }
                     ]}>
-                        {isSelected ? 'SELECTED' : (note.read ? 'READ' : 'UNREAD')}
-                    </Text>
-                </View>
+                        <Text style={[
+                            styles.typeText, 
+                            { color: isSelected ? '#FFF' : (note.read ? '#00E676' : colors.destructive) }
+                        ]}>
+                            {isSelected ? 'SELECTED' : (note.read ? 'READ' : 'UNREAD')}
+                        </Text>
+
+                        {!isSelected && (
+                            <>
+                                <View style={{ width: 1, height: 12, backgroundColor: note.read ? '#00E67640' : colors.destructive + '40', marginHorizontal: 8 }} />
+                                {note.read ? <IconEyeOff size={14} color="#00E676" /> : <IconEye size={14} color={colors.destructive} />}
+                            </>
+                        )}
+                        {isSelected && (
+                            <>
+                                <View style={{ width: 1, height: 12, backgroundColor: '#FFFFFF40', marginHorizontal: 8 }} />
+                                <IconCheck size={14} color="#FFF" />
+                            </>
+                        )}
+                    </View>
+                </Pressable>
             </View>
 
             {!isSelectionMode && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Pressable onPress={() => onToggleRead(note.url, !note.read)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
-                        {note.read ? <IconEyeOff size={18} color="#00E676" /> : <IconEye size={18} color={colors.destructive} />}
-                    </Pressable>
-                    <Pressable onPress={() => onDelete(note.url)} style={[styles.actionBtn, { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', marginLeft: 8 }]}>
-                        <IconTrash size={18} color={colors.destructive} />
+                    <Pressable onPress={() => onExport(note)}>
+                        <View style={[
+                            styles.typeBadge, 
+                            { 
+                                backgroundColor: colors.accent + '15',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                borderRadius: 16,
+                                paddingVertical: 6,
+                                paddingHorizontal: 10,
+                            }
+                        ]}>
+                            <Text style={[
+                                styles.typeText, 
+                                { color: colors.accent }
+                            ]}>
+                                EXPORT
+                            </Text>
+                            <View style={{ width: 1, height: 12, backgroundColor: colors.accent + '40', marginHorizontal: 8 }} />
+                            <IconFileExport size={14} color={colors.accent} />
+                        </View>
                     </Pressable>
                 </View>
             )}
@@ -107,7 +145,11 @@ export default function SavedNotes() {
     const [refreshing, setRefreshing] = useState(false);
     const [selectedNotes, setSelectedNotes] = useState([]);
     const [deleteConfirmTarget, setDeleteConfirmTarget] = useState(null);
+    const [exportConfirmTarget, setExportConfirmTarget] = useState(null);
+    const [exportSuccessVisible, setExportSuccessVisible] = useState(false);
     const isSelectionMode = selectedNotes.length > 0;
+    
+    const { showAd, loaded: adLoaded } = useRewardedAd();
     
     const loadNotes = async (isManual = false) => {
         if (isManual) {
@@ -164,6 +206,47 @@ export default function SavedNotes() {
         }
         setDeleteConfirmTarget(null);
         loadNotes();
+    };
+
+    const handleExportConfirm = () => {
+        if (!exportConfirmTarget) return;
+        
+        showAd(async () => {
+            if (Platform.OS === 'android') {
+                try {
+                    const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+                    if (permissions.granted) {
+                        const fileContent = await FileSystem.readAsStringAsync(exportConfirmTarget.localUri, { encoding: FileSystem.EncodingType.Base64 });
+                        const newFileUri = await FileSystem.StorageAccessFramework.createFileAsync(
+                            permissions.directoryUri,
+                            exportConfirmTarget.filename || 'export.pdf',
+                            'application/pdf'
+                        );
+                        await FileSystem.writeAsStringAsync(newFileUri, fileContent, { encoding: FileSystem.EncodingType.Base64 });
+                        setExportSuccessVisible(true);
+                    } else {
+                        Alert.alert('Permission Denied', 'Folder permission is required to save the file.');
+                    }
+                } catch (e) {
+                    Alert.alert('Error', 'Failed to save the file to the selected folder.');
+                    console.error(e);
+                }
+            } else {
+                // Reward callback - execute export after ad finishes successfully
+                const isAvailable = await Sharing.isAvailableAsync();
+                if (isAvailable) {
+                    // Use localUri (file:// scheme) instead of url (https:// scheme)
+                    await Sharing.shareAsync(exportConfirmTarget.localUri, {
+                        dialogTitle: 'Export PDF to File Manager',
+                        UTI: 'com.adobe.pdf',
+                        mimeType: 'application/pdf',
+                    });
+                } else {
+                    Alert.alert('Error', 'Sharing is not available on your device');
+                }
+            }
+        });
+        setExportConfirmTarget(null);
     };
 
     const filteredNotes = notes.filter(note => {
@@ -250,6 +333,7 @@ export default function SavedNotes() {
                                         onPress={() => router.push(`/Viewer?url=${encodeURIComponent(note.url)}&title=${encodeURIComponent(note.title)}&subject=${encodeURIComponent(note.subject || 'Saved Note')}`)}
                                         onDelete={() => setDeleteConfirmTarget(note.url)}
                                         onToggleRead={toggleRead}
+                                        onExport={(noteData) => setExportConfirmTarget(noteData)}
                                     />
                                 ))}
                             </View>
@@ -318,6 +402,78 @@ export default function SavedNotes() {
                                         variant="secondary" 
                                         onPress={() => setDeleteConfirmTarget(null)} 
                                         style={styles.fullWidthButton} 
+                                    />
+                                </View>
+                            </View>
+                        </LinearGradient>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Export Ad Confirmation Modal */}
+            <Modal visible={exportConfirmTarget !== null} transparent={true} animationType="fade" onRequestClose={() => setExportConfirmTarget(null)}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.glowingWrapper}>
+                        <LinearGradient
+                            colors={[colors.accent, colors.accent + '30']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.gradientBorder}
+                        >
+                            <View style={[styles.innerGlowCard, { backgroundColor: activeTheme === 'dark' ? '#0F1A24' : '#FFFFFF' }]}>
+                                <View style={[styles.modalIconWrap, { backgroundColor: colors.accent + '20', alignSelf: 'center' }]}>
+                                    <IconFileExport size={32} color={colors.accent} />
+                                </View>
+                                <Mountain title="Export File" style={[styles.modalTitleConfirm, { color: colors.textPrimary }]} />
+                                <Text style={[styles.modalTextConfirm, { color: colors.textSecondary }]}>
+                                    A short video ad will play to support the app. After it finishes, you can save the PDF to your device.
+                                </Text>
+                                <View style={styles.actionGridInner}>
+                                    <AppButton 
+                                        title={adLoaded ? "Watch Ad & Export" : "Loading Ad..."} 
+                                        icon={IconPlayerPlay} 
+                                        onPress={handleExportConfirm} 
+                                        disabled={!adLoaded}
+                                        style={[styles.fullWidthButton, { backgroundColor: colors.accent }]} 
+                                    />
+                                    <AppButton 
+                                        title="Cancel" 
+                                        icon={IconX} 
+                                        variant="secondary" 
+                                        onPress={() => setExportConfirmTarget(null)} 
+                                        style={styles.fullWidthButton} 
+                                    />
+                                </View>
+                            </View>
+                        </LinearGradient>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Export Success Modal */}
+            <Modal visible={exportSuccessVisible} transparent={true} animationType="fade" onRequestClose={() => setExportSuccessVisible(false)}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.glowingWrapper}>
+                        <LinearGradient
+                            colors={['#00E676', '#00E67630']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.gradientBorder}
+                        >
+                            <View style={[styles.innerGlowCard, { backgroundColor: activeTheme === 'dark' ? '#0F1A24' : '#FFFFFF' }]}>
+                                <View style={[styles.modalIconWrap, { backgroundColor: '#00E67620', alignSelf: 'center' }]}>
+                                    <IconCheck size={32} color="#00E676" />
+                                </View>
+                                <Mountain title="Export Successful!" style={[styles.modalTitleConfirm, { color: colors.textPrimary }]} />
+                                <Text style={[styles.modalTextConfirm, { color: colors.textSecondary }]}>
+                                    Your PDF file has been safely exported to your device's folder.
+                                </Text>
+                                <View style={styles.actionGridInner}>
+                                    <AppButton 
+                                        title="Awesome" 
+                                        icon={IconCheck} 
+                                        onPress={() => setExportSuccessVisible(false)} 
+                                        style={[styles.fullWidthButton, { backgroundColor: '#00E676' }]} 
                                     />
                                 </View>
                             </View>

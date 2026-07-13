@@ -72,20 +72,21 @@ const Support = () => {
                               style={styles.fullWidthButton}
                               variant="secondary"
                               onPress={async () => {
-                                  if (__DEV__) {
-                                      Linking.openURL("market://details?id=com.oceanmallik.diunote").catch(() => {
-                                          Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
-                                      });
-                                  } else {
-                                      try {
-                                          if (await StoreReview.hasAction()) {
-                                              await StoreReview.requestReview();
+                                  try {
+                                      const isAvailable = await StoreReview.isAvailableAsync();
+                                      if (isAvailable) {
+                                          await StoreReview.requestReview();
+                                      } else {
+                                          const marketUrl = "market://details?id=com.oceanmallik.diunote";
+                                          const canOpen = await Linking.canOpenURL(marketUrl);
+                                          if (canOpen) {
+                                              Linking.openURL(marketUrl);
                                           } else {
-                                              Linking.openURL("market://details?id=com.oceanmallik.diunote");
+                                              Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
                                           }
-                                      } catch {
-                                          Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
                                       }
+                                  } catch (e) {
+                                      Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
                                   }
                               }}
                           />

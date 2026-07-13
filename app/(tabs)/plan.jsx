@@ -219,6 +219,29 @@ export default function Plan() {
   const [tempIcon, setTempIcon] = useState('list');
   const titleInputRef = useRef(null);
 
+  const getStatusColor = (status) => {
+    if (status === 'Done') return '#00E676';
+    if (status === 'In Process') return '#FFA000';
+    return colors.accent;
+  };
+
+  const drawerStatuses = ['To Do', 'In Process', 'Done'];
+  const modalSliderAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.spring(modalSliderAnim, {
+      toValue: Math.max(0, drawerStatuses.indexOf(tempStatus)),
+      useNativeDriver: false,
+      friction: 8,
+      tension: 50,
+    }).start();
+  }, [tempStatus]);
+
+  const modalSliderLeft = modalSliderAnim.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: ['0%', '33.33%', '66.66%']
+  });
+
   useEffect(() => {
     loadPlans();
   }, []);
@@ -534,23 +557,33 @@ export default function Plan() {
 
             <View style={styles.statusSelector}>
               <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Choose Status</Text>
-              <View style={{ flexDirection: 'row', gap: 8 }}>
-                {tabs.filter(t => t !== 'All').map(tab => {
+              <View style={[
+                styles.segmentedControlContainer, 
+                { 
+                  backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                  marginHorizontal: 0,
+                  marginVertical: 0,
+                  flex: undefined
+                }
+              ]}>
+                <Animated.View style={[
+                  styles.segmentedSlider, 
+                  { 
+                    left: modalSliderLeft,
+                    backgroundColor: getStatusColor(tempStatus) 
+                  }
+                ]} />
+                {drawerStatuses.map(tab => {
                   const isSelected = tempStatus === tab;
                   return (
                     <Pressable
                       key={tab}
-                      style={[
-                        styles.statusTab,
-                        { backgroundColor: activeTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
-                        isSelected && { backgroundColor: colors.accent }
-                      ]}
+                      style={styles.segmentedButton}
                       onPress={() => setTempStatus(tab)}
                     >
                       <Text style={[
-                        styles.statusTabText,
-                        { color: colors.textPrimary },
-                        isSelected && { color: '#FFF' }
+                        styles.segmentedButtonText,
+                        { color: isSelected ? '#FFFFFF' : getStatusColor(tab) }
                       ]}>
                         {tab}
                       </Text>
@@ -869,9 +902,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusSelector: {
-    flexDirection: 'row',
-    gap: 8,
     marginBottom: 20,
+    width: '100%',
   },
   statusTab: {
     flex: 1,

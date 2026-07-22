@@ -44,10 +44,10 @@ const Support = () => {
                   <View style={[styles.innerGlowCard, { backgroundColor: activeTheme === 'dark' ? '#0F1A24' : '#FFFFFF' }]}>
                       <View style={styles.actionGridInner}>
                           <AppButton
-                              onPress={() => loaded ? showAd() : null}
-                              title={loaded ? "Watch an Ad (Free)" : "Ad Loading..."}
+                              onPress={() => router.push('/donation')}
+                              title="Make donation payment"
                               style={styles.fullWidthButton}
-                              icon={IconPlayerPlay}
+                              icon={IconBuildingBank}
                           />
                           <View style={styles.buttonRow}>
                               <AppButton
@@ -58,11 +58,11 @@ const Support = () => {
                                   icon={IconWallet}
                               />
                               <AppButton
-                                  onPress={() => router.push('/Bank')}
-                                  title="Bank"
+                                  onPress={() => loaded ? showAd() : null}
+                                  title={loaded ? "Show Ad" : "Ad Loading..."}
                                   style={styles.halfButton}
                                   variant="semi"
-                                  icon={IconBuildingBank}
+                                  icon={IconPlayerPlay}
                               />
                           </View>
 

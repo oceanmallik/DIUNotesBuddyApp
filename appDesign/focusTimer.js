@@ -521,8 +521,8 @@ export default function FocusTimer() {
 
 const styles = StyleSheet.create({
     container: {
-        marginHorizontal: 12,
-        marginBottom: 16,
+        marginHorizontal: 16,
+        marginBottom: 20,
         borderRadius: 20,
         padding: 12,
         borderWidth: 1,
@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
-        marginBottom: 12,
+        marginBottom: 8,
     },
     iconWrap: {
         width: 32,
@@ -579,8 +579,8 @@ const styles = StyleSheet.create({
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 30,
-        marginTop: 10,
+        marginBottom: 20,
+        marginTop: 0,
     },
     timeTextContainer: {
         position: 'absolute',
@@ -614,10 +614,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 10,
+        paddingHorizontal: 0,
         marginBottom: 10,
         position: 'relative',
-        minHeight: 110,
+        minHeight: 100,
     },
     massiveTimeDisplay: {
         alignItems: 'center',
@@ -658,7 +658,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 50,
         justifyContent: 'center',
-        marginVertical: 10,
+        marginVertical: 4,
     },
     wavySliderInner: {
         position: 'relative',

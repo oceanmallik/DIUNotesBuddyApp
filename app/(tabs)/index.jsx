@@ -1,13 +1,14 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 
-import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle, IconBuildingBank, IconUsers } from '@tabler/icons-react-native'
+import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle, IconBuildingBank, IconUsers, IconHeart } from '@tabler/icons-react-native'
 import { router, useFocusEffect } from 'expo-router'
 import React, { useRef, useState, useCallback, useEffect } from 'react'
-import { Animated, Image, Pressable, StyleSheet, Text, View, Modal, Platform } from 'react-native'
+import { Animated, Image, Pressable, StyleSheet, Text, View, Modal, Platform, ScrollView } from 'react-native'
 import SpInAppUpdates, { IAUUpdateKind } from 'sp-react-native-in-app-updates'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Tree } from '../../appDesign/texts.js'
 import FocusTimer from '../../appDesign/focusTimer.js'
+import { AppButton } from '../../appDesign/button.js'
 import { useAuth } from '../../logic/AuthProvider'
 import { useAppTheme } from '../../logic/ThemeProvider'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -145,7 +146,7 @@ const App = () => {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.bg, { paddingBottom: tabBarHeight + 25 }]}>
-        <View>
+        <View style={{ flex: 1 }}>
           {/* Top bar */}
           <View style={[
             styles.topBar, 
@@ -199,7 +200,12 @@ const App = () => {
             </AnimatedPressable>
           </View>
 
-          <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginBottom: 20, gap: 12 }}>
+          <ScrollView 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            style={{ flex: 1 }}
+          >
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginBottom: 20, gap: 12 }}>
             <View style={[styles.statBox, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}>
                 <Text style={[styles.statNum, { color: colors.accent }]}>{stats.total}</Text>
                 <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Downloads</Text>
@@ -243,14 +249,25 @@ const App = () => {
               <Tree title="Make donation payment" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
             </Pressable>
 
-            <Pressable 
-              onPress={() => router.push('/Donors')} 
-              style={[styles.quickButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
-            >
-              <IconUsers size={22} color="#00D4FF" />
-              <Tree title="Recent Donors" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
-            </Pressable>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <Pressable 
+                onPress={() => router.push('/Donors')} 
+                style={[styles.quickButton, { flex: 1, backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
+              >
+                <IconUsers size={22} color="#00D4FF" />
+                <Tree title="Donors" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
+              </Pressable>
+
+              <AppButton 
+                title="Support ☕" 
+                icon={IconHeart} 
+                variant="primary"
+                onPress={() => router.push('/Support')}
+                style={{ flex: 1, paddingVertical: 10, borderRadius: 16, marginHorizontal: 0, marginTop: 0 }}
+              />
+            </View>
           </View>
+          </ScrollView>
         </View>
 
         <Modal

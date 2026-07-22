@@ -73,17 +73,12 @@ const Support = () => {
                               variant="secondary"
                               onPress={async () => {
                                   try {
-                                      const isAvailable = await StoreReview.isAvailableAsync();
-                                      if (isAvailable) {
-                                          await StoreReview.requestReview();
+                                      const marketUrl = "market://details?id=com.oceanmallik.diunote";
+                                      const canOpen = await Linking.canOpenURL(marketUrl);
+                                      if (canOpen) {
+                                          Linking.openURL(marketUrl);
                                       } else {
-                                          const marketUrl = "market://details?id=com.oceanmallik.diunote";
-                                          const canOpen = await Linking.canOpenURL(marketUrl);
-                                          if (canOpen) {
-                                              Linking.openURL(marketUrl);
-                                          } else {
-                                              Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
-                                          }
+                                          Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");
                                       }
                                   } catch (e) {
                                       Linking.openURL("https://play.google.com/store/apps/details?id=com.oceanmallik.diunote");

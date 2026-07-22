@@ -1,4 +1,4 @@
-import { IconHeart, IconBrandGooglePlay, IconPlayerPlay, IconWorld, IconBuildingBank, IconWallet } from '@tabler/icons-react-native'
+import { IconHeart, IconBrandGooglePlay, IconPlayerPlay, IconWorld, IconBuildingBank, IconWallet, IconUsers } from '@tabler/icons-react-native'
 import { ScrollView, StyleSheet, View, Linking } from 'react-native'
 import { TitleCard } from '../../appDesign/cards.js'
 import Header, { useHeaderHeight } from '../../appDesign/header.js'
@@ -96,6 +96,13 @@ const Support = () => {
                               style={styles.fullWidthButton}
                               variant="secondary"
                               onPress={() => Linking.openURL("https://diunotesbuddy.live/")}
+                          />
+                          <AppButton
+                              title="Recent Donors"
+                              icon={IconUsers}
+                              style={styles.fullWidthButton}
+                              variant="secondary"
+                              onPress={() => router.push('/Donors')}
                           />
                       </View>
                   </View>

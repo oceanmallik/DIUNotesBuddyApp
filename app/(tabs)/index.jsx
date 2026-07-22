@@ -1,6 +1,6 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 
-import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle, IconBuildingBank } from '@tabler/icons-react-native'
+import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle, IconBuildingBank, IconUsers } from '@tabler/icons-react-native'
 import { router, useFocusEffect } from 'expo-router'
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { Animated, Image, Pressable, StyleSheet, Text, View, Modal, Platform } from 'react-native'
@@ -241,6 +241,14 @@ const App = () => {
             >
               <IconBuildingBank size={22} color="#FFA000" />
               <Tree title="Make donation payment" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
+            </Pressable>
+
+            <Pressable 
+              onPress={() => router.push('/Donors')} 
+              style={[styles.quickButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
+            >
+              <IconUsers size={22} color="#00D4FF" />
+              <Tree title="Recent Donors" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
             </Pressable>
           </View>
         </View>

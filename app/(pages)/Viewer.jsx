@@ -1,4 +1,6 @@
-import { IconArrowLeft, IconX } from '@tabler/icons-react-native';
+import { IconArrowLeft, IconX, IconBrandGoogle } from '@tabler/icons-react-native';
+import * as WebBrowser from 'expo-web-browser';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useRef, useState, useEffect } from 'react';
 import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View, Dimensions } from 'react-native';
@@ -15,6 +17,7 @@ const PdfViewer = () => {
     const title = Array.isArray(params.title) ? params.title[0] : params.title;
     const router = useRouter();
     const { colors } = useAppTheme();
+    const insets = useSafeAreaInsets();
 
     const [localUri, setLocalUri] = useState(null);
     const [isCheckingLocal, setIsCheckingLocal] = useState(true);
@@ -172,7 +175,7 @@ const PdfViewer = () => {
             
             <Animated.View style={[
                 styles.customHeader, 
-                { backgroundColor: colors.background, borderBottomColor: colors.border, marginTop: headerMarginTop }
+                { backgroundColor: colors.background, borderBottomColor: colors.border, marginTop: headerMarginTop, paddingTop: Math.max(insets.top + 8, 16) }
             ]}>
                 <Pressable onPress={() => router.back()} style={styles.backButton}>
                     <IconArrowLeft color={colors.textPrimary} size={28} />
@@ -180,6 +183,12 @@ const PdfViewer = () => {
                 <Text style={[styles.headerTitle, { color: colors.textPrimary, flex: 1, paddingRight: 8 }]} numberOfLines={1} ellipsizeMode="tail">
                     {typeof title === 'string' ? title : "Reading Note"}
                 </Text>
+                <Pressable 
+                    onPress={() => router.push('/browser')}
+                    style={{ padding: 8, borderRadius: 20, backgroundColor: colors.card, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}
+                >
+                    <IconBrandGoogle color={colors.accent} size={22} />
+                </Pressable>
             </Animated.View>
             
             <View
@@ -289,10 +298,9 @@ const styles = StyleSheet.create({
     customHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingTop: 50,
-        paddingBottom: 16,
-        paddingHorizontal: 20,
-        borderBottomWidth: 1,
+        paddingBottom: 10,
+        paddingHorizontal: 16,
+        borderBottomWidth: StyleSheet.hairlineWidth,
     },
     backButton: {
         marginRight: 16,

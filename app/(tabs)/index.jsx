@@ -1,6 +1,6 @@
 import appLogo from "@/assets/images/android-icon-foreground.png"
 
-import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle, IconBuildingBank, IconUsers, IconHeart } from '@tabler/icons-react-native'
+import { IconBook2, IconMoon, IconSun, IconUser, IconDownload, IconInfoCircle, IconBuildingBank, IconUsers, IconHeart, IconCreditCard } from '@tabler/icons-react-native'
 import { router, useFocusEffect } from 'expo-router'
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { Animated, Image, Pressable, StyleSheet, Text, View, Modal, Platform, ScrollView } from 'react-native'
@@ -145,7 +145,7 @@ const App = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.bg, { paddingBottom: tabBarHeight + 25 }]}>
+      <View style={[styles.bg]}>
         <View style={{ flex: 1 }}>
           {/* Top bar */}
           <View style={[
@@ -202,7 +202,7 @@ const App = () => {
 
           <ScrollView 
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 20 }}
+            contentContainerStyle={{ paddingBottom: tabBarHeight + 25 }}
             style={{ flex: 1 }}
           >
             <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginBottom: 20, gap: 12 }}>
@@ -243,28 +243,29 @@ const App = () => {
 
             <Pressable 
               onPress={() => router.push('/donation')} 
-              style={[styles.quickButton, { backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
+              style={[styles.quickButton, { backgroundColor: '#FFEB3B', borderRadius: 50, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05, justifyContent: 'space-between', paddingHorizontal: 20 }]}
             >
-              <IconBuildingBank size={22} color="#FFA000" />
-              <Tree title="Make donation payment" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
+              <IconBuildingBank size={22} color="#FF1989" />
+              <Tree title="Make donation payment" style={[styles.quickButtonText, { color: '#000000', flex: 1, textAlign: 'center' }]} />
+              <IconCreditCard size={22} color="#FF1989" />
             </Pressable>
 
             <View style={{ flexDirection: 'row', gap: 12 }}>
               <Pressable 
                 onPress={() => router.push('/Donors')} 
-                style={[styles.quickButton, { flex: 1, backgroundColor: colors.card, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
+                style={[styles.quickButton, { flex: 1, backgroundColor: colors.accent, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
               >
-                <IconUsers size={22} color="#00D4FF" />
-                <Tree title="Donors" style={[styles.quickButtonText, { color: colors.textPrimary }]} />
+                <IconUsers size={22} color={activeTheme === 'dark' ? '#000000' : '#FFFFFF'} />
+                <Tree title="Donors" style={[styles.quickButtonText, { color: activeTheme === 'dark' ? '#000000' : '#FFFFFF' }]} />
               </Pressable>
 
-              <AppButton 
-                title="Support ☕" 
-                icon={IconHeart} 
-                variant="primary"
-                onPress={() => router.push('/Support')}
-                style={{ flex: 1, paddingVertical: 10, borderRadius: 16, marginHorizontal: 0, marginTop: 0 }}
-              />
+              <Pressable 
+                onPress={() => router.push('/Support')} 
+                style={[styles.quickButton, { flex: 1, backgroundColor: colors.accent, shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.05 }]}
+              >
+                <IconHeart size={22} color={activeTheme === 'dark' ? '#000000' : '#FFFFFF'} />
+                <Tree title="Support" style={[styles.quickButtonText, { color: activeTheme === 'dark' ? '#000000' : '#FFFFFF' }]} />
+              </Pressable>
             </View>
           </View>
           </ScrollView>

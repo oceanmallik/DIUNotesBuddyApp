@@ -9,7 +9,7 @@ export default function PagesLayout() {
       <Stack.Screen name="profile" />
       <Stack.Screen name="[subject]" />
       <Stack.Screen name="Viewer" />
-
+      <Stack.Screen name="browser" />
     </Stack>
   );
 }

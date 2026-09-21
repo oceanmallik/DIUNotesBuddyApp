@@ -17,9 +17,10 @@ export default function SecretEntry() {
     const [error, setError] = useState('');
     const shakeAnim = useRef(new Animated.Value(0)).current;
 
-    const config = secretConfig[id];
+    const configs = secretConfig[id];
+    const configList = Array.isArray(configs) ? configs : (configs ? [configs] : null);
 
-    if (!config) {
+    if (!configList || configList.length === 0) {
         return (
             <View style={[styles.container, { backgroundColor: colors.background }]}>
                 <Header title="Unknown Area" showBack />
@@ -33,9 +34,11 @@ export default function SecretEntry() {
     }
 
     const handleSubmit = () => {
-        if (code === config.code) {
+        const matchedConfig = configList.find(c => c.code === code);
+        
+        if (matchedConfig) {
             setError('');
-            router.replace(config.route);
+            router.replace(matchedConfig.route);
         } else {
             setError(`Ask for a personal secret code from ${id}`);
             setCode('');

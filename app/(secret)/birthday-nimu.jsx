@@ -439,7 +439,7 @@ const Screen4VoiceNote = ({ colors }) => {
           <Ionicons name="sparkles" size={40} color={colors.accent} style={{ marginBottom: 10 }} />
           <Text style={styles.secretTitle}>Secret Code Unlocked!</Text>
           <View style={styles.codeBox}>
-            <Text style={styles.codeText}>school-life-memories</Text>
+            <Text style={styles.codeText}>memories22</Text>
           </View>
           <Text style={styles.riddleText}>
             Clue: Where do you go when you want to change your identity?

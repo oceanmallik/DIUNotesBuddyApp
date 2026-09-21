@@ -23,9 +23,9 @@ const TRIVIA_QUESTIONS = [
   {
     image: 'https://picsum.photos/400/300?random=1',
     correctImage: 'https://picsum.photos/400/300?random=101',
-    question: 'Where did we first meet?',
-    options: ['At the coffee shop', 'College campus', 'Online'],
-    answerIndex: 1,
+    question: 'তোর মা-বাবা তোকে কোথায় পেয়েছিল?',
+    options: ['ডাস্টবিনের জঞ্জাল থেকে', 'স্বাভাবিক জন্মে', 'আনেনি, তুই নিজেই চলে এসেছিস'],
+    answerIndex: 0,
   },
   {
     image: 'https://picsum.photos/400/300?random=2',
@@ -57,21 +57,57 @@ const TRIVIA_QUESTIONS = [
   },
 ];
 
-const MEMORY_CARDS = Array.from({ length: 6 }).map((_, i) => ({
-  id: i + 1,
-  frontImage: `https://picsum.photos/400/500?random=${i + 10}`,
-  prompt: `Memory #${i + 1}`,
-  text: `A wonderful memory we shared that I'll never forget. This is a placeholder for memory ${i + 1}.`,
-  isLetter: false,
-})).concat([
+const MEMORY_CARDS = [
+  {
+    id: 1,
+    frontImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/s1.jpg',
+    prompt: 'Summer Memory',
+    text: 'গ্রীষ্ম (Summer) : তোর তেজ আর আত্মবিশ্বাস ঠিক দুপুরের রোদ, কখনো জেদি, কিন্তু সবসময় উজ্জ্বল।',
+    isLetter: false,
+  },
+  {
+    id: 2,
+    frontImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/s2.jpg',
+    prompt: 'Monsoon Memory',
+    text: 'বর্ষা (Monsoon) : বৃষ্টির মতো হঠাৎ আসা তোর সব পাগলামি, যা নিমেষেই মন ভালো করে দেয়।',
+    isLetter: false,
+  },
+  {
+    id: 3,
+    frontImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/s3.jpg',
+    prompt: 'Autumn Memory',
+    text: 'শরৎ (Autumn) : কাশফুলের মতো শান্ত আর স্নিগ্ধ তোর হাসি, মেঘলা দিনেও এক চিলতে নীল আকাশ।',
+    isLetter: false,
+  },
+  {
+    id: 4,
+    frontImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/s4.jpg',
+    prompt: 'Late Autumn Memory',
+    text: 'হেমন্ত (Late Autumn) : শিশিরভেজা সকালের মতোই মিষ্টি আর মায়াবী তোর উপস্থিতি।',
+    isLetter: false,
+  },
+  {
+    id: 5,
+    frontImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/s5.jpg',
+    prompt: 'Winter Memory',
+    text: 'শীত (Winter) : কনকনে শীতে এক কাপ গরম চায়ের মতো ভরসা—সব ঝড়ে আমার পাশে তুই।',
+    isLetter: false,
+  },
+  {
+    id: 6,
+    frontImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/s6.jpg',
+    prompt: 'Spring Memory',
+    text: 'বসন্ত (Spring) : যেখানে তুই আছিস, সেখানেই রঙের ছোঁয়া; তুই নিজেই আমার জীবনের বসন্ত।',
+    isLetter: false,
+  },
   {
     id: 7,
-    frontImage: `https://picsum.photos/400/500?random=99`,
-    prompt: 'Open Me Last',
+    frontImage: 'https://picsum.photos/400/500?random=99',
+    prompt: 'A Simple Letter',
     text: "Dear bestie,\n\nI can't believe another year has passed. You are the most amazing person and I'm so lucky to have you in my life. Here's to many more memories together!\n\nLove always,\nYour Secret Keeper",
     isLetter: true,
   }
-]);
+];
 
 // --- Components ---
 

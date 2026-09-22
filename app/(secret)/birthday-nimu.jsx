@@ -12,27 +12,28 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View
 } from 'react-native';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
 const { width } = Dimensions.get('window');
 
-// --- Mock Data ---
+// --- trivia Data ---
 const TRIVIA_QUESTIONS = [
   {
-    image: 'https://picsum.photos/400/300?random=1',
-    correctImage: 'https://picsum.photos/400/300?random=101',
+    image: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/nimu1.jpeg',
+    correctImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/nimu1alt.jpeg',
     question: 'তোর মা-বাবা তোকে কোথায় পেয়েছিল?',
     options: ['ডাস্টবিনের জঞ্জাল থেকে', 'স্বাভাবিক জন্মে', 'আনেনি, তুই নিজেই চলে এসেছিস'],
     answerIndex: 0,
   },
   {
-    image: 'https://picsum.photos/400/300?random=2',
-    correctImage: 'https://picsum.photos/400/300?random=102',
-    question: 'What is our go-to late night snack?',
-    options: ['Pizza', 'Ice cream', 'Ramen'],
-    answerIndex: 2,
+    image: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/nimu2.jpeg',
+    correctImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/nimu2alt.jpeg',
+    question: 'আকাশ কেন নীল হয়?',
+    options: ['সূর্যের আলোর তরঙ্গদৈর্ঘ্যের কারণে', 'তোর হিজাবের রঙের কারণে', 'ওপরের কোনোটিই নয়'],
+    answerIndex: 1,
   },
   {
     image: 'https://picsum.photos/400/300?random=3',
@@ -90,21 +91,21 @@ const MEMORY_CARDS = [
     id: 5,
     frontImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/s5.jpg',
     prompt: 'Winter Memory',
-    text: 'শীত (Winter) : কনকনে শীতে এক কাপ গরম চায়ের মতো ভরসা—সব ঝড়ে আমার পাশে তুই।',
+    text: 'শীত (Winter) : কনকনে শীতে এক কাপ গরম চায়ের মতো ভরসা, সব ঝড়ে আমার পাশে তুই।',
     isLetter: false,
   },
   {
     id: 6,
     frontImage: 'https://raw.githubusercontent.com/oceanmallik/bestFriend/refs/heads/main/appPhotoBirthday/s6.jpg',
     prompt: 'Spring Memory',
-    text: 'বসন্ত (Spring) : যেখানে তুই আছিস, সেখানেই রঙের ছোঁয়া; তুই নিজেই আমার জীবনের বসন্ত।',
+    text: 'বসন্ত (Spring) : যেখানে তুই আছিস, সেখানেই রঙের ছোঁয়া। তুই নিজেই আমার জীবনের বসন্ত।',
     isLetter: false,
   },
   {
     id: 7,
     frontImage: 'https://picsum.photos/400/500?random=99',
     prompt: 'A Simple Letter',
-    text: "Dear bestie,\n\nI can't believe another year has passed. You are the most amazing person and I'm so lucky to have you in my life. Here's to many more memories together!\n\nLove always,\nYour Secret Keeper",
+    text: "শুভ জন্মদিন প্রিয় বন্ধু, \n\nরক্তের সম্পর্ক না থাকলেও তুই যে আমার নিজের বোনের চেয়েও বেশি কিছু, সেটা নতুন করে বলার দরকার নেই। রাত দুইটার পাগলামি থেকে শুরু করে মন খারাপের দিনে ভরসা হওয়া, সবকিছুতেই তুই আমার সবচেয়ে বড় শক্তি। \n\nতুই যেভাবে নিজের স্বপ্ন নিয়ে লড়ছিস, তোকে নিয়ে সত্যি অনেক গর্ব হয়। জীবনে যাই ঘটুক, জেনে রাখিস তোর এই ভাই/বন্ধুটা যেকোনো পরিস্থিতিতে তোর পাশে আছে আর থাকবে। তোর এই সুন্দর হাসিমুখটা যেন কখনো না হারায়। শুভ জন্মদিন, পাগলী! অনেক ভালো থাকিস সবসময়। \n\n— তোর বন্ধু",
     isLetter: true,
   }
 ];
@@ -284,37 +285,74 @@ const PolaroidCard = ({ card, onViewed, colors }) => {
   });
 
   const frontAnimatedStyle = { transform: [{ rotateY: frontInterpolate }] };
-  const backAnimatedStyle = { transform: [{ rotateY: backInterpolate }], position: 'absolute', top: 0 };
+  const backAnimatedStyle = { transform: [{ rotateY: backInterpolate }], position: 'absolute' };
+
+  const cardDimensions = card.isLetter ? { width: width - 60, height: 520 } : {};
+  const wrapperHeight = card.isLetter ? { height: 540 } : {};
 
   return (
-    <TouchableOpacity activeOpacity={1} onPress={flip} style={styles.cardWrapper}>
+    <View style={[styles.cardWrapper, wrapperHeight]}>
       {/* Front */}
-      <Animated.View style={[styles.polaroidCard, frontAnimatedStyle, { backfaceVisibility: 'hidden' }]}>
-        <View style={styles.polaroidImagePlaceholder}>
-          {card.isLetter ? (
-            <Ionicons name="mail-unread" size={80} color={colors.accent} />
-          ) : (
-            <Image source={{ uri: card.frontImage }} style={styles.polaroidImg} contentFit="cover" />
-          )}
-        </View>
-        <Text style={styles.polaroidPrompt}>{card.prompt}</Text>
-        <Text style={styles.tapToFlip}>(Tap to flip)</Text>
-      </Animated.View>
+      <TouchableWithoutFeedback onPress={flip}>
+        <Animated.View
+          pointerEvents={isFlipped ? "none" : "auto"}
+          style={[styles.polaroidCard, cardDimensions, frontAnimatedStyle, { backfaceVisibility: 'hidden', zIndex: isFlipped ? 0 : 1 }]}
+        >
+          {/* Tape graphic at the top */}
+          {!card.isLetter && <View style={styles.tapeGraphic} />}
+          <View style={[
+            styles.polaroidImagePlaceholder,
+            card.isLetter && { flex: 1, backgroundColor: '#FFF0F5', borderRadius: 8, borderWidth: 1.5, borderColor: '#F48FB1', borderStyle: 'dashed' }
+          ]}>
+            {card.isLetter ? (
+              <Ionicons name="mail-unread" size={80} color={colors.accent} />
+            ) : (
+              <Image source={{ uri: card.frontImage }} style={styles.polaroidImg} contentFit="cover" />
+            )}
+          </View>
+          <Text style={styles.polaroidPrompt}>{card.prompt}</Text>
+          <Text style={styles.tapToFlip}>{card.isLetter ? '(Tap to open)' : '(Tap to flip)'}</Text>
+        </Animated.View>
+      </TouchableWithoutFeedback>
 
       {/* Back */}
-      <Animated.View style={[styles.polaroidCard, styles.polaroidBack, backAnimatedStyle, { backfaceVisibility: 'hidden' }]}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }} showsVerticalScrollIndicator={false}>
-          {card.isLetter ? (
-            <Text style={styles.letterText}>{card.text}</Text>
-          ) : (
-            <>
-              <Image source={{ uri: card.frontImage }} style={styles.polaroidImgSmall} contentFit="cover" />
-              <Text style={styles.captionText}>{card.text}</Text>
-            </>
-          )}
+      <Animated.View
+        pointerEvents={isFlipped ? "auto" : "none"}
+        style={[styles.polaroidCard, cardDimensions, styles.polaroidBack, card.isLetter && styles.letterBack, backAnimatedStyle, { backfaceVisibility: 'hidden', zIndex: isFlipped ? 1 : 0 }]}
+      >
+        <ScrollView
+          style={{ width: '100%' }}
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={card.isLetter}
+        >
+          <TouchableWithoutFeedback onPress={flip}>
+            <View style={{ flexGrow: 1, width: '100%', alignItems: card.isLetter ? 'flex-start' : 'center', justifyContent: card.isLetter ? 'flex-start' : 'center' }}>
+              {card.isLetter ? (
+                <View style={styles.letterContainer}>
+                  <View style={styles.letterDecorationTop}>
+                    <Ionicons name="mail-open-outline" size={28} color={colors.accent} />
+                  </View>
+                  <Text style={styles.letterText}>{card.text}</Text>
+                  <View style={styles.letterDecorationBottom}>
+                    <Ionicons name="heart-half-outline" size={24} color={colors.accent} />
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.memoryBackContainer}>
+                  <View style={styles.tapeGraphic} />
+                  <Image source={{ uri: card.frontImage }} style={styles.polaroidImgSmall} contentFit="cover" />
+                  <Text style={{ fontSize: 36, color: colors.border, fontFamily: 'SpaceGrotesk-Bold', height: 28, opacity: 0.5 }}>"</Text>
+                  <Text style={styles.captionText}>{card.text}</Text>
+                  <View style={styles.memoryTag}>
+                    <Text style={styles.memoryTagText}>Captured Moment</Text>
+                  </View>
+                </View>
+              )}
+            </View>
+          </TouchableWithoutFeedback>
         </ScrollView>
       </Animated.View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -761,10 +799,11 @@ const getStyles = (colors) => StyleSheet.create({
     height: '100%',
   },
   polaroidPrompt: {
-    fontSize: 20,
+    fontSize: 22,
     color: '#333',
     fontFamily: 'SpaceGrotesk-Bold',
     textAlign: 'center',
+    letterSpacing: 0.5,
   },
   tapToFlip: {
     color: '#888',
@@ -781,19 +820,85 @@ const getStyles = (colors) => StyleSheet.create({
     height: 150,
     borderRadius: 8,
     marginBottom: 20,
+    borderWidth: 3,
+    borderColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
   },
   captionText: {
     fontSize: 16,
     color: '#444',
     textAlign: 'center',
+    lineHeight: 26,
+    fontFamily: 'SpaceGrotesk-Regular',
+    fontStyle: 'italic',
+    paddingHorizontal: 15,
+  },
+  tapeGraphic: {
+    position: 'absolute',
+    top: -15,
+    width: 110,
+    height: 35,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    transform: [{ rotate: '-2deg' }],
+    zIndex: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  memoryBackContainer: {
+    alignItems: 'center',
+    paddingTop: 15,
+    width: '100%',
+  },
+  memoryTag: {
+    marginTop: 25,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    backgroundColor: colors.card,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  memoryTagText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontFamily: 'SpaceGrotesk-Bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  letterText: {
+    fontSize: 16,
+    color: '#222',
     lineHeight: 24,
     fontFamily: 'SpaceGrotesk-Regular',
   },
-  letterText: {
-    fontSize: 18,
-    color: '#222',
-    lineHeight: 28,
-    fontFamily: 'SpaceGrotesk-Regular',
+  letterBack: {
+    backgroundColor: '#FFF0F5',
+    padding: 15,
+  },
+  letterContainer: {
+    flexGrow: 1,
+    width: '100%',
+    borderWidth: 1.5,
+    borderColor: '#F48FB1',
+    borderStyle: 'dashed',
+    borderRadius: 8,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+  },
+  letterDecorationTop: {
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  letterDecorationBottom: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 5,
   },
   vaultFooter: {
     marginTop: 10,

@@ -5,7 +5,7 @@ export const secretConfig = {
             route: "/(secret)/nimu"
         },
         {
-            code: "1",
+            code: "hbdnimu21",
             route: "/(secret)/birthday-nimu"
         },
         {

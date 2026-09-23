@@ -151,8 +151,7 @@ const Screen1Trivia = ({ onComplete, colors }) => {
 
       {correctSelected && (
         <View style={{ alignItems: 'center', marginBottom: 20 }}>
-          <Text style={[styles.headerTitle, { fontSize: 20, marginBottom: 15 }]}>You got it!</Text>
-          <Image source={{ uri: currentQ.correctImage }} style={styles.questionImage} contentFit="cover" />
+          <Text style={[styles.headerTitle, { fontSize: 20, marginBottom: 5 }]}>You got it!</Text>
         </View>
       )}
 
@@ -172,25 +171,48 @@ const Screen2Final = ({ colors }) => {
   
   return (
     <View style={[styles.screenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
-      <Text style={styles.headerTitle}>Journey Completed!</Text>
-      <Text style={styles.subtitleText}>Here's to all our amazing memories.</Text>
+      <View style={styles.finalHeaderContainer}>
+        <Ionicons name="star" size={32} color={colors.accent} style={{ marginBottom: 10 }} />
+        <Text style={styles.headerTitle}>Journey Completed!</Text>
+        <Text style={styles.subtitleText}>Here's to all our amazing memories, laughs, and late-night talks.</Text>
+      </View>
       
       <View style={styles.bondCard}>
-        <Image 
-          source={{ uri: 'https://picsum.photos/400/400?random=999' }} 
-          style={styles.bondImage} 
-          contentFit="cover" 
-        />
+        
+        <View style={styles.photoRow}>
+          <View style={styles.photoWrapperLeft}>
+            <Image 
+              source={{ uri: 'https://picsum.photos/400/500?random=1001' }} 
+              style={styles.personImage} 
+              contentFit="cover" 
+            />
+            <View style={styles.photoLabel}>
+              <Text style={styles.photoLabelText}>Ocean</Text>
+            </View>
+          </View>
+          
+          <View style={styles.heartContainer}>
+             <Text style={{ fontSize: 32 }}>🤝</Text>
+          </View>
+
+          <View style={styles.photoWrapperRight}>
+            <Image 
+              source={{ uri: 'https://picsum.photos/400/500?random=1002' }} 
+              style={styles.personImage} 
+              contentFit="cover" 
+            />
+            <View style={styles.photoLabel}>
+              <Text style={styles.photoLabelText}>Nimu</Text>
+            </View>
+          </View>
+        </View>
         
         <View style={styles.namesContainer}>
-          <Text style={styles.nameText}>Ocean Mallik</Text>
-          
           <View style={styles.bondBadge}>
             <Ionicons name="infinite" size={24} color={colors.accent} />
             <Text style={styles.bondBadgeText}>A Bond of Friendship & Siblinghood</Text>
           </View>
-          
-          <Text style={styles.nameText}>Tasnim Iffat Nimu</Text>
+          <Text style={styles.footerQuote}>"Good friends are like stars. You don't always see them, but you know they're always there."</Text>
         </View>
       </View>
     </View>
@@ -317,51 +339,108 @@ const getStyles = (colors) => StyleSheet.create({
     fontFamily: 'SpaceGrotesk-Bold',
   },
   // Final Screen
+  finalHeaderContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   bondCard: {
     backgroundColor: colors.card,
     width: '100%',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 24,
+    padding: 24,
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
-    shadowRadius: 10,
+    shadowRadius: 15,
     elevation: 8,
   },
-  bondImage: {
-    width: '100%',
-    height: 220,
-    borderRadius: 16,
+  photoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 30,
+    width: '100%',
+  },
+  photoWrapperLeft: {
+    transform: [{ rotate: '-8deg' }],
+    zIndex: 2,
+  },
+  photoWrapperRight: {
+    transform: [{ rotate: '8deg' }],
+    zIndex: 1,
+  },
+  personImage: {
+    width: 130,
+    height: 170,
+    borderRadius: 16,
+    borderWidth: 4,
+    borderColor: '#FFF',
+    backgroundColor: colors.border,
+  },
+  photoLabel: {
+    position: 'absolute',
+    bottom: -10,
+    alignSelf: 'center',
+    backgroundColor: colors.card,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  photoLabelText: {
+    fontSize: 14,
+    fontFamily: 'SpaceGrotesk-Bold',
+    color: colors.textPrimary,
+  },
+  heartContainer: {
+    marginHorizontal: -15,
+    zIndex: 3,
+    backgroundColor: colors.background,
+    borderRadius: 30,
+    padding: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 5,
   },
   namesContainer: {
     width: '100%',
     alignItems: 'center',
-    gap: 15,
-  },
-  nameText: {
-    fontSize: 26,
-    color: colors.textPrimary,
-    fontFamily: 'SpaceGrotesk-Bold',
-    textAlign: 'center',
+    gap: 20,
   },
   bondBadge: {
     backgroundColor: colors.background,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.accent,
     alignItems: 'center',
-    gap: 5,
+    flexDirection: 'row',
+    gap: 8,
   },
   bondBadgeText: {
     color: colors.accent,
     fontFamily: 'SpaceGrotesk-Bold',
     fontSize: 14,
     textAlign: 'center',
+  },
+  footerQuote: {
+    fontSize: 14,
+    fontFamily: 'SpaceGrotesk-Regular',
+    color: colors.textSecondary,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    lineHeight: 22,
   }
 });

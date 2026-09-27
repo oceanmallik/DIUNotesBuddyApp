@@ -1,20 +1,20 @@
+import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
   Dimensions,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Image } from 'expo-image';
-import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../logic/ThemeProvider';
 
 const { width } = Dimensions.get('window');
 
-// --- Mock Data ---
+// --- Memory Database ---
 const TRIVIA_QUESTIONS = [
   {
     image: 'https://picsum.photos/400/300?random=201',
@@ -168,7 +168,7 @@ const Screen1Trivia = ({ onComplete, colors }) => {
 
 const Screen2Final = ({ colors }) => {
   const styles = getStyles(colors);
-  
+
   return (
     <View style={[styles.screenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
       <View style={styles.finalHeaderContainer}>
@@ -176,37 +176,37 @@ const Screen2Final = ({ colors }) => {
         <Text style={styles.headerTitle}>Journey Completed!</Text>
         <Text style={styles.subtitleText}>Here's to all our amazing memories, laughs, and late-night talks.</Text>
       </View>
-      
+
       <View style={styles.bondCard}>
-        
+
         <View style={styles.photoRow}>
           <View style={styles.photoWrapperLeft}>
-            <Image 
-              source={{ uri: 'https://picsum.photos/400/500?random=1001' }} 
-              style={styles.personImage} 
-              contentFit="cover" 
+            <Image
+              source={{ uri: 'https://picsum.photos/400/500?random=1001' }}
+              style={styles.personImage}
+              contentFit="cover"
             />
             <View style={styles.photoLabel}>
               <Text style={styles.photoLabelText}>Ocean</Text>
             </View>
           </View>
-          
+
           <View style={styles.heartContainer}>
-             <Text style={{ fontSize: 32 }}>🤝</Text>
+            <Text style={{ fontSize: 32 }}>🤝</Text>
           </View>
 
           <View style={styles.photoWrapperRight}>
-            <Image 
-              source={{ uri: 'https://picsum.photos/400/500?random=1002' }} 
-              style={styles.personImage} 
-              contentFit="cover" 
+            <Image
+              source={{ uri: 'https://picsum.photos/400/500?random=1002' }}
+              style={styles.personImage}
+              contentFit="cover"
             />
             <View style={styles.photoLabel}>
               <Text style={styles.photoLabelText}>Nimu</Text>
             </View>
           </View>
         </View>
-        
+
         <View style={styles.namesContainer}>
           <View style={styles.bondBadge}>
             <Ionicons name="infinite" size={24} color={colors.accent} />
@@ -224,7 +224,7 @@ const Screen2Final = ({ colors }) => {
 export default function NimuMemories() {
   const { colors } = useAppTheme();
   const styles = getStyles(colors);
-  
+
   const [currentScreen, setCurrentScreen] = useState(1);
 
   const navigateTo = (screenId) => {

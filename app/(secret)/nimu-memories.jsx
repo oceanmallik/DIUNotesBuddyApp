@@ -41,7 +41,7 @@ const SHORT_STORIES = [
   {
     id: 6,
     title: "Again, kichu ekta",
-    content: ''
+    content: 'ABCD'
   }
 ];
 

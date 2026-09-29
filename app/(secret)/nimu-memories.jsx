@@ -46,7 +46,6 @@ export default function NimuMemories() {
       setIsOpen(false);
       setCurrentIndex(prev => prev + 1);
     } else {
-      // End of stories, reset to beginning
       setIsOpen(false);
       setCurrentIndex(0);
     }

@@ -223,8 +223,12 @@ const Screen1Trivia = ({ onComplete, colors }) => {
 const Screen2Trophy = ({ onNext, colors }) => {
   const styles = getStyles(colors);
   return (
-    <View style={[styles.screenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
-      <Ionicons name="trophy" size={80} color={colors.accent} style={{ marginBottom: 20 }} />
+    <ScrollView 
+      style={styles.screenContainer} 
+      contentContainerStyle={{ alignItems: 'center', paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Ionicons name="trophy" size={80} color={colors.accent} style={{ marginBottom: 20, marginTop: 20 }} />
       <Text style={styles.headerTitle}>You Did It!</Text>
 
       <View style={styles.trophyBanner}>
@@ -236,26 +240,34 @@ const Screen2Trophy = ({ onNext, colors }) => {
         <Text style={styles.bondValue}>Unbreakable (S-Tier) 💖</Text>
       </View>
 
-      <View style={styles.badgesGrid}>
-        <View style={styles.badgeItem}>
-          <Ionicons name="moon" size={32} color={colors.accent} />
-          <Text style={styles.badgeText}>Certified 2 AM Therapist</Text>
+      <View style={{ width: '100%', gap: 12, paddingBottom: 10 }}>
+        <View style={[styles.badgeItem, { width: '100%', flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center' }]}>
+          <Ionicons name="trash-bin-outline" size={26} color={colors.accent} />
+          <Text style={[styles.badgeText, { marginTop: 0, marginLeft: 15, flex: 1, textAlign: 'left', fontSize: 15 }]}>ডাস্টবিন থেকে কুড়িয়ে পাওয়া রত্ন</Text>
         </View>
-        <View style={styles.badgeItem}>
-          <Ionicons name="car" size={32} color={colors.destructive} />
-          <Text style={styles.badgeText}>Ride-or-Die Clearance</Text>
+        <View style={[styles.badgeItem, { width: '100%', flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center' }]}>
+          <Ionicons name="color-palette-outline" size={26} color={colors.accent} />
+          <Text style={[styles.badgeText, { marginTop: 0, marginLeft: 15, flex: 1, textAlign: 'left', fontSize: 15 }]}>যার হিজাবের রঙে আকাশ নীল</Text>
         </View>
-        <View style={styles.badgeItem}>
-          <Ionicons name="star" size={32} color={colors.accent} />
-          <Text style={styles.badgeText}>Honorary Sister</Text>
+        <View style={[styles.badgeItem, { width: '100%', flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center' }]}>
+          <Ionicons name="fast-food-outline" size={26} color={colors.accent} />
+          <Text style={[styles.badgeText, { marginTop: 0, marginLeft: 15, flex: 1, textAlign: 'left', fontSize: 15 }]}>ঢাকাগামী বাসের ছোলা খাদক</Text>
+        </View>
+        <View style={[styles.badgeItem, { width: '100%', flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center' }]}>
+          <Ionicons name="medal-outline" size={26} color={colors.accent} />
+          <Text style={[styles.badgeText, { marginTop: 0, marginLeft: 15, flex: 1, textAlign: 'left', fontSize: 15 }]}>ওশানকে ভালো মানুষের স্বীকৃতিদাতা</Text>
+        </View>
+        <View style={[styles.badgeItem, { width: '100%', flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center' }]}>
+          <Ionicons name="cut-outline" size={26} color={colors.destructive} />
+          <Text style={[styles.badgeText, { marginTop: 0, marginLeft: 15, flex: 1, textAlign: 'left', fontSize: 15 }]}>আগামী কোরবানির প্রধান আকর্ষণ</Text>
         </View>
       </View>
 
-      <TouchableOpacity style={[styles.primaryBtn, { marginTop: 40, width: '100%' }]} onPress={onNext}>
+      <TouchableOpacity style={[styles.primaryBtn, { marginTop: 30, width: '100%' }]} onPress={onNext}>
         <Text style={styles.primaryBtnText}>Open Memory Vault</Text>
         <Ionicons name="lock-open-outline" size={20} color="#FFF" style={{ marginLeft: 8 }} />
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 

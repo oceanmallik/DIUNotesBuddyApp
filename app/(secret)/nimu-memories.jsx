@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -8,439 +7,288 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import { useAppTheme } from '../../logic/ThemeProvider';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-// --- Memory Database ---
-const TRIVIA_QUESTIONS = [
+const SHORT_STORIES = [
   {
-    image: 'https://picsum.photos/400/300?random=201',
-    correctImage: 'https://picsum.photos/400/300?random=301',
-    question: 'Who is the bigger foodie among us?',
-    options: ['Ocean', 'Nimu', 'We both eat equally'],
-    answerIndex: 1,
+    id: 1,
+    title: "The Midnight Ramen Adventure",
+    content: `ছোট্ট একটা বিদ্যাপীঠ, চারপাশ বেশ শান্ত। মোস্তফা স্যারের ক্লাস চলছে আপন গতিতে। পিনপতন নীরবতার মাঝেই হঠাৎ বেজে উঠল একটা রিংটোন। স্যার তো রীতিমতো চমকে উঠলেন! ভরদুপুরে হঠাৎ কার ফোন? মনে মনে প্রমাদ গুনলেন তিনি, এই বুঝি গিন্নির কল! বুক দুরুদুরু অবস্থায় বাঁ দিকের পকেট থেকে স্যামসাং ফোনটা বের করলেন। স্ক্রিনের দিকে তাকিয়েই ধড়ে প্রাণ ফিরে এলো স্যারের। একটা স্বস্তির দীর্ঘশ্বাস ছাড়লেন। নাহ, গিন্নি নয়, স্ক্রিনে জ্বলজ্বল করছে 'আক্তার হোসেন' নামটা। তবে পরক্ষণেই স্যার বুঝলেন, এই কল আদতে তার জন্য নয়। ক্লাসের প্রথম সারির তৃতীয় বেঞ্চে বসা এক মেয়ের জন্য এসেছে এই তলব। স্যার মেয়েটিকে ডেকে ফোনটা এগিয়ে দিলেন। একটু নিরিবিলিতে কথা বলার জন্য মেয়েটি যেই না বেঞ্চ ছেড়ে উঠে দাঁড়াতে যাবে, ঠিক তখনই ঘটল আসল বিপত্তি! তার ঠিক পেছনেই বসা এক সুদর্শন ছেলে হঠাৎ করে অদ্ভুত আর বিশ্রী একটা শব্দ করে বসল। মুহূর্তেই ক্লাসের পরিবেশ থমথমে! মেয়েটি যাওয়ার পথে থমকে দাঁড়াল। ঘাড় ঘুরিয়ে এমন এক রাগান্বিত, তীক্ষ্ণ আর রক্তচক্ষু দৃষ্টিতে ছেলেটার দিকে তাকাল যে, ছেলেটার আত্মা খাঁচাছাড়া হওয়ার জোগাড়! কোনো কথা না বাড়িয়ে মেয়েটি হনহন করে বাইরে চলে গেল। কিন্তু এদিকে ছেলেটার অবস্থা তখন রীতিমতো শোচনীয়। তার চোখেমুখে স্পষ্ট আতঙ্ক, এই বুঝি মেয়ের বাবা লাঠিসোঁটা নিয়ে স্কুলে এসে হাজির হলো বলে! ভয়ে তার হাত-পা ঠান্ডা, মনে মনে শুধু ভাবছে,"আজ আর রক্ষা নেই, স্কুলে আজ আমার বিচার বসবেই!" কিন্তু কথায় আছে না, রাখে আল্লাহ মারে কে! ছেলেটার কপাল সে যাত্রায় ভালোই ছিল। সারাদিন আতঙ্কে প্রহর গুনলেও শেষমেশ কিছুই হলো না। বিশাল এক কালবৈশাখী ঝড় যেন বিনা মেঘেই শান্ত হয়ে গেল!`
   },
   {
-    image: 'https://picsum.photos/400/300?random=202',
-    correctImage: 'https://picsum.photos/400/300?random=302',
-    question: 'Who gives the best late-night advice?',
-    options: ['Ocean', 'Nimu', 'Google'],
-    answerIndex: 0,
+    id: 2,
+    title: "The Great Umbrella Mishap",
+    content: 'গল্পটা খুব বেশিদিন আগের না, কিন্তু যখনই মনে পড়ে, গায়ের লোম খাড়া হয়ে যায়। আমাদের স্কুলের এক স্যার তার পুরনো, স্যাঁতসেঁতে বাড়িতে আমাদের প্রাইভেট পড়াতেন। আমরা কয়েকজন ছোট ছোট ছেলেমেয়ে ছিলাম। স্যারের কড়া নিয়ম ছিল, ঘরের বাইরে এক কোণে জুতো খুলে তারপর ভেতরে ঢুকতে হবে। যাওয়ার সময় আমাদের সবার জুতো একদম ঝকঝকে পরিষ্কার থাকতো। কিন্তু আসল ভয়ংকর ব্যাপারটা অপেক্ষা করে থাকতো পড়া শেষের মুহূর্তটার জন্য। পড়া শেষে যখন চারপাশটা একদম সুনসান হয়ে যেত, আমরা দরজা খুলে বাইরে আসতেই আমাদের রক্ত হিম হয়ে আসতো। বারান্দার সেই মিটমিটে আলোতে দেখতাম, আমাদের পরিষ্কার জুতোগুলোর ওপর দিয়ে যেন একটা তাণ্ডব বয়ে গেছে! জুতোগুলো স্যাঁতসেঁতে কাদায় মাখামাখি, কিন্তু সেগুলো কোনো সাধারণ কাদা নয়। যেন অতিকায়, বীভৎস কোনো পা আমাদের জুতোগুলোকে চরম আক্রোশে মাড়িয়ে দিয়ে গেছে। আশেপাশে কোনো মানুষের সাড়াশব্দ নেই, বাতাসে শুধু একটা ভ্যাপসা গন্ধ, অথচ জুতোগুলোর ওপর সেই অমানবিক পায়ের ছাপ! যেন কোনো এক অশরীরী ছায়ামূর্তি, যার পায়ের পাতাগুলো স্বাভাবিক মানুষের মতো নয়, সে প্রতিদিন অন্ধকারে দাঁড়িয়ে আমাদের জন্য অপেক্ষা করতো।ওই নোংরা, কাদামাখা জুতো পায়ে দিয়ে ফেরার সময় আমাদের সবার বুকের ভেতরটা ধড়ফড় করতো। মনে হতো অন্ধকারের ভেতর থেকে কেউ একজন আমাদের দিকে তাকিয়ে আছে, আর নিঃশব্দে হাসছে! প্রতিদিনের এই গা ছমছমে আতঙ্কটা আজও আমাদের তাড়া করে ফেরে।'
   },
   {
-    image: 'https://picsum.photos/400/300?random=203',
-    correctImage: 'https://picsum.photos/400/300?random=303',
-    question: 'Who is more likely to stay up until 4 AM?',
-    options: ['Nimu', 'Ocean', 'Neither'],
-    answerIndex: 0,
+    id: 3,
+    title: "Lost in the City",
+    content: "We decided to take a shortcut through a neighborhood we'd never been to. Two hours later, we were hopelessly lost, our phones at 1% battery. We eventually found our way back by following the smell of a familiar bakery."
   },
   {
-    image: 'https://picsum.photos/400/300?random=204',
-    correctImage: 'https://picsum.photos/400/300?random=304',
-    question: 'Who is the bigger drama queen?',
-    options: ['Ocean', 'Nimu', 'It is a tie'],
-    answerIndex: 1,
-  },
-  {
-    image: 'https://picsum.photos/400/300?random=205',
-    correctImage: 'https://picsum.photos/400/300?random=305',
-    question: 'Who has the worst memory for dates?',
-    options: ['Nimu', 'Ocean', 'We both forget'],
-    answerIndex: 1,
-  },
-  {
-    image: 'https://picsum.photos/400/300?random=206',
-    correctImage: 'https://picsum.photos/400/300?random=306',
-    question: 'Who is always running late?',
-    options: ['Ocean', 'Nimu', 'Traffic is to blame'],
-    answerIndex: 1,
-  },
-  {
-    image: 'https://picsum.photos/400/300?random=207',
-    correctImage: 'https://picsum.photos/400/300?random=307',
-    question: 'Who is the designated problem solver?',
-    options: ['Nimu', 'Ocean', 'We just panic'],
-    answerIndex: 0,
-  },
-  {
-    image: 'https://picsum.photos/400/300?random=208',
-    correctImage: 'https://picsum.photos/400/300?random=308',
-    question: 'Who takes more selfies?',
-    options: ['Ocean', 'Nimu', 'We take usies'],
-    answerIndex: 1,
-  },
-  {
-    image: 'https://picsum.photos/400/300?random=209',
-    correctImage: 'https://picsum.photos/400/300?random=309',
-    question: 'Who is more likely to start a random argument for fun?',
-    options: ['Nimu', 'Ocean', 'Neither'],
-    answerIndex: 0,
-  },
-  {
-    image: 'https://picsum.photos/400/300?random=210',
-    correctImage: 'https://picsum.photos/400/300?random=310',
-    question: 'Who is the funnier one?',
-    options: ['Ocean', 'Nimu', 'We are a comedy duo'],
-    answerIndex: 2,
-  },
+    id: 4,
+    title: "The Mystery of the Missing Keys",
+    content: "We searched everywhere: our bags, the car, the entire hallway. We even blamed a stray cat. Turns out, the keys were in the fridge the entire time, sitting perfectly next to the leftover pizza."
+  }
 ];
 
-// --- Components ---
+export default function NimuMemories() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
 
-const Screen1Trivia = ({ onComplete, colors }) => {
-  const styles = getStyles(colors);
-  const [qIndex, setQIndex] = useState(0);
-  const [wrongSelections, setWrongSelections] = useState([]);
-  const [correctSelected, setCorrectSelected] = useState(false);
-
-  const currentQ = TRIVIA_QUESTIONS[qIndex];
-
-  const handleOptionPress = (idx) => {
-    if (correctSelected) return;
-    if (idx === currentQ.answerIndex) {
-      setCorrectSelected(true);
-    } else {
-      if (!wrongSelections.includes(idx)) {
-        setWrongSelections([...wrongSelections, idx]);
-      }
-    }
-  };
+  const currentStory = SHORT_STORIES[currentIndex];
 
   const handleNext = () => {
-    if (qIndex < TRIVIA_QUESTIONS.length - 1) {
-      setQIndex(qIndex + 1);
-      setWrongSelections([]);
-      setCorrectSelected(false);
+    if (currentIndex < SHORT_STORIES.length - 1) {
+      setIsOpen(false);
+      setCurrentIndex(prev => prev + 1);
     } else {
-      onComplete();
+      // End of stories, reset to beginning
+      setIsOpen(false);
+      setCurrentIndex(0);
     }
   };
 
-  return (
-    <ScrollView style={styles.screenContainer} contentContainerStyle={{ paddingBottom: 30 }} showsVerticalScrollIndicator={false}>
-      <Text style={styles.headerTitle}>Memories Trivia: {qIndex + 1}/10</Text>
+  const handleReveal = () => {
+    setIsOpen(true);
+  };
 
-      <View style={styles.questionCard}>
-        <Image source={{ uri: currentQ.image }} style={styles.questionImage} contentFit="cover" />
-        <Text style={styles.questionText}>{currentQ.question}</Text>
-      </View>
+  const renderEnvelope = () => (
+    <View style={styles.centerContainer}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={handleReveal}
+        style={styles.envelopeContainer}
+      >
+        <View style={styles.envelopeTopFlap} />
 
-      <View style={styles.optionsContainer}>
-        {currentQ.options.map((opt, idx) => {
-          const isCorrect = correctSelected && idx === currentQ.answerIndex;
-          const isWrong = wrongSelections.includes(idx);
-          let btnStyle = styles.optionBtn;
-          if (isCorrect) btnStyle = [styles.optionBtn, styles.optionCorrect];
-          if (isWrong) btnStyle = [styles.optionBtn, styles.optionWrong];
-
-          return (
-            <TouchableOpacity
-              key={idx}
-              style={btnStyle}
-              onPress={() => handleOptionPress(idx)}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.optionText}>{opt}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-
-      {correctSelected && (
-        <View style={{ alignItems: 'center', marginBottom: 20 }}>
-          <Text style={[styles.headerTitle, { fontSize: 20, marginBottom: 5 }]}>You got it!</Text>
+        <View style={styles.envelopeContent}>
+          <View style={styles.waxSeal}>
+            <Ionicons name="heart" size={24} color="#FFF" />
+          </View>
+          <Text style={styles.envelopeTitle}>For Nimu</Text>
+          <Text style={styles.envelopeSubtitle}>Memory {currentIndex + 1}</Text>
+          <Text style={styles.tapToOpen}>Tap to open letter</Text>
         </View>
-      )}
-
-      {correctSelected && (
-        <TouchableOpacity style={styles.primaryBtn} onPress={handleNext}>
-          <Text style={styles.primaryBtnText}>
-            {qIndex < TRIVIA_QUESTIONS.length - 1 ? 'Next Question' : 'Finish Trivia'}
-          </Text>
-        </TouchableOpacity>
-      )}
-    </ScrollView>
-  );
-};
-
-const Screen2Final = ({ colors }) => {
-  const styles = getStyles(colors);
-
-  return (
-    <View style={[styles.screenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
-      <View style={styles.finalHeaderContainer}>
-        <Ionicons name="star" size={32} color={colors.accent} style={{ marginBottom: 10 }} />
-        <Text style={styles.headerTitle}>Journey Completed!</Text>
-        <Text style={styles.subtitleText}>Here's to all our amazing memories, laughs, and late-night talks.</Text>
-      </View>
-
-      <View style={styles.bondCard}>
-
-        <View style={styles.photoRow}>
-          <View style={styles.photoWrapperLeft}>
-            <Image
-              source={{ uri: 'https://picsum.photos/400/500?random=1001' }}
-              style={styles.personImage}
-              contentFit="cover"
-            />
-            <View style={styles.photoLabel}>
-              <Text style={styles.photoLabelText}>Ocean</Text>
-            </View>
-          </View>
-
-          <View style={styles.heartContainer}>
-            <Text style={{ fontSize: 32 }}>🤝</Text>
-          </View>
-
-          <View style={styles.photoWrapperRight}>
-            <Image
-              source={{ uri: 'https://picsum.photos/400/500?random=1002' }}
-              style={styles.personImage}
-              contentFit="cover"
-            />
-            <View style={styles.photoLabel}>
-              <Text style={styles.photoLabelText}>Nimu</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.namesContainer}>
-          <View style={styles.bondBadge}>
-            <Ionicons name="infinite" size={24} color={colors.accent} />
-            <Text style={styles.bondBadgeText}>A Bond of Friendship & Siblinghood</Text>
-          </View>
-          <Text style={styles.footerQuote}>"Good friends are like stars. You don't always see them, but you know they're always there."</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
-};
 
-// --- Main Container ---
+  const renderLetter = () => (
+    <View style={styles.letterWrapper}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+        <View style={styles.paper}>
+          <Text style={styles.dateText}>Memory #{currentStory.id}</Text>
+          <Text style={styles.letterTitle}>{currentStory.title}</Text>
+          <View style={styles.divider} />
 
-export default function NimuMemories() {
-  const { colors } = useAppTheme();
-  const styles = getStyles(colors);
+          <Text style={styles.letterBody}>
+            {currentStory.content}
+          </Text>
 
-  const [currentScreen, setCurrentScreen] = useState(1);
+          <View style={styles.signatureContainer}>
+            <Text style={styles.signature}>Written by,</Text>
+            <Text style={styles.signatureName}>Ocean</Text>
+          </View>
+        </View>
 
-  const navigateTo = (screenId) => {
-    setCurrentScreen(screenId);
-  };
+        <TouchableOpacity
+          style={styles.nextButton}
+          onPress={handleNext}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.nextButtonText}>
+            {currentIndex === SHORT_STORIES.length - 1 ? "Read Again" : "Next Story"}
+          </Text>
+          {currentIndex !== SHORT_STORIES.length - 1 && (
+            <Ionicons name="arrow-forward" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+          )}
+          {currentIndex === SHORT_STORIES.length - 1 && (
+            <Ionicons name="refresh" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+          )}
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {currentScreen === 1 && <Screen1Trivia onComplete={() => navigateTo(2)} colors={colors} />}
-      {currentScreen === 2 && <Screen2Final colors={colors} />}
+      {isOpen ? renderLetter() : renderEnvelope()}
     </SafeAreaView>
   );
 }
 
-// --- Styles ---
-
-const getStyles = (colors) => StyleSheet.create({
+const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#3E3227', // Dark wood desk aesthetic
   },
-  screenContainer: {
+  centerContainer: {
     flex: 1,
-    padding: 20,
-    backgroundColor: colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: 28,
-    color: colors.accent,
-    textAlign: 'center',
-    marginBottom: 10,
-    marginTop: 20,
-    fontFamily: 'SpaceGrotesk-Bold'
-  },
-  subtitleText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: 20,
-    fontFamily: 'SpaceGrotesk-Regular'
-  },
-  // Trivia
-  questionCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 15,
-    marginBottom: 30,
-    borderWidth: 1,
-    borderColor: colors.border,
+  // Envelope Styles
+  envelopeContainer: {
+    width: width * 0.85,
+    height: width * 0.55,
+    backgroundColor: '#EAE0D5',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  questionImage: {
-    width: '100%',
-    height: 180,
-    borderRadius: 12,
-    marginBottom: 15,
-    backgroundColor: colors.border,
-  },
-  questionText: {
-    fontSize: 20,
-    color: colors.textPrimary,
-    fontFamily: 'SpaceGrotesk-Bold',
-    textAlign: 'center',
-  },
-  optionsContainer: {
-    gap: 12,
-    marginBottom: 30,
-  },
-  optionBtn: {
-    backgroundColor: colors.card,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  optionText: {
-    color: colors.textPrimary,
-    fontSize: 16,
-    textAlign: 'center',
-    fontFamily: 'SpaceGrotesk-Bold'
-  },
-  optionCorrect: {
-    backgroundColor: '#2E7D32',
-    borderColor: '#4CAF50',
-  },
-  optionWrong: {
-    backgroundColor: colors.destructive,
-    borderColor: colors.destructive,
-  },
-  primaryBtn: {
-    backgroundColor: colors.accent,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 30,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  primaryBtnText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontFamily: 'SpaceGrotesk-Bold',
-  },
-  // Final Screen
-  finalHeaderContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  bondCard: {
-    backgroundColor: colors.card,
-    width: '100%',
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
     shadowRadius: 15,
-    elevation: 8,
+    elevation: 10,
+    borderWidth: 1,
+    borderColor: '#C8BBAE',
+    overflow: 'hidden', // to keep the flap inside the rounded corners
   },
-  photoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 30,
-    width: '100%',
-  },
-  photoWrapperLeft: {
-    transform: [{ rotate: '-8deg' }],
-    zIndex: 2,
-  },
-  photoWrapperRight: {
-    transform: [{ rotate: '8deg' }],
+  envelopeTopFlap: {
+    position: 'absolute',
+    top: 0,
+    width: 0,
+    height: 0,
+    borderLeftWidth: (width * 0.85) / 2,
+    borderRightWidth: (width * 0.85) / 2,
+    borderTopWidth: (width * 0.85) * 0.35,
+    borderStyle: 'solid',
+    backgroundColor: 'transparent',
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#DFD2C4',
     zIndex: 1,
   },
-  personImage: {
-    width: 130,
-    height: 170,
-    borderRadius: 16,
-    borderWidth: 4,
-    borderColor: '#FFF',
-    backgroundColor: colors.border,
+  envelopeContent: {
+    alignItems: 'center',
+    zIndex: 2,
+    marginTop: 40,
   },
-  photoLabel: {
+  waxSeal: {
     position: 'absolute',
-    bottom: -10,
-    alignSelf: 'center',
-    backgroundColor: colors.card,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+    top: -65, // Adjust this so it sits near the tip of the flap
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#9A2A2A', // Deep red wax color
+    justifyContent: 'center',
+    alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 6,
   },
-  photoLabelText: {
-    fontSize: 14,
+  envelopeTitle: {
+    fontSize: 26,
     fontFamily: 'SpaceGrotesk-Bold',
-    color: colors.textPrimary,
+    color: '#4A3B32',
+    marginTop: 10,
+    marginBottom: 4,
+    fontStyle: 'italic',
   },
-  heartContainer: {
-    marginHorizontal: -15,
-    zIndex: 3,
-    backgroundColor: colors.background,
+  envelopeSubtitle: {
+    fontSize: 16,
+    fontFamily: 'SpaceGrotesk-Regular',
+    color: '#7A6B5C',
+    marginBottom: 16,
+  },
+  tapToOpen: {
+    fontSize: 13,
+    fontFamily: 'SpaceGrotesk-Bold',
+    color: '#9E8D7D',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+  },
+
+  // Letter Styles
+  letterWrapper: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 30,
+    paddingHorizontal: 20,
+  },
+  paper: {
+    width: width * 0.9,
+    backgroundColor: '#FDFBF7', // Off-white paper color
+    padding: 30,
+    borderRadius: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+    minHeight: height * 0.6,
+    borderWidth: 1,
+    borderColor: '#EFEAE0',
+  },
+  dateText: {
+    fontSize: 13,
+    color: '#A08E7D',
+    fontFamily: 'SpaceGrotesk-Regular',
+    textAlign: 'right',
+    marginBottom: 15,
+  },
+  letterTitle: {
+    fontSize: 22,
+    color: '#2C241B',
+    fontFamily: 'SpaceGrotesk-Bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#EAE0D5',
+    marginBottom: 25,
+    width: '70%',
+    alignSelf: 'center',
+  },
+  letterBody: {
+    fontSize: 17,
+    color: '#3E3227',
+    fontFamily: 'SpaceGrotesk-Regular',
+    lineHeight: 30,
+  },
+  signatureContainer: {
+    marginTop: 50,
+    alignItems: 'flex-end',
+  },
+  signature: {
+    fontSize: 16,
+    color: '#5C4A3D',
+    fontFamily: 'SpaceGrotesk-Regular',
+  },
+  signatureName: {
+    fontSize: 20,
+    color: '#2C241B',
+    fontFamily: 'SpaceGrotesk-Bold',
+    fontStyle: 'italic',
+    marginTop: 5,
+  },
+  nextButton: {
+    marginTop: 30,
+    backgroundColor: '#8C7A6B',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
     borderRadius: 30,
-    padding: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
-  namesContainer: {
-    width: '100%',
-    alignItems: 'center',
-    gap: 20,
-  },
-  bondBadge: {
-    backgroundColor: colors.background,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.accent,
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  bondBadgeText: {
-    color: colors.accent,
+  nextButtonText: {
+    color: '#FFF',
+    fontSize: 16,
     fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  footerQuote: {
-    fontSize: 14,
-    fontFamily: 'SpaceGrotesk-Regular',
-    color: colors.textSecondary,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    lineHeight: 22,
   }
 });

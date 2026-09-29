@@ -319,7 +319,7 @@ const PolaroidCard = ({ card, onViewed, colors }) => {
             {card.isLetter ? (
               <Ionicons name="mail-unread" size={80} color={colors.accent} />
             ) : (
-              <Image source={{ uri: card.frontImage }} style={styles.polaroidImg} contentFit="cover" />
+              <Image source={{ uri: card.frontImage }} style={styles.polaroidImg} contentFit="cover" blurRadius={25} />
             )}
           </View>
           <Text style={styles.polaroidPrompt}>{card.prompt}</Text>
@@ -828,25 +828,27 @@ const getStyles = (colors) => StyleSheet.create({
     padding: 25,
   },
   polaroidImgSmall: {
-    width: 150,
-    height: 150,
-    borderRadius: 8,
+    width: 190,
+    height: 190,
+    borderRadius: 10,
     marginBottom: 20,
-    borderWidth: 3,
+    borderWidth: 4,
     borderColor: '#FFF',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    transform: [{ rotate: '-2deg' }],
+    elevation: 5,
   },
   captionText: {
     fontSize: 16,
-    color: '#444',
+    color: '#333',
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 28,
     fontFamily: 'SpaceGrotesk-Regular',
     fontStyle: 'italic',
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
   },
   tapeGraphic: {
     position: 'absolute',

@@ -1,10 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import Slider from '@react-native-community/slider';
-import { Audio } from 'expo-av';
 import { Image } from 'expo-image';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Animated,
   Dimensions,
   SafeAreaView,
@@ -223,8 +220,8 @@ const Screen1Trivia = ({ onComplete, colors }) => {
 const Screen2Trophy = ({ onNext, colors }) => {
   const styles = getStyles(colors);
   return (
-    <ScrollView 
-      style={styles.screenContainer} 
+    <ScrollView
+      style={styles.screenContainer}
       contentContainerStyle={{ alignItems: 'center', paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
@@ -414,125 +411,66 @@ const Screen3MemoryVault = ({ onNext, colors }) => {
   );
 };
 
-const Screen4VoiceNote = ({ colors }) => {
+const Screen4TapReveal = ({ colors }) => {
   const styles = getStyles(colors);
-  const [sound, setSound] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0); // 0 to 1
-  const [duration, setDuration] = useState(1);
-  const [isSeeking, setIsSeeking] = useState(false);
-  const [audioComplete, setAudioComplete] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
+  const [taps, setTaps] = useState(0);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    let soundRef = null;
-    const loadAudio = async () => {
-      try {
-        const { sound: newSound } = await Audio.Sound.createAsync(
-          { uri: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-          { shouldPlay: false }
-        );
-        soundRef = newSound;
-        setSound(newSound);
-        setIsLoading(false);
+  const MAX_TAPS = 5;
+  const coverOpacity = 1 - (taps / MAX_TAPS);
+  const isRevealed = taps >= MAX_TAPS;
 
-        newSound.setOnPlaybackStatusUpdate((status) => {
-          if (status.isLoaded) {
-            setDuration(status.durationMillis || 1);
-            if (!isSeeking) {
-              const currentProgress = status.positionMillis / (status.durationMillis || 1);
-              setProgress(currentProgress);
-            }
+  const handleTap = () => {
+    if (taps < MAX_TAPS) {
+      const newTaps = taps + 1;
+      setTaps(newTaps);
 
-            if (status.didJustFinish) {
-              setIsPlaying(false);
-              setAudioComplete(true);
-              Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 1000,
-                useNativeDriver: true,
-              }).start();
-            }
-          }
-        });
-      } catch (error) {
-        console.error("Error loading audio", error);
-        setIsLoading(false);
+      if (newTaps >= MAX_TAPS) {
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }).start();
       }
-    };
-
-    loadAudio();
-
-    return () => {
-      if (soundRef) {
-        soundRef.unloadAsync();
-      }
-    };
-  }, []);
-
-  const togglePlayback = async () => {
-    if (!sound) return;
-    if (isPlaying) {
-      await sound.pauseAsync();
-      setIsPlaying(false);
-    } else {
-      await sound.playAsync();
-      setIsPlaying(true);
     }
   };
 
   return (
-    <View style={[styles.screenContainer, { justifyContent: 'center' }]}>
-      <Text style={styles.headerTitle}>A message just for you</Text>
+    <View style={[styles.screenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
+      <Text style={styles.headerTitle}>One Last Surprise...</Text>
       <Text style={[styles.subtitleText, { textAlign: 'center', marginBottom: 40 }]}>
-        Plug in your headphones and hit play. Listen to the full audio to get a secret code for the next adventure!
+        Tap the mystery box 5 times to reveal your final clue!
       </Text>
 
-      <View style={styles.audioPlayerCard}>
-        {isLoading ? (
-          <ActivityIndicator size="large" color={colors.accent} style={{ padding: 20 }} />
-        ) : (
-          <>
-            <TouchableOpacity onPress={togglePlayback} style={styles.playBtn}>
-              <Ionicons name={isPlaying ? "pause" : "play"} size={40} color="#FFF" />
-            </TouchableOpacity>
+      <View style={{ width: 300, height: 150, borderRadius: 12, overflow: 'hidden', backgroundColor: colors.card, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 5, elevation: 5, marginBottom: 40 }}>
+        {/* Secret Content */}
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.card }}>
+          <Text style={{ fontSize: 16, color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Regular', marginBottom: 5 }}>Secret Code:</Text>
+          <Text style={{ fontSize: 28, color: colors.accent, fontFamily: 'SpaceGrotesk-Bold' }}>memories22</Text>
+        </View>
 
-            <Slider
-              style={{ width: '100%', height: 40 }}
-              minimumValue={0}
-              maximumValue={1}
-              value={progress}
-              minimumTrackTintColor={colors.accent}
-              maximumTrackTintColor={colors.border}
-              thumbTintColor={colors.accent}
-              onSlidingStart={() => setIsSeeking(true)}
-              onValueChange={(val) => setProgress(val)}
-              onSlidingComplete={async (val) => {
-                if (sound) {
-                  await sound.setPositionAsync(val * duration);
-                }
-                setIsSeeking(false);
-              }}
-            />
-          </>
+        {/* Cover Layer */}
+        {!isRevealed && (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={handleTap}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#B0BEC5', justifyContent: 'center', alignItems: 'center', opacity: coverOpacity }}
+          >
+            <Text style={{ color: '#455A64', fontSize: 24, fontFamily: 'SpaceGrotesk-Bold' }}>TAP TO REVEAL</Text>
+            <Text style={{ color: '#455A64', fontSize: 14, fontFamily: 'SpaceGrotesk-Regular', marginTop: 5 }}>({MAX_TAPS - taps} taps left)</Text>
+          </TouchableOpacity>
         )}
       </View>
 
-      {audioComplete && (
-        <Animated.View style={[styles.secretModal, { opacity: fadeAnim }]}>
-          <Ionicons name="sparkles" size={40} color={colors.accent} style={{ marginBottom: 10 }} />
-          <Text style={styles.secretTitle}>Secret Code Unlocked!</Text>
-          <View style={styles.codeBox}>
-            <Text style={styles.codeText}>memories22</Text>
-          </View>
-          <Text style={styles.riddleText}>
-            Clue: Where do you go when you want to change your identity?
-            Find the hidden input to continue the adventure.
-          </Text>
-        </Animated.View>
-      )}
+      {/* Revealed Clue */}
+      <Animated.View style={{ opacity: fadeAnim, width: '100%', alignItems: 'center' }}>
+        <Ionicons name="sparkles" size={40} color={colors.accent} style={{ marginBottom: 15 }} />
+        <Text style={[styles.subtitleText, { fontSize: 18, color: colors.textPrimary, fontFamily: 'SpaceGrotesk-Bold' }]}>Code Unlocked!</Text>
+        <Text style={[styles.subtitleText, { paddingHorizontal: 20 }]}>
+          Clue: Tap on @oceanmallik
+        </Text>
+      </Animated.View>
     </View>
   );
 };
@@ -555,7 +493,7 @@ export default function BirthdayNimu() {
       {currentScreen === 1 && <Screen1Trivia onComplete={() => navigateTo(2)} colors={colors} />}
       {currentScreen === 2 && <Screen2Trophy onNext={() => navigateTo(3)} colors={colors} />}
       {currentScreen === 3 && <Screen3MemoryVault onNext={() => navigateTo(4)} colors={colors} />}
-      {currentScreen === 4 && <Screen4VoiceNote colors={colors} />}
+      {currentScreen === 4 && <Screen4TapReveal colors={colors} />}
     </SafeAreaView>
   );
 }

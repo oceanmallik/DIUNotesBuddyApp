@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   Dimensions,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -53,6 +54,8 @@ const SHORT_STORIES = [
 export default function NimuMemories() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
 
   const currentStory = SHORT_STORIES[currentIndex];
 
@@ -61,13 +64,72 @@ export default function NimuMemories() {
       setIsOpen(false);
       setCurrentIndex(prev => prev + 1);
     } else {
-      setIsOpen(false);
-      setCurrentIndex(0);
+      setIsFinished(true);
     }
   };
 
   const handleReveal = () => {
     setIsOpen(true);
+  };
+
+  const renderWelcome = () => (
+    <View style={styles.centerContainer}>
+      <Ionicons name="book-outline" size={60} color="#EAE0D5" style={{ marginBottom: 20 }} />
+      <Text style={[styles.welcomeTitle, { textAlign: 'center', paddingHorizontal: 20 }]}>Welcome to Nimu&apos;s Memories</Text>
+      <Text style={[styles.welcomeSubtitle, { textAlign: 'center', paddingHorizontal: 20 }]}>A collection of unforgettable moments...</Text>
+      <TouchableOpacity 
+        style={styles.startButton}
+        activeOpacity={0.8}
+        onPress={() => setHasStarted(true)}
+      >
+        <Text style={styles.startButtonText}>Begin the Journey</Text>
+        <Ionicons name="sparkles" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderFinished = () => (
+    <View style={styles.centerContainer}>
+      <Ionicons name="gift-outline" size={80} color="#EAE0D5" style={{ marginBottom: 10 }} />
+      <Text style={[styles.welcomeTitle, { textAlign: 'center', paddingHorizontal: 20, marginBottom: 5 }]}>
+        Happy birthday Nimu, bkash e 100 taka patha.
+      </Text>
+      <Image 
+        source={{ uri: 'https://www.oceanmallik.com/banglaQR.jpg' }}
+        style={{ width: 200, height: 200, marginTop: 10, borderRadius: 10 }}
+        resizeMode="contain"
+      />
+      <Text style={[styles.welcomeSubtitle, { textAlign: 'center', paddingHorizontal: 20, marginTop: 15, fontSize: 18, marginBottom: 20 }]}>
+        এইটা স্ক্যান করে পেমেন্ট পাঠা
+      </Text>
+      <TouchableOpacity 
+        style={[styles.startButton, { marginTop: 10 }]}
+        activeOpacity={0.8}
+        onPress={() => {
+          setIsFinished(false);
+          setHasStarted(false);
+          setCurrentIndex(0);
+          setIsOpen(false);
+        }}
+      >
+        <Text style={styles.startButtonText}>Read Again</Text>
+        <Ionicons name="refresh" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderProgressBar = () => {
+    const progress = (currentIndex + 1) / SHORT_STORIES.length;
+    return (
+      <View style={styles.progressContainer}>
+        <Text style={styles.progressText}>
+          Story {currentIndex + 1} of {SHORT_STORIES.length}
+        </Text>
+        <View style={styles.progressBarBackground}>
+          <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
+        </View>
+      </View>
+    );
   };
 
   const renderEnvelope = () => (
@@ -115,13 +177,12 @@ export default function NimuMemories() {
           activeOpacity={0.8}
         >
           <Text style={styles.nextButtonText}>
-            {currentIndex === SHORT_STORIES.length - 1 ? "Read Again" : "Next Story"}
+            {currentIndex === SHORT_STORIES.length - 1 ? "Finish" : "Next Story"}
           </Text>
-          {currentIndex !== SHORT_STORIES.length - 1 && (
+          {currentIndex !== SHORT_STORIES.length - 1 ? (
             <Ionicons name="arrow-forward" size={20} color="#FFF" style={{ marginLeft: 8 }} />
-          )}
-          {currentIndex === SHORT_STORIES.length - 1 && (
-            <Ionicons name="refresh" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+          ) : (
+            <Ionicons name="checkmark-done" size={20} color="#FFF" style={{ marginLeft: 8 }} />
           )}
         </TouchableOpacity>
       </ScrollView>
@@ -130,7 +191,10 @@ export default function NimuMemories() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {isOpen ? renderLetter() : renderEnvelope()}
+      {!hasStarted && !isFinished && renderWelcome()}
+      {hasStarted && !isFinished && renderProgressBar()}
+      {hasStarted && !isFinished && (isOpen ? renderLetter() : renderEnvelope())}
+      {isFinished && renderFinished()}
     </SafeAreaView>
   );
 }
@@ -144,6 +208,62 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  // Welcome & Finish Screens
+  welcomeTitle: {
+    fontSize: 28,
+    fontFamily: 'SpaceGrotesk-Bold',
+    color: '#EAE0D5',
+    marginBottom: 10,
+  },
+  welcomeSubtitle: {
+    fontSize: 16,
+    fontFamily: 'SpaceGrotesk-Regular',
+    color: '#C8BBAE',
+    marginBottom: 40,
+  },
+  startButton: {
+    backgroundColor: '#8C7A6B',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  startButtonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontFamily: 'SpaceGrotesk-Bold',
+  },
+  // Progress Bar
+  progressContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    alignItems: 'center',
+  },
+  progressText: {
+    color: '#EAE0D5',
+    fontSize: 14,
+    fontFamily: 'SpaceGrotesk-Regular',
+    marginBottom: 8,
+  },
+  progressBarBackground: {
+    width: '100%',
+    height: 6,
+    backgroundColor: '#5C4A3D',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#D4AF37', // Gold color
+    borderRadius: 3,
   },
   // Envelope Styles
   envelopeContainer: {

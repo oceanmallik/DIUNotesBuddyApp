@@ -97,15 +97,16 @@ const MEMORY_CARDS = [
     prompt: 'Spring Memory',
     text: 'বসন্ত (Spring) : যেখানে তুই আছিস, সেখানেই রঙের ছোঁয়া। তুই নিজেই আমার জীবনের বসন্ত।',
     isLetter: false,
-  },
-  {
-    id: 7,
-    frontImage: 'https://picsum.photos/400/500?random=99',
-    prompt: 'A Simple Letter',
-    text: "শুভ জন্মদিন প্রিয় বন্ধু, \n\nরক্তের সম্পর্ক না থাকলেও তুই যে আমার নিজের বোনের চেয়েও বেশি কিছু, সেটা নতুন করে বলার দরকার নেই। রাত দুইটার পাগলামি থেকে শুরু করে মন খারাপের দিনে ভরসা হওয়া, সবকিছুতেই তুই আমার সবচেয়ে বড় শক্তি। \n\nতুই যেভাবে নিজের স্বপ্ন নিয়ে লড়ছিস, তোকে নিয়ে সত্যি অনেক গর্ব হয়। জীবনে যাই ঘটুক, জেনে রাখিস তোর এই ভাই/বন্ধুটা যেকোনো পরিস্থিতিতে তোর পাশে আছে আর থাকবে। তোর এই সুন্দর হাসিমুখটা যেন কখনো না হারায়। শুভ জন্মদিন, পাগলী! অনেক ভালো থাকিস সবসময়। \n\n— তোর বন্ধু",
-    isLetter: true,
   }
 ];
+
+const LETTER_CARD = {
+  id: 7,
+  frontImage: 'https://picsum.photos/400/500?random=99',
+  prompt: 'A Simple Letter',
+  text: "শুভ জন্মদিন প্রিয় বন্ধু, \n\nরক্তের সম্পর্ক না থাকলেও তুই যে আমার নিজের বোনের চেয়েও বেশি কিছু, সেটা নতুন করে বলার দরকার নেই। রাত দুইটার পাগলামি থেকে শুরু করে মন খারাপের দিনে ভরসা হওয়া, সবকিছুতেই তুই আমার সবচেয়ে বড় শক্তি। \n\nতুই যেভাবে নিজের স্বপ্ন নিয়ে লড়ছিস, তোকে নিয়ে সত্যি অনেক গর্ব হয়। জীবনে যাই ঘটুক, জেনে রাখিস তোর এই ভাই/বন্ধুটা যেকোনো পরিস্থিতিতে তোর পাশে আছে আর থাকবে। তোর এই সুন্দর হাসিমুখটা যেন কখনো না হারায়। শুভ জন্মদিন, পাগলী! অনেক ভালো থাকিস সবসময়। \n\n— তোর বন্ধু",
+  isLetter: true,
+};
 
 // --- Components ---
 
@@ -411,7 +412,33 @@ const Screen3MemoryVault = ({ onNext, colors }) => {
   );
 };
 
-const Screen4TapReveal = ({ colors }) => {
+const Screen4Letter = ({ onNext, colors }) => {
+  const styles = getStyles(colors);
+  const [viewed, setViewed] = useState(false);
+
+  return (
+    <View style={styles.screenContainer}>
+      <Text style={styles.headerTitle}>A Special Message</Text>
+      <Text style={styles.subtitleText}>Tap the envelope to open it.</Text>
+
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 20 }}>
+        <PolaroidCard card={LETTER_CARD} onViewed={() => setViewed(true)} colors={colors} />
+      </View>
+
+      <View style={styles.vaultFooter}>
+        <TouchableOpacity
+          style={[styles.primaryBtn, !viewed && styles.btnDisabled]}
+          onPress={onNext}
+          disabled={!viewed}
+        >
+          <Text style={styles.primaryBtnText}>Proceed to Next Surprise</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const Screen5TapReveal = ({ colors }) => {
   const styles = getStyles(colors);
 
   const [taps, setTaps] = useState(0);
@@ -493,7 +520,8 @@ export default function BirthdayNimu() {
       {currentScreen === 1 && <Screen1Trivia onComplete={() => navigateTo(2)} colors={colors} />}
       {currentScreen === 2 && <Screen2Trophy onNext={() => navigateTo(3)} colors={colors} />}
       {currentScreen === 3 && <Screen3MemoryVault onNext={() => navigateTo(4)} colors={colors} />}
-      {currentScreen === 4 && <Screen4TapReveal colors={colors} />}
+      {currentScreen === 4 && <Screen4Letter onNext={() => navigateTo(5)} colors={colors} />}
+      {currentScreen === 5 && <Screen5TapReveal colors={colors} />}
     </SafeAreaView>
   );
 }

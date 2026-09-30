@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import React, { useRef, useState } from 'react';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {
   Animated,
   Dimensions,
@@ -104,7 +105,7 @@ const LETTER_CARD = {
   id: 7,
   frontImage: 'https://picsum.photos/400/500?random=99',
   prompt: 'A Simple Letter',
-  text: "শুভ জন্মদিন প্রিয় বন্ধু, \n\nরক্তের সম্পর্ক না থাকলেও তুই যে আমার নিজের বোনের চেয়েও বেশি কিছু, সেটা নতুন করে বলার দরকার নেই। রাত দুইটার পাগলামি থেকে শুরু করে মন খারাপের দিনে ভরসা হওয়া, সবকিছুতেই তুই আমার সবচেয়ে বড় শক্তি। \n\nতুই যেভাবে নিজের স্বপ্ন নিয়ে লড়ছিস, তোকে নিয়ে সত্যি অনেক গর্ব হয়। জীবনে যাই ঘটুক, জেনে রাখিস তোর এই ভাই/বন্ধুটা যেকোনো পরিস্থিতিতে তোর পাশে আছে আর থাকবে। তোর এই সুন্দর হাসিমুখটা যেন কখনো না হারায়। শুভ জন্মদিন, পাগলী! অনেক ভালো থাকিস সবসময়। \n\n— তোর বন্ধু",
+  text: "শুভ জন্মদিন প্রিয় বন্ধু, \n\nরক্তের সম্পর্ক না থাকলেও তুই যে আমার নিজের বোনের চেয়েও বেশি কিছু, সেটা নতুন করে বলার দরকার নেই। রাত দুইটার পাগলামি থেকে শুরু করে মন খারাপের দিনে ভরসা হওয়া, সবকিছুতেই তুই আমার সবচেয়ে বড় শক্তি। \n\nতুই যেভাবে নিজের স্বপ্ন নিয়ে লড়ছিস, তোকে নিয়ে সত্যি অনেক গর্ব হয়। জীবনে যাই ঘটুক, জেনে রাখিস তোর এই ভাই/বন্ধুটা যেকোনো পরিস্থিতিতে তোর পাশে আছে আর থাকবে। তোর এই সুন্দর হাসিমুখটা যেন কখনো না হারায়। শুভ জন্মদিন, ছাগল! অনেক ভালো থাকিস সবসময়। \n\n— তোর বন্ধু",
   isLetter: true,
 };
 
@@ -414,26 +415,142 @@ const Screen3MemoryVault = ({ onNext, colors }) => {
 
 const Screen4Letter = ({ onNext, colors }) => {
   const styles = getStyles(colors);
-  const [viewed, setViewed] = useState(false);
+
+  const [step, setStep] = useState(0); // 0 = closed, 1 = opened (letter out), 2 = reading (expanded)
+
+  const flapAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const expandAnim = useRef(new Animated.Value(0)).current;
+  const envelopeOpacity = useRef(new Animated.Value(1)).current;
+
+  const handleTap = () => {
+    if (step === 0) {
+      setStep(1);
+      Animated.sequence([
+        Animated.timing(flapAnim, { toValue: 1, duration: 400, useNativeDriver: true }),
+        Animated.timing(slideAnim, { toValue: 1, duration: 500, useNativeDriver: false })
+      ]).start();
+    } else if (step === 1) {
+      setStep(2);
+      Animated.parallel([
+        Animated.timing(envelopeOpacity, { toValue: 0, duration: 400, useNativeDriver: true }),
+        Animated.timing(expandAnim, { toValue: 1, duration: 600, useNativeDriver: false })
+      ]).start();
+    }
+  };
 
   return (
     <View style={styles.screenContainer}>
-      <Text style={styles.headerTitle}>A Special Message</Text>
-      <Text style={styles.subtitleText}>Tap the envelope to open it.</Text>
+      <Animated.View style={{ opacity: expandAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
+        <Text style={styles.headerTitle}>{step === 0 ? "A Special Message" : "Read It"}</Text>
+        <Text style={styles.subtitleText}>{step === 0 ? "Tap the envelope to open it." : "Tap the letter to unfold."}</Text>
+      </Animated.View>
 
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 20 }}>
-        <PolaroidCard card={LETTER_CARD} onViewed={() => setViewed(true)} colors={colors} />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+
+        <TouchableWithoutFeedback onPress={handleTap}>
+          <View style={{ width: 300, height: 200, alignItems: 'center', justifyContent: 'flex-end', marginTop: 40 }}>
+
+            {/* Envelope Back */}
+            <Animated.View style={{
+              position: 'absolute', bottom: 0, width: 300, height: 200,
+              backgroundColor: '#D4AF37', borderRadius: 10,
+              opacity: envelopeOpacity
+            }} />
+
+            {/* Letter Paper */}
+            <Animated.View style={{
+              position: 'absolute',
+              bottom: 10,
+              width: expandAnim.interpolate({ inputRange: [0, 1], outputRange: [270, width - 40] }),
+              height: expandAnim.interpolate({ inputRange: [0, 1], outputRange: [180, 480] }),
+              backgroundColor: '#FFF0F5',
+              borderRadius: 8,
+              padding: 20,
+              borderWidth: 1.5, borderColor: '#F48FB1', borderStyle: 'dashed',
+              zIndex: step === 0 ? 2 : 6,
+              transform: [
+                { translateY: slideAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -120] }) },
+                { translateY: expandAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 100] }) }
+              ],
+              shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 5, elevation: 5,
+              overflow: 'hidden'
+            }}>
+
+              {/* Full Text */}
+              <Animated.View style={{ opacity: expandAnim, flex: 1 }} pointerEvents={step === 2 ? 'auto' : 'none'}>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
+                  <Text style={styles.letterText}>{LETTER_CARD.text}</Text>
+                </ScrollView>
+              </Animated.View>
+
+              {/* Mini Lines (folded look) */}
+              <Animated.View style={{
+                position: 'absolute', top: 30, left: 20, right: 20,
+                opacity: expandAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] })
+              }}>
+                <View style={{ height: 6, backgroundColor: '#FFD1DC', marginBottom: 15, width: '40%', borderRadius: 3 }} />
+                <View style={{ height: 6, backgroundColor: '#FFD1DC', marginBottom: 15, width: '80%', borderRadius: 3 }} />
+                <View style={{ height: 6, backgroundColor: '#FFD1DC', marginBottom: 15, width: '90%', borderRadius: 3 }} />
+                <View style={{ height: 6, backgroundColor: '#FFD1DC', marginBottom: 15, width: '75%', borderRadius: 3 }} />
+              </Animated.View>
+
+            </Animated.View>
+
+            {/* Left Flap */}
+            <Animated.View style={{
+              position: 'absolute', left: 0, top: 0,
+              width: 0, height: 0,
+              borderTopWidth: 100, borderBottomWidth: 100, borderLeftWidth: 150,
+              borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#CFA768',
+              zIndex: 7, opacity: envelopeOpacity
+            }} />
+
+            {/* Right Flap */}
+            <Animated.View style={{
+              position: 'absolute', right: 0, top: 0,
+              width: 0, height: 0,
+              borderTopWidth: 100, borderBottomWidth: 100, borderRightWidth: 150,
+              borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: '#CFA768',
+              zIndex: 7, opacity: envelopeOpacity
+            }} />
+
+            {/* Bottom Flap */}
+            <Animated.View style={{
+              position: 'absolute', bottom: 0,
+              width: 0, height: 0,
+              borderLeftWidth: 150, borderRightWidth: 150, borderBottomWidth: 120,
+              borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: '#B8860B',
+              zIndex: 8, opacity: envelopeOpacity
+            }} />
+
+            {/* Top Flap (Hinged) */}
+            <Animated.View style={{
+              position: 'absolute', top: 0,
+              width: 0, height: 0,
+              borderLeftWidth: 150, borderRightWidth: 150, borderTopWidth: 110,
+              borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#DAA520',
+              zIndex: step === 0 ? 10 : 5,
+              opacity: envelopeOpacity,
+              transform: [
+                { translateY: -55 },
+                { rotateX: flapAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-180deg'] }) },
+                { translateY: 55 }
+              ]
+            }} />
+
+          </View>
+        </TouchableWithoutFeedback>
       </View>
 
-      <View style={styles.vaultFooter}>
+      <Animated.View style={[styles.vaultFooter, { opacity: expandAnim }]} pointerEvents={step === 2 ? 'auto' : 'none'}>
         <TouchableOpacity
-          style={[styles.primaryBtn, !viewed && styles.btnDisabled]}
+          style={styles.primaryBtn}
           onPress={onNext}
-          disabled={!viewed}
         >
           <Text style={styles.primaryBtnText}>Proceed to Next Surprise</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </View>
   );
 };
@@ -442,6 +559,13 @@ const Screen5TapReveal = ({ colors }) => {
   const styles = getStyles(colors);
 
   const [taps, setTaps] = useState(0);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    Clipboard.setString('memories22');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const MAX_TAPS = 5;
@@ -473,8 +597,13 @@ const Screen5TapReveal = ({ colors }) => {
       <View style={{ width: 300, height: 150, borderRadius: 12, overflow: 'hidden', backgroundColor: colors.card, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 5, elevation: 5, marginBottom: 40 }}>
         {/* Secret Content */}
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.card }}>
-          <Text style={{ fontSize: 16, color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Regular', marginBottom: 5 }}>Secret Code:</Text>
-          <Text style={{ fontSize: 28, color: colors.accent, fontFamily: 'SpaceGrotesk-Bold' }}>memories22</Text>
+          <Text style={{ fontSize: 16, color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Regular', marginBottom: 10 }}>Secret Code:</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.background, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.border }}>
+            <Text selectable={true} style={{ fontSize: 26, color: colors.accent, fontFamily: 'SpaceGrotesk-Bold', marginRight: 15 }}>memories22</Text>
+            <TouchableOpacity onPress={handleCopy} style={{ backgroundColor: copied ? '#4CAF50' : colors.accent, padding: 8, borderRadius: 8 }}>
+              <Ionicons name={copied ? "checkmark-outline" : "copy-outline"} size={20} color="#FFF" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Cover Layer */}

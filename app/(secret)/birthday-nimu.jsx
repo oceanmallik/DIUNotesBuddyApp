@@ -296,8 +296,8 @@ const PolaroidCard = ({ card, onViewed, colors }) => {
   const frontAnimatedStyle = { transform: [{ rotateY: frontInterpolate }] };
   const backAnimatedStyle = { transform: [{ rotateY: backInterpolate }], position: 'absolute' };
 
-  const cardDimensions = card.isLetter ? { width: width - 60, height: 520 } : {};
-  const wrapperHeight = card.isLetter ? { height: 540 } : {};
+  const cardDimensions = card.isLetter ? { width: width - 40, height: 600 } : {};
+  const wrapperHeight = card.isLetter ? { height: 620 } : {};
 
   return (
     <View style={[styles.cardWrapper, wrapperHeight]}>
@@ -719,13 +719,13 @@ const getStyles = (colors) => StyleSheet.create({
   // Polaroid
   cardWrapper: {
     width: '100%',
-    height: 420,
+    height: 520,
     alignItems: 'center',
     justifyContent: 'center',
   },
   polaroidCard: {
-    width: 280,
-    height: 380,
+    width: 320,
+    height: 480,
     backgroundColor: '#FFFFFF', // Keep physical polaroid white even in dark mode for aesthetic
     borderRadius: 8,
     padding: 15,
@@ -738,7 +738,7 @@ const getStyles = (colors) => StyleSheet.create({
   },
   polaroidImagePlaceholder: {
     width: '100%',
-    height: 250,
+    height: 320,
     backgroundColor: '#EEE',
     marginBottom: 20,
     justifyContent: 'center',
@@ -766,8 +766,8 @@ const getStyles = (colors) => StyleSheet.create({
     padding: 25,
   },
   polaroidImgSmall: {
-    width: 190,
-    height: 190,
+    width: 170,
+    height: 170,
     borderRadius: 10,
     marginBottom: 20,
     borderWidth: 4,
